@@ -10,10 +10,13 @@ const lightboxImg = document.getElementById('lightboxImg');
 chrome.storage.local.get('steps', (data) => {
   const steps = data.steps || [];
 
+  // Always ensure empty state is properly toggled
   if (steps.length === 0) {
     emptyState.classList.remove('hidden');
     document.getElementById('brandingSection').style.display = 'none';
     return;
+  } else {
+    emptyState.classList.add('hidden');
   }
 
   // Auto-generate title from first URL

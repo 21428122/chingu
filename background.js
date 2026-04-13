@@ -117,16 +117,20 @@ function buildDescription(msg) {
   const tag = (msg.elementTag || '').toLowerCase();
   const text = msg.elementText ? msg.elementText.trim() : '';
   const truncated = text.length > 60 ? text.substring(0, 57) + '...' : text;
+  const id = msg.elementId || '';
+  const cls = msg.elementClass || '';
 
   // Input / textarea: "Type [value] in [field]"
   if ((tag === 'input' || tag === 'textarea') && msg.inputValue) {
-    const label = msg.elementId || msg.placeholder || 'the field';
+    const label = msg.placeholder || id || 'the field';
     return `Type "${msg.inputValue}" in ${label}`;
   }
 
   // Button / link with text
   if (tag === 'button' || tag === 'a' || msg.role === 'button') {
     if (truncated) return `Click "${truncated}"`;
+    // Try to use id or aria-label as fallback
+    if (id) return `Click the "${id}" ${tag === 'a' ? 'link' : 'button'}`;
     return `Click the ${tag === 'a' ? 'link' : 'button'}`;
   }
 
@@ -140,9 +144,26 @@ function buildDescription(msg) {
     return truncated ? `Toggle "${truncated}"` : `Toggle the ${msg.inputType}`;
   }
 
+  // Navigation / menu items
+  if (tag === 'li' || tag === 'nav' || tag === 'span' || tag === 'div') {
+    if (truncated) return `Click "${truncated}"`;
+  }
+
+  // Table rows / cells
+  if (tag === 'td' || tag === 'tr' || tag === 'th') {
+    if (truncated) return `Click "${truncated}" in the table`;
+  }
+
   // Generic click with text
   if (truncated) {
     return `Click "${truncated}"`;
+  }
+
+  // Last resort: try to build something useful from id or class
+  if (id) return `Click the "${id}" element`;
+  if (cls) {
+    const friendlyClass = cls.split(' ')[0].replace(/[-_]/g, ' ');
+    return `Click the ${friendlyClass} area`;
   }
 
   return `Click on the page`;
