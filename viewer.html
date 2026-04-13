@@ -3,19 +3,23 @@
 <head>
   <meta charset="utf-8">
   <title>Chingu — Your SOP Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #f5f5f5;
-      color: #1a1a1a;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #F8FAFC;
+      color: #0F172A;
       line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
     }
 
+    /* Top bar */
     .top-bar {
       background: white;
-      border-bottom: 1px solid #e5e5e5;
+      border-bottom: 1px solid #E2E8F0;
       padding: 12px 24px;
       display: flex;
       justify-content: space-between;
@@ -23,6 +27,8 @@
       position: sticky;
       top: 0;
       z-index: 10;
+      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.85);
     }
 
     .top-bar-left {
@@ -32,14 +38,41 @@
     }
 
     .logo {
-      font-size: 16px;
-      font-weight: 700;
-      color: #4F46E5;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
     }
 
-    .guide-title {
-      font-size: 14px;
-      color: #666;
+    .logo-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-mark svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .logo-text {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0F172A;
+      letter-spacing: -0.02em;
+    }
+
+    .guide-count {
+      font-size: 13px;
+      color: #94A3B8;
+      font-weight: 500;
+      background: #F1F5F9;
+      padding: 4px 10px;
+      border-radius: 9999px;
     }
 
     .top-bar-actions {
@@ -50,146 +83,169 @@
     .btn {
       padding: 8px 16px;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.15s;
+      transition: all 0.15s ease;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: -0.01em;
     }
 
     .btn-primary {
-      background: #4F46E5;
+      background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
       color: white;
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
     }
 
-    .btn-primary:hover { background: #4338CA; }
+    .btn-primary:hover {
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+      transform: translateY(-1px);
+    }
 
     .btn-secondary {
-      background: #f0f0f0;
-      color: #333;
+      background: white;
+      color: #334155;
+      border: 1.5px solid #E2E8F0;
     }
 
-    .btn-secondary:hover { background: #e5e5e5; }
+    .btn-secondary:hover {
+      background: #F8FAFC;
+      border-color: #CBD5E1;
+    }
 
     /* Branding header */
     .branding {
-      max-width: 800px;
-      margin: 32px auto 0;
-      padding: 24px;
+      max-width: 760px;
+      margin: 40px auto 0;
+      padding: 32px 32px 28px;
       background: white;
-      border-radius: 12px 12px 0 0;
-      border: 1px solid #e5e5e5;
+      border-radius: 20px 20px 0 0;
+      border: 1px solid #E2E8F0;
       border-bottom: none;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
     }
 
     .branding-logo {
       display: none;
-      max-height: 40px;
-      margin-bottom: 12px;
+      max-height: 36px;
+      margin-bottom: 16px;
     }
 
-    .branding-logo.visible {
-      display: block;
-    }
+    .branding-logo.visible { display: block; }
 
     .guide-heading {
-      font-size: 24px;
+      font-size: 28px;
       font-weight: 700;
-      color: #1a1a1a;
+      color: #0F172A;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
     }
 
     .guide-heading[contenteditable]:hover {
-      outline: 2px solid #4F46E5;
-      outline-offset: 4px;
-      border-radius: 4px;
+      outline: 2px solid #6366F1;
+      outline-offset: 6px;
+      border-radius: 6px;
     }
 
     .guide-heading[contenteditable]:focus {
-      outline: 2px solid #4F46E5;
-      outline-offset: 4px;
-      border-radius: 4px;
+      outline: 2px solid #6366F1;
+      outline-offset: 6px;
+      border-radius: 6px;
     }
 
     .guide-meta {
       font-size: 13px;
-      color: #999;
-      margin-top: 4px;
+      color: #94A3B8;
+      margin-top: 8px;
+      font-weight: 500;
     }
 
-    /* Steps */
+    /* Steps container */
     .steps-container {
-      max-width: 800px;
-      margin: 0 auto 48px;
+      max-width: 760px;
+      margin: 0 auto 60px;
     }
 
     .step {
       background: white;
-      border: 1px solid #e5e5e5;
+      border: 1px solid #E2E8F0;
       border-top: none;
-      padding: 24px;
+      padding: 28px 32px;
+      transition: background 0.15s ease;
+    }
+
+    .step:hover {
+      background: #FAFAFF;
     }
 
     .step:last-child {
-      border-radius: 0 0 12px 12px;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
     }
 
     .step-header {
       display: flex;
       align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 16px;
+      gap: 14px;
+      margin-bottom: 18px;
     }
 
     .step-number {
-      background: #4F46E5;
+      background: linear-gradient(135deg, #6366F1, #8B5CF6);
       color: white;
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
       flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
     }
 
     .step-description {
-      font-size: 15px;
-      font-weight: 500;
-      color: #1a1a1a;
-      padding-top: 3px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #0F172A;
+      padding-top: 5px;
+      letter-spacing: -0.01em;
     }
 
     .step-description[contenteditable]:hover {
-      outline: 1px dashed #ccc;
-      outline-offset: 4px;
-      border-radius: 2px;
+      outline: 1px dashed #CBD5E1;
+      outline-offset: 6px;
+      border-radius: 4px;
     }
 
     .step-description[contenteditable]:focus {
-      outline: 2px solid #4F46E5;
-      outline-offset: 4px;
-      border-radius: 2px;
+      outline: 2px solid #6366F1;
+      outline-offset: 6px;
+      border-radius: 4px;
     }
 
     .step-url {
       font-size: 11px;
-      color: #aaa;
-      margin-top: 2px;
+      color: #CBD5E1;
+      margin-top: 4px;
       word-break: break-all;
+      font-weight: 400;
     }
 
     .step-screenshot {
       width: 100%;
-      border-radius: 8px;
-      border: 1px solid #e5e5e5;
+      border-radius: 12px;
+      border: 1px solid #E2E8F0;
       cursor: pointer;
-      transition: transform 0.2s;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
     }
 
     .step-screenshot:hover {
-      transform: scale(1.01);
+      transform: scale(1.005);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
     }
 
     /* Lightbox */
@@ -197,62 +253,65 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.85);
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(8px);
       z-index: 100;
       cursor: zoom-out;
       align-items: center;
       justify-content: center;
     }
 
-    .lightbox.active {
-      display: flex;
-    }
+    .lightbox.active { display: flex; }
 
     .lightbox img {
       max-width: 95vw;
       max-height: 95vh;
-      border-radius: 8px;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     }
 
-    /* Upload branding modal */
+    /* Modal */
     .modal-overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.4);
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(4px);
       z-index: 50;
       align-items: center;
       justify-content: center;
     }
 
-    .modal-overlay.active {
-      display: flex;
-    }
+    .modal-overlay.active { display: flex; }
 
     .modal {
       background: white;
-      border-radius: 12px;
-      padding: 24px;
+      border-radius: 16px;
+      padding: 28px;
       max-width: 400px;
       width: 90%;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.15);
     }
 
     .modal h3 {
-      font-size: 16px;
-      margin-bottom: 12px;
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
     }
 
     .modal label {
       font-size: 13px;
-      font-weight: 500;
+      font-weight: 600;
       display: block;
-      margin-bottom: 4px;
-      color: #333;
+      margin-bottom: 6px;
+      color: #334155;
     }
 
     .modal input[type="file"] {
-      margin-bottom: 16px;
+      margin-bottom: 20px;
       font-size: 13px;
+      font-family: 'Inter', sans-serif;
     }
 
     .modal-actions {
@@ -263,49 +322,68 @@
 
     /* Empty state */
     .empty-state {
-      max-width: 800px;
-      margin: 80px auto;
+      max-width: 760px;
+      margin: 100px auto;
       text-align: center;
-      color: #999;
+      color: #94A3B8;
     }
 
     .empty-state h2 {
       font-size: 20px;
-      color: #666;
+      font-weight: 700;
+      color: #64748B;
       margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      font-size: 14px;
     }
 
     /* Footer */
     .footer {
       text-align: center;
-      padding: 24px;
+      padding: 32px;
       font-size: 12px;
-      color: #ccc;
+      color: #CBD5E1;
+      font-weight: 500;
     }
 
     .footer a {
-      color: #4F46E5;
+      color: #6366F1;
       text-decoration: none;
+      font-weight: 600;
     }
+
+    .footer a:hover { text-decoration: underline; }
+
+    .hidden { display: none; }
 
     @media print {
       .top-bar, .footer { display: none; }
       .step-screenshot { break-inside: avoid; }
-      .branding { border: none; }
-      .step { border: none; border-top: 1px solid #eee; }
+      .branding { border: none; box-shadow: none; }
+      .step { border: none; border-top: 1px solid #F1F5F9; }
     }
   </style>
 </head>
 <body>
   <div class="top-bar">
     <div class="top-bar-left">
-      <span class="logo">Chingu</span>
-      <span class="guide-title" id="guideSubtitle"></span>
+      <div class="logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="3" fill="white"/>
+          </svg>
+        </div>
+        <span class="logo-text">Chingu</span>
+      </div>
+      <span class="guide-count" id="guideSubtitle"></span>
     </div>
     <div class="top-bar-actions">
       <button class="btn btn-secondary" id="btnBrand">Add Logo</button>
-      <button class="btn btn-secondary" id="btnCopy">Copy Link</button>
       <button class="btn btn-secondary" id="btnPolish">Auto-Polish</button>
+      <button class="btn btn-secondary" id="btnCopy">Copy Link</button>
       <button class="btn btn-primary" id="btnPdf">Export PDF</button>
     </div>
   </div>
@@ -327,12 +405,10 @@
     Made with <a href="https://github.com/21428122/chingu" target="_blank">Chingu</a> — free, open source SOPs
   </div>
 
-  <!-- Lightbox -->
   <div class="lightbox" id="lightbox">
     <img id="lightboxImg" src="" alt="Screenshot">
   </div>
 
-  <!-- Brand modal -->
   <div class="modal-overlay" id="brandModal">
     <div class="modal">
       <h3>Add Your Branding</h3>

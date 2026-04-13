@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Chingu",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "The open source Chrome extension for SOPs that actually work. Free forever.",
   "permissions": [
     "activeTab",
