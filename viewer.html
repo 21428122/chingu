@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Chingu — Your SOP Guide</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      color: #1a1a1a;
+      line-height: 1.5;
+    }
+
+    .top-bar {
+      background: white;
+      border-bottom: 1px solid #e5e5e5;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .top-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      font-size: 16px;
+      font-weight: 700;
+      color: #4F46E5;
+    }
+
+    .guide-title {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .top-bar-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-primary {
+      background: #4F46E5;
+      color: white;
+    }
+
+    .btn-primary:hover { background: #4338CA; }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .btn-secondary:hover { background: #e5e5e5; }
+
+    /* Branding header */
+    .branding {
+      max-width: 800px;
+      margin: 32px auto 0;
+      padding: 24px;
+      background: white;
+      border-radius: 12px 12px 0 0;
+      border: 1px solid #e5e5e5;
+      border-bottom: none;
+    }
+
+    .branding-logo {
+      display: none;
+      max-height: 40px;
+      margin-bottom: 12px;
+    }
+
+    .branding-logo.visible {
+      display: block;
+    }
+
+    .guide-heading {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+
+    .guide-heading[contenteditable]:hover {
+      outline: 2px solid #4F46E5;
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+
+    .guide-heading[contenteditable]:focus {
+      outline: 2px solid #4F46E5;
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+
+    .guide-meta {
+      font-size: 13px;
+      color: #999;
+      margin-top: 4px;
+    }
+
+    /* Steps */
+    .steps-container {
+      max-width: 800px;
+      margin: 0 auto 48px;
+    }
+
+    .step {
+      background: white;
+      border: 1px solid #e5e5e5;
+      border-top: none;
+      padding: 24px;
+    }
+
+    .step:last-child {
+      border-radius: 0 0 12px 12px;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .step-number {
+      background: #4F46E5;
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .step-description {
+      font-size: 15px;
+      font-weight: 500;
+      color: #1a1a1a;
+      padding-top: 3px;
+    }
+
+    .step-description[contenteditable]:hover {
+      outline: 1px dashed #ccc;
+      outline-offset: 4px;
+      border-radius: 2px;
+    }
+
+    .step-description[contenteditable]:focus {
+      outline: 2px solid #4F46E5;
+      outline-offset: 4px;
+      border-radius: 2px;
+    }
+
+    .step-url {
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 2px;
+      word-break: break-all;
+    }
+
+    .step-screenshot {
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #e5e5e5;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .step-screenshot:hover {
+      transform: scale(1.01);
+    }
+
+    /* Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 100;
+      cursor: zoom-out;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lightbox.active {
+      display: flex;
+    }
+
+    .lightbox img {
+      max-width: 95vw;
+      max-height: 95vh;
+      border-radius: 8px;
+    }
+
+    /* Upload branding modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 50;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .modal h3 {
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    .modal label {
+      font-size: 13px;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 4px;
+      color: #333;
+    }
+
+    .modal input[type="file"] {
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    /* Empty state */
+    .empty-state {
+      max-width: 800px;
+      margin: 80px auto;
+      text-align: center;
+      color: #999;
+    }
+
+    .empty-state h2 {
+      font-size: 20px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+      color: #ccc;
+    }
+
+    .footer a {
+      color: #4F46E5;
+      text-decoration: none;
+    }
+
+    @media print {
+      .top-bar, .footer { display: none; }
+      .step-screenshot { break-inside: avoid; }
+      .branding { border: none; }
+      .step { border: none; border-top: 1px solid #eee; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <span class="logo">Chingu</span>
+      <span class="guide-title" id="guideSubtitle"></span>
+    </div>
+    <div class="top-bar-actions">
+      <button class="btn btn-secondary" id="btnBrand">Add Logo</button>
+      <button class="btn btn-secondary" id="btnCopy">Copy Link</button>
+      <button class="btn btn-primary" id="btnPdf">Export PDF</button>
+    </div>
+  </div>
+
+  <div class="branding" id="brandingSection">
+    <img class="branding-logo" id="brandLogo" alt="Company logo">
+    <h1 class="guide-heading" id="guideTitle" contenteditable="true">Untitled Guide</h1>
+    <p class="guide-meta" id="guideMeta"></p>
+  </div>
+
+  <div class="steps-container" id="stepsContainer"></div>
+
+  <div class="empty-state hidden" id="emptyState">
+    <h2>No steps captured yet</h2>
+    <p>Click the Chingu extension icon and hit "Start Recording" to create a guide.</p>
+  </div>
+
+  <div class="footer">
+    Made with <a href="https://github.com/21428122/chingu" target="_blank">Chingu</a> — free, open source SOPs
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <img id="lightboxImg" src="" alt="Screenshot">
+  </div>
+
+  <!-- Brand modal -->
+  <div class="modal-overlay" id="brandModal">
+    <div class="modal">
+      <h3>Add Your Branding</h3>
+      <label for="logoUpload">Company Logo</label>
+      <input type="file" id="logoUpload" accept="image/*">
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="brandCancel">Cancel</button>
+        <button class="btn btn-primary" id="brandSave">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="viewer.js"></script>
+</body>
+</html>
