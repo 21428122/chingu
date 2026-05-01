@@ -15,11 +15,55 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Header with gradient */
+    /* --- Animations --- */
+    @keyframes record-pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(0.78); opacity: 0.55; }
+    }
+
+    @keyframes blink {
+      0%, 92%, 100% { transform: scaleY(1); }
+      95%, 98% { transform: scaleY(0.1); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    @keyframes success-wiggle {
+      0% { transform: scale(1) rotate(0deg); }
+      35% { transform: scale(1.08) rotate(-3deg); }
+      70% { transform: scale(0.98) rotate(2deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+
+    /* --- Cappy mood classes --- */
+    .cappy-float {
+      animation: float 3.6s ease-in-out infinite;
+    }
+
+    .cappy-wiggle {
+      animation: success-wiggle 600ms cubic-bezier(0.34, 1.4, 0.64, 1) 1;
+    }
+
+    .cappy-blink .eye-l,
+    .cappy-blink .eye-r {
+      animation: blink 4s ease-in-out infinite;
+      transform-origin: center;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cappy-float, .cappy-wiggle,
+      .cappy-blink .eye-l, .cappy-blink .eye-r,
+      .recording-dot { animation: none !important; }
+    }
+
+    /* Header with cool-focus gradient */
     .header {
       background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A78BFA 100%);
       color: white;
-      padding: 20px 20px 16px;
+      padding: 16px 20px 14px;
       position: relative;
       overflow: hidden;
     }
@@ -43,26 +87,40 @@
       z-index: 1;
     }
 
+    /* Mini Cappy face icon in header */
     .header-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.2);
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.18);
       backdrop-filter: blur(8px);
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
     }
 
-    .header-icon svg {
-      width: 18px;
-      height: 18px;
+    .header-title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      position: relative;
+      z-index: 1;
     }
 
     .header h1 {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 700;
       letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    .header-subtitle {
+      font-size: 11px;
+      opacity: 0.75;
+      letter-spacing: 0.04em;
+      font-weight: 500;
     }
 
     .header p {
@@ -109,7 +167,7 @@
     /* Content */
     .tab-content {
       display: none;
-      padding: 24px 20px 20px;
+      padding: 20px 20px 16px;
     }
 
     .tab-content.active { display: block; }
@@ -118,16 +176,27 @@
     .stats-card {
       background: white;
       border-radius: 16px;
-      padding: 24px;
+      padding: 20px 24px;
       text-align: center;
       box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.06);
-      margin-bottom: 20px;
+      margin-bottom: 16px;
+    }
+
+    /* Cappy mood container */
+    #cappyMood {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+
+    #cappySvg {
+      display: block;
     }
 
     .step-count {
       font-size: 40px;
       font-weight: 700;
-      background: linear-gradient(135deg, #6366F1, #8B5CF6);
+      background: linear-gradient(135deg, #FFD4A8 0%, #C8956D 40%, #8B5CF6 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -154,7 +223,7 @@
       padding: 6px 12px;
       background: #F1F5F9;
       border-radius: 9999px;
-      margin: 0 auto 20px;
+      margin: 0 auto 16px;
       width: fit-content;
     }
 
@@ -258,12 +327,7 @@
       height: 8px;
       background: #EF4444;
       border-radius: 50%;
-      animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.85); }
+      animation: record-pulse 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
 
     .hidden { display: none; }
@@ -344,12 +408,26 @@
   <div class="header">
     <div class="header-row">
       <div class="header-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
-          <circle cx="12" cy="12" r="10"/>
-          <circle cx="12" cy="12" r="3" fill="white"/>
+        <!-- Mini Cappy face inline SVG ~36px -->
+        <svg viewBox="0 0 200 200" width="28" height="28" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="100" cy="115" rx="92" ry="80" fill="#C8956D"/>
+          <ellipse cx="42" cy="53" rx="15" ry="12" transform="rotate(-22 42 53)" fill="#A6754F"/>
+          <ellipse cx="158" cy="53" rx="15" ry="12" transform="rotate(22 158 53)" fill="#A6754F"/>
+          <ellipse cx="43" cy="55" rx="7" ry="5" transform="rotate(-22 43 55)" fill="#FFD4A8"/>
+          <ellipse cx="157" cy="55" rx="7" ry="5" transform="rotate(22 157 55)" fill="#FFD4A8"/>
+          <ellipse cx="100" cy="140" rx="48" ry="30" fill="#E8B98E"/>
+          <circle cx="75" cy="92" r="10" fill="#0F172A"/>
+          <circle cx="78" cy="88" r="3" fill="#FFFFFF"/>
+          <circle cx="125" cy="92" r="10" fill="#0F172A"/>
+          <circle cx="128" cy="88" r="3" fill="#FFFFFF"/>
+          <ellipse cx="100" cy="130" rx="9" ry="5" fill="#0F172A"/>
+          <path d="M 85 144 Q 100 156 115 144" stroke="#0F172A" stroke-width="3.5" stroke-linecap="round" fill="none"/>
         </svg>
       </div>
-      <h1>Chingu</h1>
+      <div class="header-title-group">
+        <h1>Chingu</h1>
+        <span class="header-subtitle">친구</span>
+      </div>
     </div>
     <p>SOPs that actually work</p>
   </div>
@@ -362,6 +440,9 @@
   <!-- Record Tab -->
   <div class="tab-content active" id="tab-record">
     <div class="stats-card">
+      <div id="cappyMood">
+        <svg id="cappySvg" viewBox="0 0 200 200" width="90" height="90" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
       <div class="step-count" id="stepCount">0</div>
       <div class="step-label">Steps Captured</div>
     </div>
@@ -403,6 +484,148 @@ type MyNewPass123 in password field"></textarea>
     <a href="https://github.com/21428122/chingu" target="_blank">Chingu</a> — free, open source
   </div>
 
+  <script>
+    /* ── Cappy SVG generator ── */
+    function cappySVG(state) {
+      let eyes, mouth;
+      switch (state) {
+        case 'working':
+          eyes = `<path d="M 65 90 Q 75 100 85 90" stroke="#0F172A" stroke-width="6" stroke-linecap="round" fill="none"/>
+                  <path d="M 115 90 Q 125 100 135 90" stroke="#0F172A" stroke-width="6" stroke-linecap="round" fill="none"/>`;
+          mouth = `<line x1="92" y1="148" x2="108" y2="148" stroke="#0F172A" stroke-width="2.8" stroke-linecap="round"/>`;
+          break;
+        case 'happy':
+          eyes = `<path d="M 62 95 Q 75 78 88 95" stroke="#0F172A" stroke-width="5" stroke-linecap="round" fill="none"/>
+                  <path d="M 112 95 Q 125 78 138 95" stroke="#0F172A" stroke-width="5" stroke-linecap="round" fill="none"/>`;
+          mouth = `<path d="M 80 144 Q 100 162 120 144" stroke="#0F172A" stroke-width="4" stroke-linecap="round" fill="none"/>`;
+          break;
+        case 'confused':
+          eyes = `<circle cx="75" cy="92" r="9" fill="#0F172A"/>
+                  <circle cx="78" cy="89" r="2.5" fill="#FFFFFF"/>
+                  <circle cx="125" cy="92" r="11" fill="none" stroke="#0F172A" stroke-width="3"/>`;
+          mouth = `<ellipse cx="100" cy="148" rx="5" ry="6" fill="none" stroke="#0F172A" stroke-width="3"/>`;
+          break;
+        case 'sleepy':
+          eyes = `<path d="M 65 92 Q 75 100 85 92" stroke="#0F172A" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+                  <path d="M 115 92 Q 125 100 135 92" stroke="#0F172A" stroke-width="3.5" stroke-linecap="round" fill="none"/>`;
+          mouth = `<path d="M 92 146 Q 100 152 108 146" stroke="#0F172A" stroke-width="2.5" stroke-linecap="round" fill="none"/>`;
+          break;
+        default: /* idle / chill */
+          eyes = `<g class="eye-l"><circle cx="75" cy="92" r="10" fill="#0F172A"/><circle cx="78" cy="88" r="3" fill="#FFFFFF"/></g>
+                  <g class="eye-r"><circle cx="125" cy="92" r="10" fill="#0F172A"/><circle cx="128" cy="88" r="3" fill="#FFFFFF"/></g>`;
+          mouth = `<path d="M 85 144 Q 100 156 115 144" stroke="#0F172A" stroke-width="3.5" stroke-linecap="round" fill="none"/>`;
+      }
+      return `
+        <ellipse cx="100" cy="115" rx="92" ry="80" fill="#C8956D"/>
+        <ellipse cx="42" cy="53" rx="15" ry="12" transform="rotate(-22 42 53)" fill="#A6754F"/>
+        <ellipse cx="158" cy="53" rx="15" ry="12" transform="rotate(22 158 53)" fill="#A6754F"/>
+        <ellipse cx="43" cy="55" rx="7" ry="5" transform="rotate(-22 43 55)" fill="#FFD4A8"/>
+        <ellipse cx="157" cy="55" rx="7" ry="5" transform="rotate(22 157 55)" fill="#FFD4A8"/>
+        <ellipse cx="32" cy="118" rx="14" ry="8" fill="#FF8FA3" opacity="0.42"/>
+        <ellipse cx="168" cy="118" rx="14" ry="8" fill="#FF8FA3" opacity="0.42"/>
+        <ellipse cx="100" cy="140" rx="48" ry="30" fill="#E8B98E"/>
+        ${eyes}
+        <ellipse cx="100" cy="130" rx="9" ry="5" fill="#0F172A"/>
+        ${mouth}
+      `;
+    }
+
+    /* ── setCappyState: update SVG + CSS animation classes ── */
+    function setCappyState(state) {
+      const svg = document.getElementById('cappySvg');
+      const mood = document.getElementById('cappyMood');
+      if (!svg || !mood) return;
+
+      svg.innerHTML = cappySVG(state);
+
+      // Remove all animation classes first
+      mood.classList.remove('cappy-float', 'cappy-wiggle', 'cappy-blink');
+      svg.classList.remove('cappy-float', 'cappy-wiggle', 'cappy-blink');
+
+      // Apply animations based on state
+      switch (state) {
+        case 'idle':
+        case 'default':
+          svg.classList.add('cappy-float', 'cappy-blink');
+          break;
+        case 'working':
+          svg.classList.add('cappy-blink');
+          break;
+        case 'happy':
+          // Trigger wiggle (one-shot) — re-add after removing to restart animation
+          void svg.offsetWidth; // force reflow
+          svg.classList.add('cappy-wiggle');
+          // After wiggle finishes, switch to float
+          svg.addEventListener('animationend', function onEnd() {
+            svg.removeEventListener('animationend', onEnd);
+            svg.classList.remove('cappy-wiggle');
+            svg.classList.add('cappy-float', 'cappy-blink');
+          }, { once: true });
+          break;
+        case 'confused':
+          // Just static, slight float
+          svg.classList.add('cappy-float');
+          break;
+        case 'sleepy':
+          // Very gentle float
+          svg.classList.add('cappy-float');
+          break;
+        default:
+          svg.classList.add('cappy-float', 'cappy-blink');
+      }
+    }
+
+    // Expose globally so popup.js can optionally call it
+    window.setCappyState = setCappyState;
+
+    // Initialize with idle/default state
+    setCappyState('idle');
+
+    /* ── MutationObserver to sync Cappy with popup.js state changes ── */
+    (function() {
+      function deriveState() {
+        const idle    = document.getElementById('idleControls');
+        const rec     = document.getElementById('recordingControls');
+        const done    = document.getElementById('doneControls');
+        const status  = document.getElementById('status');
+
+        if (!idle || !rec || !done) return;
+
+        const isRecording = rec && !rec.classList.contains('hidden');
+        const isDone      = done && !done.classList.contains('hidden');
+        const isIdle      = idle && !idle.classList.contains('hidden');
+
+        if (isRecording) {
+          setCappyState('working');
+        } else if (isDone) {
+          setCappyState('happy');
+        } else {
+          // Check status text for extra cues
+          const txt = status ? status.textContent.toLowerCase() : '';
+          if (txt.includes('error') || txt.includes('fail')) {
+            setCappyState('confused');
+          } else {
+            setCappyState('idle');
+          }
+        }
+      }
+
+      const targets = ['idleControls', 'recordingControls', 'doneControls', 'status'];
+      targets.forEach(function(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const observer = new MutationObserver(deriveState);
+        observer.observe(el, { attributes: true, attributeFilter: ['class'], childList: false, subtree: false });
+      });
+
+      // Also observe status text changes
+      const statusEl = document.getElementById('status');
+      if (statusEl) {
+        const textObs = new MutationObserver(deriveState);
+        textObs.observe(statusEl, { childList: true, subtree: true, characterData: true });
+      }
+    })();
+  </script>
   <script src="popup.js"></script>
 </body>
 </html>

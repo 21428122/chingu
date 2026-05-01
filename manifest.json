@@ -8,6 +8,7 @@
     "scripting",
     "storage"
   ],
+  "host_permissions": ["http://localhost:9988/"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

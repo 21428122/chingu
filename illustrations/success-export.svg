@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" fill="none">
+  <title>Success — export complete (Cappy with PDF, confetti)</title>
+  <defs>
+    <linearGradient id="suc-bg" x1="0" y1="0" x2="0" y2="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFF5E4"/>
+      <stop offset="100%" stop-color="#FFE4C4"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="360" rx="22" fill="url(#suc-bg)"/>
+
+  <!-- Confetti scatter -->
+  <g>
+    <rect x="60"  y="50"  width="10" height="4" rx="2" fill="#10B981" transform="rotate(20 65 52)"/>
+    <rect x="100" y="80"  width="8"  height="4" rx="2" fill="#FFB07A" transform="rotate(-15 104 82)"/>
+    <rect x="380" y="60"  width="10" height="4" rx="2" fill="#6366F1" transform="rotate(35 385 62)"/>
+    <rect x="420" y="110" width="8"  height="4" rx="2" fill="#10B981" transform="rotate(-25 424 112)"/>
+    <rect x="40"  y="160" width="6"  height="4" rx="2" fill="#A78BFA" transform="rotate(45 43 162)"/>
+    <rect x="430" y="200" width="10" height="4" rx="2" fill="#FFB07A" transform="rotate(15 435 202)"/>
+    <circle cx="80"  cy="120" r="3" fill="#10B981"/>
+    <circle cx="410" cy="170" r="3" fill="#6366F1"/>
+    <circle cx="50"  cy="220" r="3" fill="#FFB07A"/>
+    <circle cx="445" cy="80"  r="3" fill="#A78BFA"/>
+  </g>
+
+  <!-- Cappy (happy) -->
+  <g transform="translate(120, 90)">
+    <ellipse cx="90" cy="110" rx="92" ry="80" fill="#C8956D"/>
+    <ellipse cx="32" cy="48" rx="15" ry="12" transform="rotate(-22 32 48)" fill="#A6754F"/>
+    <ellipse cx="148" cy="48" rx="15" ry="12" transform="rotate(22 148 48)" fill="#A6754F"/>
+    <ellipse cx="33" cy="50" rx="7" ry="5" transform="rotate(-22 33 50)" fill="#FFD4A8"/>
+    <ellipse cx="147" cy="50" rx="7" ry="5" transform="rotate(22 147 50)" fill="#FFD4A8"/>
+    <ellipse cx="22" cy="112" rx="14" ry="8" fill="#FF8FA3" opacity="0.55"/>
+    <ellipse cx="158" cy="112" rx="14" ry="8" fill="#FF8FA3" opacity="0.55"/>
+    <ellipse cx="90" cy="135" rx="48" ry="30" fill="#E8B98E"/>
+    <!-- Happy closed-arc eyes ^ ^ -->
+    <path d="M55 95 Q 68 80 81 95" stroke="#0F172A" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <path d="M99 95 Q 112 80 125 95" stroke="#0F172A" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <ellipse cx="90" cy="125" rx="9" ry="5" fill="#0F172A"/>
+    <!-- Wide smile -->
+    <path d="M72 145 Q 90 162 108 145" stroke="#0F172A" stroke-width="4" stroke-linecap="round" fill="none"/>
+  </g>
+
+  <!-- PDF page prop -->
+  <g transform="translate(320, 200) rotate(8)">
+    <rect x="0" y="0" width="84" height="104" rx="6" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2"/>
+    <rect x="0" y="0" width="84" height="22" rx="6" fill="#10B981"/>
+    <text x="42" y="16" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="11" fill="#FFFFFF" letter-spacing="0.06em">PDF</text>
+    <line x1="14" y1="38" x2="68" y2="38" stroke="#CBD5E1" stroke-width="2.4" stroke-linecap="round"/>
+    <line x1="14" y1="52" x2="60" y2="52" stroke="#CBD5E1" stroke-width="2.4" stroke-linecap="round"/>
+    <line x1="14" y1="66" x2="68" y2="66" stroke="#CBD5E1" stroke-width="2.4" stroke-linecap="round"/>
+    <line x1="14" y1="80" x2="44" y2="80" stroke="#CBD5E1" stroke-width="2.4" stroke-linecap="round"/>
+  </g>
+
+  <!-- Mint check badge -->
+  <g transform="translate(395, 195)">
+    <circle r="20" fill="#10B981"/>
+    <path d="M -8 0 L -2 6 L 9 -6" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+
+  <text x="240" y="335" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="16" fill="#10B981" letter-spacing="-0.01em">Done. Your guide is ready.</text>
+</svg>

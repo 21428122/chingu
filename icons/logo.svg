@@ -1,25 +1,71 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <title>Chingu — Cappy mark, primary</title>
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#6366F1"/>
-      <stop offset="50%" stop-color="#8B5CF6"/>
-      <stop offset="100%" stop-color="#A78BFA"/>
+    <!-- Warm Hug gradient: peach → coral → capy tan -->
+    <linearGradient id="warmBg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFE4C4"/>
+      <stop offset="55%" stop-color="#FFB07A"/>
+      <stop offset="100%" stop-color="#C8956D"/>
     </linearGradient>
-    <linearGradient id="shine" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.15"/>
+    <!-- Subtle top sheen -->
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="240" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.22"/>
       <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
     </linearGradient>
+    <!-- Indigo badge gradient (anchors to legacy brand) -->
+    <linearGradient id="indigoBadge" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <!-- Soft body shadow for depth -->
+    <radialGradient id="bodyShade" cx="0.5" cy="0.6" r="0.7">
+      <stop offset="60%" stop-color="#C8956D" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#6F4F37" stop-opacity="0.18"/>
+    </radialGradient>
+    <clipPath id="frame">
+      <rect x="16" y="16" width="480" height="480" rx="112"/>
+    </clipPath>
   </defs>
-  <!-- Rounded square background -->
-  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#bg)"/>
-  <!-- Subtle glass shine -->
-  <rect x="16" y="16" width="480" height="240" rx="112" fill="url(#shine)"/>
-  <!-- Stylized C that forms a capture/record symbol -->
-  <!-- Outer C arc -->
-  <path d="M310 148C310 148 370 148 370 148C362 112 330 88 278 88C204 88 148 152 148 256C148 360 204 424 278 424C330 424 362 400 370 364L310 364C302 384 290 396 270 396C228 396 204 340 204 256C204 172 228 116 270 116C290 116 302 128 310 148Z"
-        fill="white" opacity="0.95"/>
-  <!-- Record dot — the differentiator -->
-  <circle cx="370" cy="256" r="52" fill="white" opacity="0.95"/>
-  <!-- Inner dot with gradient color -->
-  <circle cx="370" cy="256" r="30" fill="#EF4444"/>
+
+  <!-- Rounded-square frame -->
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#warmBg)"/>
+  <rect x="16" y="16" width="480" height="240" rx="112" fill="url(#sheen)"/>
+
+  <g clip-path="url(#frame)">
+    <!-- Body / head silhouette: wide rounded ellipse, peeking up from bottom -->
+    <ellipse cx="256" cy="335" rx="190" ry="175" fill="#C8956D"/>
+    <!-- Body shading -->
+    <ellipse cx="256" cy="335" rx="190" ry="175" fill="url(#bodyShade)"/>
+
+    <!-- Ears: small rounded nubs on top of head -->
+    <ellipse cx="142" cy="188" rx="36" ry="30" transform="rotate(-22 142 188)" fill="#A6754F"/>
+    <ellipse cx="370" cy="188" rx="36" ry="30" transform="rotate(22 370 188)" fill="#A6754F"/>
+    <!-- Inner ear, soft peach -->
+    <ellipse cx="146" cy="194" rx="18" ry="14" transform="rotate(-22 146 194)" fill="#FFD4A8"/>
+    <ellipse cx="366" cy="194" rx="18" ry="14" transform="rotate(22 366 194)" fill="#FFD4A8"/>
+
+    <!-- Cheek blush (warm playful touch) -->
+    <ellipse cx="138" cy="338" rx="34" ry="20" fill="#FF8FA3" opacity="0.42"/>
+    <ellipse cx="374" cy="338" rx="34" ry="20" fill="#FF8FA3" opacity="0.42"/>
+
+    <!-- Snout (lighter patch around nose/mouth) -->
+    <ellipse cx="256" cy="395" rx="118" ry="78" fill="#E8B98E"/>
+
+    <!-- Eyes: solid dots with tiny sparkle -->
+    <circle cx="200" cy="282" r="22" fill="#0F172A"/>
+    <circle cx="312" cy="282" r="22" fill="#0F172A"/>
+    <circle cx="208" cy="274" r="7" fill="#FFFFFF"/>
+    <circle cx="320" cy="274" r="7" fill="#FFFFFF"/>
+
+    <!-- Nose -->
+    <ellipse cx="256" cy="362" rx="22" ry="13" fill="#0F172A"/>
+
+    <!-- Smile (gentle, content) -->
+    <path d="M228 400 Q 256 422 284 400" stroke="#0F172A" stroke-width="6" stroke-linecap="round" fill="none"/>
+  </g>
+
+  <!-- Indigo "record" badge — Cappy's job, not just face -->
+  <circle cx="424" cy="116" r="40" fill="url(#indigoBadge)"/>
+  <circle cx="424" cy="116" r="38" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-opacity="0.55"/>
+  <circle cx="424" cy="116" r="14" fill="#EF4444"/>
 </svg>

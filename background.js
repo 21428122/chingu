@@ -1,3 +1,15 @@
+// Dev auto-reload — polls dev-server.js; silently skipped when not running
+let _devV;
+async function _devPoll() {
+  try {
+    const { version } = await (await fetch('http://localhost:9988')).json();
+    if (_devV === undefined) { _devV = version; return; }
+    if (version !== _devV) chrome.runtime.reload();
+  } catch (e) {}
+}
+_devPoll();
+setInterval(_devPoll, 1000);
+
 let recording = false;
 let steps = [];
 let activeTabId = null;

@@ -16,344 +16,331 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Top bar */
+    /* ── Top bar ── */
     .top-bar {
-      background: white;
+      background: rgba(255,255,255,0.9);
       border-bottom: 1px solid #E2E8F0;
-      padding: 12px 24px;
+      padding: 10px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 20;
       backdrop-filter: blur(12px);
-      background: rgba(255, 255, 255, 0.85);
-    }
-
-    .top-bar-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
       gap: 8px;
-      text-decoration: none;
+      flex-wrap: wrap;
     }
-
+    .top-bar-left { display: flex; align-items: center; gap: 10px; }
+    .logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
     .logo-mark {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
+      width: 28px; height: 28px; border-radius: 8px;
       background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
     }
-
-    .logo-mark svg {
-      width: 16px;
-      height: 16px;
-    }
-
-    .logo-text {
-      font-size: 16px;
-      font-weight: 700;
-      color: #0F172A;
-      letter-spacing: -0.02em;
-    }
-
+    .logo-mark svg { width: 20px; height: 20px; }
+    .logo-text { font-size: 16px; font-weight: 700; color: #0F172A; letter-spacing: -0.02em; }
     .guide-count {
-      font-size: 13px;
-      color: #94A3B8;
-      font-weight: 500;
-      background: #F1F5F9;
-      padding: 4px 10px;
-      border-radius: 9999px;
+      font-size: 12px; color: #94A3B8; font-weight: 500;
+      background: #F1F5F9; padding: 3px 9px; border-radius: 9999px;
     }
-
-    .top-bar-actions {
-      display: flex;
-      gap: 8px;
-    }
+    .top-bar-actions { display: flex; gap: 6px; flex-wrap: wrap; }
 
     .btn {
-      padding: 8px 16px;
-      border: none;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      font-family: 'Inter', sans-serif;
-      letter-spacing: -0.01em;
+      padding: 7px 13px; border: none; border-radius: 8px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: all 0.15s ease; font-family: 'Inter', sans-serif;
+      letter-spacing: -0.01em; white-space: nowrap;
     }
-
     .btn-primary {
       background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
-      color: white;
-      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
+      color: white; box-shadow: 0 2px 8px rgba(99,102,241,0.25);
     }
+    .btn-primary:hover { box-shadow: 0 4px 16px rgba(99,102,241,0.35); transform: translateY(-1px); }
+    .btn-secondary { background: white; color: #334155; border: 1.5px solid #E2E8F0; }
+    .btn-secondary:hover { background: #F8FAFC; border-color: #CBD5E1; }
+    .btn-warn { background: white; color: #EF4444; border: 1.5px solid #FECACA; }
+    .btn-warn:hover { background: #FEF2F2; }
 
-    .btn-primary:hover {
-      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
-      transform: translateY(-1px);
-    }
-
-    .btn-secondary {
-      background: white;
-      color: #334155;
-      border: 1.5px solid #E2E8F0;
-    }
-
-    .btn-secondary:hover {
-      background: #F8FAFC;
-      border-color: #CBD5E1;
-    }
-
-    /* Branding header */
+    /* ── Branding header ── */
     .branding {
-      max-width: 760px;
-      margin: 40px auto 0;
-      padding: 32px 32px 28px;
-      background: white;
-      border-radius: 20px 20px 0 0;
-      border: 1px solid #E2E8F0;
-      border-bottom: none;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+      max-width: 760px; margin: 36px auto 0;
+      padding: 28px 32px 24px;
+      background: #FFF5E4; border-radius: 20px 20px 0 0;
+      border: 1px solid #E2E8F0; border-bottom: 1px solid #FFE4C4;
+      box-shadow: 0 1px 3px rgba(15,23,42,0.04);
     }
-
-    .branding-logo {
-      display: none;
-      max-height: 36px;
-      margin-bottom: 16px;
-    }
-
+    .branding-logo { display: none; max-height: 36px; margin-bottom: 14px; }
     .branding-logo.visible { display: block; }
-
     .guide-heading {
-      font-size: 28px;
-      font-weight: 700;
-      color: #0F172A;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
+      font-size: 26px; font-weight: 700; color: #0F172A;
+      letter-spacing: -0.02em; line-height: 1.2;
     }
-
-    .guide-heading[contenteditable]:hover {
-      outline: 2px solid #6366F1;
-      outline-offset: 6px;
-      border-radius: 6px;
+    .guide-heading[contenteditable]:hover { outline: 2px solid #6366F1; outline-offset: 6px; border-radius: 6px; }
+    .guide-heading[contenteditable]:focus { outline: 2px solid #6366F1; outline-offset: 6px; border-radius: 6px; }
+    .guide-subtitle-display {
+      font-size: 14px; color: #64748B; margin-top: 4px; font-weight: 400;
     }
+    .guide-meta { font-size: 12px; color: #94A3B8; margin-top: 6px; font-weight: 500; }
 
-    .guide-heading[contenteditable]:focus {
-      outline: 2px solid #6366F1;
-      outline-offset: 6px;
-      border-radius: 6px;
+    /* ── Steps container ── */
+    .steps-container { max-width: 760px; margin: 0 auto 60px; }
+
+    /* ── Section divider ── */
+    .section-divider {
+      background: #0F172A; color: white;
+      padding: 22px 32px; border: 1px solid #0F172A; border-top: none;
+      display: flex; align-items: center; gap: 16px;
+      position: relative;
     }
-
-    .guide-meta {
-      font-size: 13px;
-      color: #94A3B8;
-      margin-top: 8px;
-      font-weight: 500;
-    }
-
-    /* Steps container */
-    .steps-container {
-      max-width: 760px;
-      margin: 0 auto 60px;
-    }
-
-    .step {
-      background: white;
-      border: 1px solid #E2E8F0;
-      border-top: none;
-      padding: 28px 32px;
-      transition: background 0.15s ease;
-    }
-
-    .step:hover {
-      background: #FAFAFF;
-    }
-
-    .step:last-child {
-      border-radius: 0 0 20px 20px;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
-    }
-
-    .step-header {
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      margin-bottom: 18px;
-    }
-
-    .step-number {
+    .section-divider:first-child { border-top: 1px solid #0F172A; }
+    .section-letter-badge {
+      width: 44px; height: 44px; border-radius: 12px;
       background: linear-gradient(135deg, #6366F1, #8B5CF6);
-      color: white;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: 700;
-      flex-shrink: 0;
-      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 800; color: white; flex-shrink: 0;
     }
+    .section-title-edit {
+      font-size: 17px; font-weight: 700; color: white;
+      flex: 1; letter-spacing: -0.01em;
+    }
+    .section-title-edit[contenteditable]:hover { outline: 1px dashed rgba(255,255,255,0.3); outline-offset: 4px; border-radius: 4px; }
+    .section-title-edit[contenteditable]:focus { outline: 2px solid rgba(255,255,255,0.5); outline-offset: 4px; border-radius: 4px; }
+    .section-controls {
+      display: flex; gap: 4px; opacity: 0; transition: opacity 0.15s;
+    }
+    .section-divider:hover .section-controls { opacity: 1; }
+    .section-del-btn {
+      background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.6);
+      font-size: 16px; cursor: pointer; padding: 3px 8px; border-radius: 6px;
+      font-family: inherit;
+    }
+    .section-del-btn:hover { color: #FCA5A5; background: rgba(239,68,68,0.2); }
 
+    /* ── Step card ── */
+    .step {
+      background: white; border: 1px solid #E2E8F0; border-top: none;
+      padding: 24px 28px; transition: background 0.15s ease;
+    }
+    .step:hover { background: #FAFAFF; }
+    .step:last-child { border-radius: 0 0 20px 20px; box-shadow: 0 4px 12px rgba(15,23,42,0.04); }
+
+    .step-controls {
+      display: flex; justify-content: flex-end; gap: 4px;
+      margin-bottom: 6px; opacity: 0; transition: opacity 0.15s;
+    }
+    .step:hover .step-controls { opacity: 1; }
+
+    .drag-handle {
+      cursor: grab; color: #CBD5E1; font-size: 15px;
+      padding: 3px 7px; border-radius: 6px; user-select: none; line-height: 1.4;
+    }
+    .drag-handle:hover { color: #6366F1; background: #F1F5F9; }
+    .drag-handle:active { cursor: grabbing; }
+
+    .ctrl-btn {
+      background: none; border: none; cursor: pointer;
+      padding: 3px 7px; border-radius: 6px; line-height: 1.4;
+      font-family: inherit; font-size: 13px; color: #CBD5E1;
+      transition: all 0.15s;
+    }
+    .ctrl-btn:hover { color: #6366F1; background: #EEF2FF; }
+    .ctrl-btn.note-active { color: #3B82F6; background: #EFF6FF; }
+    .ctrl-btn.delete:hover { color: #EF4444; background: #FEF2F2; }
+    .ctrl-btn.add-section:hover { color: #8B5CF6; background: #F5F3FF; }
+
+    .step-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+    .step-number {
+      background: linear-gradient(135deg, #FFB07A 0%, #C8956D 100%);
+      color: white; width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(200,149,109,0.35);
+    }
     .step-description {
-      font-size: 16px;
-      font-weight: 600;
-      color: #0F172A;
-      padding-top: 5px;
-      letter-spacing: -0.01em;
+      font-size: 15px; font-weight: 600; color: #0F172A;
+      padding-top: 4px; letter-spacing: -0.01em; flex: 1;
     }
+    .step-description[contenteditable]:hover { outline: 1px dashed #CBD5E1; outline-offset: 6px; border-radius: 4px; }
+    .step-description[contenteditable]:focus { outline: 2px solid #6366F1; outline-offset: 6px; border-radius: 4px; }
+    .step-url { font-size: 11px; color: #CBD5E1; margin-top: 3px; word-break: break-all; }
 
-    .step-description[contenteditable]:hover {
-      outline: 1px dashed #CBD5E1;
-      outline-offset: 6px;
-      border-radius: 4px;
+    /* ── Note callout ── */
+    .note-callout {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 14px; border-radius: 10px; margin-bottom: 14px;
+      position: relative;
     }
-
-    .step-description[contenteditable]:focus {
-      outline: 2px solid #6366F1;
-      outline-offset: 6px;
-      border-radius: 4px;
+    .note-callout.note-info { background: #EFF6FF; border: 1px solid #BFDBFE; }
+    .note-callout.note-warning { background: #FFFBEB; border: 1px solid #FDE68A; }
+    .note-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .note-text {
+      font-size: 13px; line-height: 1.5; flex: 1;
+      color: #1E40AF; font-weight: 500;
+      min-height: 18px;
     }
-
-    .step-url {
-      font-size: 11px;
-      color: #CBD5E1;
-      margin-top: 4px;
-      word-break: break-all;
-      font-weight: 400;
+    .note-callout.note-warning .note-text { color: #92400E; }
+    .note-text:empty::before { content: attr(data-placeholder); color: #93C5FD; font-weight: 400; }
+    .note-callout.note-warning .note-text:empty::before { color: #FCD34D; }
+    .note-text[contenteditable]:focus { outline: none; }
+    .note-remove {
+      background: none; border: none; cursor: pointer;
+      color: rgba(0,0,0,0.2); font-size: 16px; padding: 0 4px;
+      line-height: 1; font-family: inherit; flex-shrink: 0;
+      opacity: 0; transition: opacity 0.15s;
     }
+    .note-callout:hover .note-remove { opacity: 1; }
+    .note-remove:hover { color: #EF4444; }
+    .note-type-toggle {
+      display: flex; gap: 6px; margin-bottom: 8px;
+    }
+    .note-type-btn {
+      padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;
+      cursor: pointer; font-family: inherit; transition: all 0.15s;
+      border: 1.5px solid #E2E8F0; background: white; color: #64748B;
+    }
+    .note-type-btn.active-info { background: #EFF6FF; border-color: #93C5FD; color: #1D4ED8; }
+    .note-type-btn.active-warning { background: #FFFBEB; border-color: #FDE68A; color: #92400E; }
 
+    /* ── Screenshot + annotation wrap ── */
+    .screenshot-wrap { position: relative; display: block; }
     .step-screenshot {
-      width: 100%;
-      border-radius: 12px;
-      border: 1px solid #E2E8F0;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+      width: 100%; border-radius: 12px; border: 1px solid #E2E8F0;
+      cursor: zoom-in; transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(15,23,42,0.04); display: block;
+    }
+    .step-screenshot:hover { box-shadow: 0 4px 12px rgba(15,23,42,0.08); }
+    .annotate-btn {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(15,23,42,0.75); color: white;
+      border: none; border-radius: 8px; padding: 6px 12px;
+      font-size: 12px; font-weight: 600; font-family: inherit;
+      cursor: pointer; opacity: 0; transition: opacity 0.2s;
+      backdrop-filter: blur(4px); letter-spacing: -0.01em;
+    }
+    .screenshot-wrap:hover .annotate-btn { opacity: 1; }
+    .annotate-btn:hover { background: rgba(99,102,241,0.9); }
+
+    /* ── Annotation Modal ── */
+    #annotateModal .modal-overlay { padding: 0; }
+    .annotate-shell {
+      display: flex; flex-direction: column;
+      width: 100vw; height: 100vh;
+      background: #0D0D18; overflow: hidden;
+    }
+    .annotate-toolbar {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      padding: 10px 16px; background: #1A1A2E;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      flex-shrink: 0;
+    }
+    .tool-group, .color-group, .thick-group, .annotate-actions {
+      display: flex; align-items: center; gap: 4px;
+    }
+    .tool-group { border-right: 1px solid rgba(255,255,255,0.1); padding-right: 12px; }
+    .color-group { border-right: 1px solid rgba(255,255,255,0.1); padding-right: 12px; }
+    .thick-group { border-right: 1px solid rgba(255,255,255,0.1); padding-right: 12px; }
+    .tool-btn {
+      width: 36px; height: 36px; border-radius: 8px;
+      border: 1.5px solid rgba(255,255,255,0.12); background: transparent;
+      color: rgba(255,255,255,0.65); font-size: 15px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; font-family: inherit;
+    }
+    .tool-btn:hover { background: rgba(255,255,255,0.08); color: white; }
+    .tool-btn.active { background: #6366F1; border-color: #6366F1; color: white; }
+    .color-dot {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 2.5px solid transparent; cursor: pointer;
+      transition: transform 0.15s; flex-shrink: 0;
+    }
+    .color-dot:hover { transform: scale(1.15); }
+    .color-dot.active { border-color: white; transform: scale(1.15); }
+    .thick-btn {
+      width: 36px; height: 36px; border-radius: 8px;
+      border: 1.5px solid rgba(255,255,255,0.12); background: transparent;
+      color: rgba(255,255,255,0.65); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .thick-btn:hover { background: rgba(255,255,255,0.08); }
+    .thick-btn.active { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.4); }
+    .thick-line { background: white; border-radius: 2px; width: 18px; }
+    .annotate-actions { margin-left: auto; gap: 8px; }
+    .ann-btn {
+      padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: inherit; transition: all 0.15s; border: none;
+    }
+    .ann-btn-ghost { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); }
+    .ann-btn-ghost:hover { background: rgba(255,255,255,0.15); color: white; }
+    .ann-btn-danger { background: rgba(239,68,68,0.15); color: #FCA5A5; }
+    .ann-btn-danger:hover { background: rgba(239,68,68,0.25); }
+    .ann-btn-primary { background: #6366F1; color: white; box-shadow: 0 4px 12px rgba(99,102,241,0.4); }
+    .ann-btn-primary:hover { background: #5558E8; }
+    .annotate-canvas-wrap {
+      flex: 1; overflow: auto; display: flex;
+      align-items: flex-start; justify-content: center;
+      padding: 24px; background: #0D0D18;
+    }
+    #annotateCanvas {
+      cursor: crosshair; border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      max-width: 100%;
+    }
+    .annotate-hint {
+      font-size: 12px; color: rgba(255,255,255,0.35);
+      font-style: italic; flex-shrink: 0;
     }
 
-    .step-screenshot:hover {
-      transform: scale(1.005);
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
-    }
+    .step.dragging { opacity: 0.35; }
+    .step.drag-over { border-left: 3px solid #6366F1; background: #FAFAFF; }
 
-    /* Lightbox */
+    /* ── Lightbox ── */
     .lightbox {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.9);
-      backdrop-filter: blur(8px);
-      z-index: 100;
-      cursor: zoom-out;
-      align-items: center;
-      justify-content: center;
+      display: none; position: fixed; inset: 0;
+      background: rgba(15,23,42,0.92); backdrop-filter: blur(8px);
+      z-index: 100; cursor: zoom-out; align-items: center; justify-content: center;
     }
-
     .lightbox.active { display: flex; }
+    .lightbox img { max-width: 95vw; max-height: 95vh; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
 
-    .lightbox img {
-      max-width: 95vw;
-      max-height: 95vh;
-      border-radius: 12px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    }
-
-    /* Modal */
+    /* ── Modal base ── */
     .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.4);
-      backdrop-filter: blur(4px);
-      z-index: 50;
-      align-items: center;
-      justify-content: center;
+      display: none; position: fixed; inset: 0;
+      background: rgba(15,23,42,0.45); backdrop-filter: blur(4px);
+      z-index: 50; align-items: center; justify-content: center; padding: 16px;
     }
-
     .modal-overlay.active { display: flex; }
-
     .modal {
-      background: white;
-      border-radius: 16px;
-      padding: 28px;
-      max-width: 400px;
-      width: 90%;
-      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.15);
+      background: white; border-radius: 16px; padding: 28px;
+      max-width: 480px; width: 100%;
+      box-shadow: 0 20px 60px rgba(15,23,42,0.18);
+      max-height: 90vh; overflow-y: auto;
     }
-
-    .modal h3 {
-      font-size: 17px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      letter-spacing: -0.02em;
+    .modal h3 { font-size: 17px; font-weight: 700; margin-bottom: 20px; letter-spacing: -0.02em; }
+    .modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { font-size: 12px; font-weight: 600; display: block; margin-bottom: 5px; color: #475569; text-transform: uppercase; letter-spacing: 0.04em; }
+    .form-group input[type="text"],
+    .form-group textarea {
+      width: 100%; padding: 9px 12px; border: 1.5px solid #E2E8F0; border-radius: 8px;
+      font-size: 13px; font-family: 'Inter', sans-serif; color: #0F172A;
+      transition: border-color 0.15s; outline: none;
     }
+    .form-group input[type="text"]:focus,
+    .form-group textarea:focus { border-color: #6366F1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+    .form-group input[type="file"] { margin-bottom: 0; font-size: 13px; font-family: inherit; }
+    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+    .modal-hint { font-size: 12px; color: #94A3B8; margin-bottom: 16px; line-height: 1.5; }
 
-    .modal label {
-      font-size: 13px;
-      font-weight: 600;
-      display: block;
-      margin-bottom: 6px;
-      color: #334155;
-    }
+    /* ── Empty state ── */
+    .empty-state { max-width: 760px; margin: 80px auto; text-align: center; color: #94A3B8; }
+    .empty-state h2 { font-size: 20px; font-weight: 700; color: #64748B; margin-bottom: 8px; }
+    .empty-state p { font-size: 14px; }
 
-    .modal input[type="file"] {
-      margin-bottom: 20px;
-      font-size: 13px;
-      font-family: 'Inter', sans-serif;
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 8px;
-      justify-content: flex-end;
-    }
-
-    /* Empty state */
-    .empty-state {
-      max-width: 760px;
-      margin: 100px auto;
-      text-align: center;
-      color: #94A3B8;
-    }
-
-    .empty-state h2 {
-      font-size: 20px;
-      font-weight: 700;
-      color: #64748B;
-      margin-bottom: 8px;
-    }
-
-    .empty-state p {
-      font-size: 14px;
-    }
-
-    /* Footer */
-    .footer {
-      text-align: center;
-      padding: 32px;
-      font-size: 12px;
-      color: #CBD5E1;
-      font-weight: 500;
-    }
-
-    .footer a {
-      color: #6366F1;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
+    /* ── Footer ── */
+    .footer { text-align: center; padding: 28px; font-size: 12px; color: #CBD5E1; font-weight: 500; }
+    .footer a { color: #6366F1; text-decoration: none; font-weight: 600; }
     .footer a:hover { text-decoration: underline; }
 
     .hidden { display: none; }
@@ -367,13 +354,21 @@
   </style>
 </head>
 <body>
+
+  <!-- ── Top bar ── -->
   <div class="top-bar">
     <div class="top-bar-left">
       <div class="logo">
         <div class="logo-mark">
-          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
-            <circle cx="12" cy="12" r="10"/>
-            <circle cx="12" cy="12" r="3" fill="white"/>
+          <svg viewBox="0 0 200 200" width="20" height="20">
+            <ellipse cx="100" cy="115" rx="92" ry="80" fill="#C8956D"/>
+            <ellipse cx="100" cy="140" rx="48" ry="30" fill="#E8B98E"/>
+            <circle cx="75" cy="92" r="10" fill="#0F172A"/>
+            <circle cx="78" cy="88" r="3" fill="#FFFFFF"/>
+            <circle cx="125" cy="92" r="10" fill="#0F172A"/>
+            <circle cx="128" cy="88" r="3" fill="#FFFFFF"/>
+            <ellipse cx="100" cy="130" rx="9" ry="5" fill="#0F172A"/>
+            <path d="M85 144 Q100 156 115 144" stroke="#0F172A" stroke-width="3.5" stroke-linecap="round" fill="none"/>
           </svg>
         </div>
         <span class="logo-text">Chingu</span>
@@ -381,43 +376,172 @@
       <span class="guide-count" id="guideSubtitle"></span>
     </div>
     <div class="top-bar-actions">
-      <button class="btn btn-secondary" id="btnBrand">Add Logo</button>
-      <button class="btn btn-secondary" id="btnPolish">Auto-Polish</button>
+      <button class="btn btn-secondary" id="btnSetup">⚙ Guide Setup</button>
+      <button class="btn btn-secondary" id="btnBrand">🖼 Logo</button>
+      <button class="btn btn-secondary" id="btnPolish">✨ Polish</button>
+      <button class="btn btn-secondary" id="btnSave">Save</button>
       <button class="btn btn-secondary" id="btnCopy">Copy Link</button>
       <button class="btn btn-primary" id="btnPdf">Export PDF</button>
     </div>
   </div>
 
+  <!-- ── Branding / cover area ── -->
   <div class="branding" id="brandingSection">
     <img class="branding-logo" id="brandLogo" alt="Company logo">
     <h1 class="guide-heading" id="guideTitle" contenteditable="true">Untitled Guide</h1>
+    <p class="guide-subtitle-display" id="guideSubtitleDisplay"></p>
     <p class="guide-meta" id="guideMeta"></p>
   </div>
 
   <div class="steps-container" id="stepsContainer"></div>
 
   <div class="empty-state hidden" id="emptyState">
+    <img src="illustrations/empty-no-recordings.svg" width="220" style="margin-bottom:20px;opacity:0.9" alt="">
     <h2>No steps captured yet</h2>
-    <p>Click the Chingu extension icon and hit "Start Recording" to create a guide.</p>
+    <p>Click the Chingu icon and hit "Start Recording" to create a guide.</p>
   </div>
 
   <div class="footer">
     Made with <a href="https://github.com/21428122/chingu" target="_blank">Chingu</a> — free, open source SOPs
   </div>
 
+  <!-- ── Lightbox ── -->
   <div class="lightbox" id="lightbox">
     <img id="lightboxImg" src="" alt="Screenshot">
   </div>
 
+  <!-- ── Guide Setup Modal ── -->
+  <div class="modal-overlay" id="setupModal">
+    <div class="modal">
+      <h3>⚙ Guide Setup</h3>
+      <p class="modal-hint">This information appears on the cover page and footer of your exported PDF.</p>
+      <div class="form-group">
+        <label>Document Title</label>
+        <input type="text" id="gsTitle" placeholder="e.g. Odoo CRM User Manual">
+      </div>
+      <div class="form-group">
+        <label>Subtitle</label>
+        <input type="text" id="gsSubtitle" placeholder="e.g. Step-by-Step Guide for Sales Representatives">
+      </div>
+      <div class="modal-row">
+        <div class="form-group">
+          <label>Version</label>
+          <input type="text" id="gsVersion" placeholder="e.g. 1.0">
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="text" id="gsDate" placeholder="e.g. April 2026">
+        </div>
+      </div>
+      <div class="modal-row">
+        <div class="form-group">
+          <label>Author</label>
+          <input type="text" id="gsAuthor" placeholder="e.g. Grace Eunbin">
+        </div>
+        <div class="form-group">
+          <label>Company Name</label>
+          <input type="text" id="gsCompany" placeholder="e.g. InBody India">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Confidentiality Label</label>
+        <input type="text" id="gsConfidential" placeholder="e.g. Confidential" value="Confidential">
+      </div>
+      <div class="form-group">
+        <label>Brand Accent Color <span style="font-weight:400;color:#94A3B8">(header, badges, footer)</span></label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="color" id="gsAccentColor" value="#6366F1" style="width:44px;height:36px;border:1.5px solid #E2E8F0;border-radius:8px;cursor:pointer;padding:2px">
+          <input type="text" id="gsAccentColorHex" placeholder="#6366F1" style="flex:1" value="#6366F1">
+          <div style="display:flex;gap:4px">
+            <button type="button" onclick="document.getElementById('gsAccentColor').value='#7B1C34';document.getElementById('gsAccentColorHex').value='#7B1C34'" style="padding:4px 8px;border:1.5px solid #E2E8F0;border-radius:6px;font-size:11px;cursor:pointer;background:#7B1C34;color:white;font-family:inherit;font-weight:600">InBody</button>
+            <button type="button" onclick="document.getElementById('gsAccentColor').value='#6366F1';document.getElementById('gsAccentColorHex').value='#6366F1'" style="padding:4px 8px;border:1.5px solid #E2E8F0;border-radius:6px;font-size:11px;cursor:pointer;background:#6366F1;color:white;font-family:inherit;font-weight:600">Default</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="setupCancel">Cancel</button>
+        <button class="btn btn-primary" id="setupSave">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Brand Logo Modal ── -->
   <div class="modal-overlay" id="brandModal">
     <div class="modal">
       <h3>Add Your Branding</h3>
-      <label for="logoUpload">Company Logo</label>
-      <input type="file" id="logoUpload" accept="image/*">
+      <div class="form-group">
+        <label>Company Logo (appears on cover page)</label>
+        <input type="file" id="logoUpload" accept="image/*">
+      </div>
       <div class="modal-actions">
         <button class="btn btn-secondary" id="brandCancel">Cancel</button>
+        <button class="btn btn-warn" id="brandRemove">Remove Logo</button>
         <button class="btn btn-primary" id="brandSave">Save</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ── Annotation Modal ── -->
+  <div class="modal-overlay" id="annotateModal" style="padding:0;z-index:200">
+    <div class="annotate-shell">
+
+      <div class="annotate-toolbar">
+        <!-- Tools -->
+        <div class="tool-group">
+          <button class="tool-btn active" id="toolArrow" data-tool="arrow" title="Arrow (point to elements)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 9-14 9V3z"/></svg>
+          </button>
+          <button class="tool-btn" data-tool="rect" title="Rectangle (highlight area)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+          </button>
+          <button class="tool-btn" data-tool="ellipse" title="Circle/Ellipse">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><ellipse cx="12" cy="12" rx="9" ry="7"/></svg>
+          </button>
+          <button class="tool-btn" data-tool="highlight" title="Highlight region">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" opacity="0.7"><rect x="3" y="8" width="18" height="8" rx="2"/></svg>
+          </button>
+          <button class="tool-btn" data-tool="pen" title="Freehand draw">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+          </button>
+          <button class="tool-btn" data-tool="text" title="Add text label">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M5 4v3h5.5v12h3V7H19V4z"/></svg>
+          </button>
+        </div>
+
+        <!-- Colors -->
+        <div class="color-group">
+          <div class="color-dot active" data-color="#EF4444" style="background:#EF4444" title="Red"></div>
+          <div class="color-dot" data-color="#F97316" style="background:#F97316" title="Orange"></div>
+          <div class="color-dot" data-color="#EAB308" style="background:#EAB308" title="Yellow"></div>
+          <div class="color-dot" data-color="#10B981" style="background:#10B981" title="Green"></div>
+          <div class="color-dot" data-color="#3B82F6" style="background:#3B82F6" title="Blue"></div>
+          <div class="color-dot" data-color="#8B5CF6" style="background:#8B5CF6" title="Purple"></div>
+          <div class="color-dot" data-color="#FFFFFF" style="background:#FFFFFF;border:1px solid #ccc" title="White"></div>
+        </div>
+
+        <!-- Thickness -->
+        <div class="thick-group">
+          <button class="thick-btn" data-w="2" title="Thin"><div class="thick-line" style="height:2px"></div></button>
+          <button class="thick-btn active" data-w="3" title="Medium"><div class="thick-line" style="height:3px"></div></button>
+          <button class="thick-btn" data-w="5" title="Thick"><div class="thick-line" style="height:5px"></div></button>
+          <button class="thick-btn" data-w="8" title="Extra thick"><div class="thick-line" style="height:8px"></div></button>
+        </div>
+
+        <span class="annotate-hint">Click &amp; drag to draw · Click canvas to place text</span>
+
+        <!-- Actions -->
+        <div class="annotate-actions">
+          <button class="ann-btn ann-btn-ghost" id="annUndo">↩ Undo</button>
+          <button class="ann-btn ann-btn-danger" id="annClear">🗑 Clear</button>
+          <button class="ann-btn ann-btn-ghost" id="annCancel">Cancel</button>
+          <button class="ann-btn ann-btn-primary" id="annDone">✓ Save</button>
+        </div>
+      </div>
+
+      <div class="annotate-canvas-wrap">
+        <canvas id="annotateCanvas"></canvas>
+      </div>
+
     </div>
   </div>
 

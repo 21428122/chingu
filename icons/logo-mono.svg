@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
+  <title>Chingu — Cappy monochrome stamp</title>
+  <!-- Single-color silhouette. Use color="#0F172A" for light bg, color="#FFFFFF" for dark bg. -->
+  <rect x="16" y="16" width="480" height="480" rx="112"/>
+  <g fill="#FFFFFF">
+    <!-- Body silhouette as negative space -->
+    <ellipse cx="256" cy="335" rx="190" ry="175"/>
+    <ellipse cx="142" cy="188" rx="36" ry="30" transform="rotate(-22 142 188)"/>
+    <ellipse cx="370" cy="188" rx="36" ry="30" transform="rotate(22 370 188)"/>
+  </g>
+  <g fill="currentColor">
+    <!-- Eyes and nose punched back through to the frame color -->
+    <circle cx="200" cy="282" r="22"/>
+    <circle cx="312" cy="282" r="22"/>
+    <ellipse cx="256" cy="362" rx="22" ry="13"/>
+    <path d="M228 400 Q 256 422 284 400" stroke="currentColor" stroke-width="6" stroke-linecap="round" fill="none"/>
+  </g>
+</svg>

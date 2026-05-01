@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chingu — SOPs that actually work</title>
+  <meta name="description" content="Click record. Use your app. Get a finished guide. Chingu captures every step, automatically.">
+  <link rel="icon" href="icons/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,800;1,9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    /* ── Tokens ── */
+    :root {
+      --tan:     #C8956D;
+      --cocoa:   #A6754F;
+      --sunrise: #FFB07A;
+      --peach:   #FFD4A8;
+      --cream:   #FFF5E4;
+      --indigo:  #6366F1;
+      --violet:  #8B5CF6;
+      --purple:  #7C3AED;
+      --lav:     #A78BFA;
+      --ink:     #0F172A;
+      --slate:   #334155;
+      --grey:    #94A3B8;
+      --silver:  #E2E8F0;
+      --snow:    #F8FAFC;
+      --red:     #EF4444;
+      --mint:    #10B981;
+    }
+
+    /* ── Base ── */
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #080810;
+      color: white;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── Keyframes ── */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-14px); }
+    }
+    @keyframes float-slow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50%       { transform: translateY(-8px) rotate(1.5deg); }
+    }
+    @keyframes blink {
+      0%, 90%, 100% { transform: scaleY(1); }
+      94%, 97%      { transform: scaleY(0.08); }
+    }
+    @keyframes rec-pulse {
+      0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
+      50%       { transform: scale(0.75); opacity: 0.6; box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+    }
+    @keyframes wiggle {
+      0%   { transform: scale(1) rotate(0deg); }
+      20%  { transform: scale(1.12) rotate(-4deg); }
+      45%  { transform: scale(0.96) rotate(3deg); }
+      70%  { transform: scale(1.05) rotate(-2deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+    @keyframes glow-pulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50%       { opacity: 1; transform: scale(1.08); }
+    }
+    @keyframes slide-up {
+      from { opacity: 0; transform: translateY(60px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes confetti-fall {
+      0%   { transform: translateY(-20px) rotate(0deg); opacity: 0; }
+      15%  { opacity: 1; }
+      100% { transform: translateY(120px) rotate(420deg); opacity: 0; }
+    }
+    @keyframes word-rise {
+      from { opacity: 0; transform: translateY(100%) skewY(3deg); }
+      to   { opacity: 1; transform: translateY(0) skewY(0deg); }
+    }
+    @keyframes shimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+
+    /* ── Scroll reveal system ── */
+    [data-reveal] {
+      opacity: 0;
+      transform: translateY(48px);
+      transition: opacity 0.9s cubic-bezier(0.22, 0.61, 0.36, 1),
+                  transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    [data-reveal].visible { opacity: 1; transform: translateY(0); }
+    [data-reveal][data-delay="1"] { transition-delay: 0.1s; }
+    [data-reveal][data-delay="2"] { transition-delay: 0.2s; }
+    [data-reveal][data-delay="3"] { transition-delay: 0.35s; }
+    [data-reveal][data-delay="4"] { transition-delay: 0.5s; }
+    [data-reveal="left"] { transform: translateX(-60px); }
+    [data-reveal="left"].visible { transform: translateX(0); }
+    [data-reveal="right"] { transform: translateX(60px); }
+    [data-reveal="right"].visible { transform: translateX(0); }
+    [data-reveal="scale"] { transform: scale(0.82); }
+    [data-reveal="scale"].visible { transform: scale(1); }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.3s ease, backdrop-filter 0.3s ease;
+    }
+    nav.scrolled {
+      background: rgba(8, 8, 16, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .nav-logo-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #FFE4C4, #FFB07A, #C8956D);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .nav-logo-name {
+      font-size: 18px;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -0.03em;
+    }
+    .nav-logo-sub {
+      font-size: 12px;
+      color: var(--indigo);
+      font-weight: 600;
+      margin-left: 6px;
+    }
+    .nav-actions { display: flex; gap: 12px; align-items: center; }
+    .nav-link {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: white; }
+    .btn-nav {
+      padding: 9px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: inherit;
+      letter-spacing: -0.01em;
+    }
+    .btn-primary-nav {
+      background: linear-gradient(135deg, #6366F1, #8B5CF6);
+      color: white;
+      border: none;
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+    }
+    .btn-primary-nav:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.5);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -55%);
+      width: 800px;
+      height: 800px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,149,109,0.22) 0%, rgba(99,102,241,0.12) 45%, transparent 70%);
+      pointer-events: none;
+      animation: glow-pulse 5s ease-in-out infinite;
+    }
+    .hero-glow2 {
+      position: absolute;
+      top: 30%;
+      left: 20%;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(139,92,246,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(8px);
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 32px;
+      animation: slide-up 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+    }
+    .rec-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--red);
+      animation: rec-pulse 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      display: inline-block;
+    }
+
+    /* Word-by-word animated headline */
+    .hero-headline {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: clamp(52px, 8vw, 104px);
+      font-weight: 800;
+      line-height: 1.0;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .hero-headline .word-wrap { overflow: hidden; display: inline-block; }
+    .hero-headline .word {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(110%) skewY(4deg);
+    }
+    .hero-headline .word.animate {
+      animation: word-rise 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+    }
+    .hero-headline .grad {
+      background: linear-gradient(135deg, #FFD4A8 0%, #FFB07A 40%, #C8956D 70%, #8B5CF6 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-sub {
+      font-size: clamp(18px, 2.5vw, 22px);
+      color: rgba(255,255,255,0.55);
+      max-width: 540px;
+      line-height: 1.55;
+      margin-bottom: 44px;
+      font-weight: 400;
+      animation: slide-up 0.9s 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: slide-up 0.9s 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+    }
+    .btn-hero-primary {
+      padding: 16px 32px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 60%, #A78BFA 100%);
+      color: white;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 32px rgba(99, 102, 241, 0.45);
+      transition: all 0.2s cubic-bezier(0.34, 1.4, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+      font-family: inherit;
+      letter-spacing: -0.01em;
+    }
+    .btn-hero-primary::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .btn-hero-primary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 16px 48px rgba(99, 102, 241, 0.55); }
+    .btn-hero-primary:hover::after { opacity: 1; }
+    .btn-hero-ghost {
+      padding: 16px 28px;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      background: transparent;
+      color: rgba(255,255,255,0.6);
+      border: 1.5px solid rgba(255,255,255,0.14);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .btn-hero-ghost:hover { border-color: rgba(255,255,255,0.35); color: white; background: rgba(255,255,255,0.05); }
+
+    /* Premium Cappy in hero */
+    .hero-cappy-wrap {
+      margin-top: 64px;
+      position: relative;
+      display: inline-block;
+      animation: slide-up 1s 0.3s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+    }
+    .hero-cappy-glow {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,176,122,0.35) 0%, rgba(200,149,109,0.15) 45%, transparent 70%);
+      pointer-events: none;
+      animation: glow-pulse 3.5s ease-in-out infinite;
+    }
+    .hero-cappy {
+      width: 300px;
+      height: 300px;
+      position: relative;
+      z-index: 2;
+      animation: float 4s ease-in-out infinite;
+      filter: drop-shadow(0 24px 48px rgba(200, 149, 109, 0.35));
+    }
+    .hero-cappy .eye-l, .hero-cappy .eye-r {
+      transform-origin: center;
+      transform-box: fill-box;
+      animation: blink 4.5s ease-in-out infinite;
+    }
+    .rec-badge {
+      position: absolute;
+      top: 20px; right: -10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: white;
+      color: var(--red);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 999px;
+      letter-spacing: 0.06em;
+      box-shadow: 0 4px 16px rgba(239, 68, 68, 0.25);
+      z-index: 3;
+      animation: slide-up 1s 1s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+    }
+    .scroll-hint {
+      margin-top: 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.25);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      animation: slide-up 1s 1.2s ease both;
+    }
+    .scroll-hint svg { animation: float 2s ease-in-out infinite; }
+
+    /* ── STATEMENT SECTION ── */
+    .statement {
+      background: var(--cream);
+      color: var(--ink);
+      padding: 140px 24px;
+      text-align: center;
+    }
+    .statement-eyebrow {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--tan);
+      margin-bottom: 20px;
+    }
+    .statement-headline {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: clamp(40px, 6vw, 80px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      color: var(--ink);
+      max-width: 900px;
+      margin: 0 auto 28px;
+    }
+    .statement-headline em {
+      font-style: italic;
+      color: var(--tan);
+    }
+    .statement-sub {
+      font-size: 20px;
+      color: var(--slate);
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .how {
+      background: #0A0A14;
+      padding: 140px 24px;
+    }
+    .section-label {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: clamp(36px, 5vw, 64px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.08;
+      text-align: center;
+      color: white;
+      max-width: 700px;
+      margin: 0 auto 80px;
+    }
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .step-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      padding: 40px 32px;
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
+    }
+    .step-card:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.15);
+      transform: translateY(-6px);
+    }
+    .step-number-big {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 72px;
+      font-weight: 800;
+      line-height: 1;
+      background: linear-gradient(135deg, #FFD4A8, #C8956D);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 24px;
+    }
+    .step-cappy-wrap {
+      margin: 0 auto 20px;
+      width: 110px;
+      height: 110px;
+    }
+    .step-card h3 {
+      font-size: 22px;
+      font-weight: 700;
+      color: white;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+    .step-card p {
+      font-size: 15px;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.6;
+    }
+
+    /* ── FEATURES (Apple-style alternating panels) ── */
+    .feature-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      min-height: 600px;
+      padding: 0;
+      overflow: hidden;
+    }
+    .feature-panel:nth-child(odd) { direction: rtl; }
+    .feature-panel:nth-child(odd) > * { direction: ltr; }
+    .feature-text {
+      padding: 80px 64px 80px 80px;
+    }
+    .feature-panel:nth-child(even) .feature-text { padding: 80px 80px 80px 64px; }
+    .feature-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .feature-tag.warm {
+      background: rgba(200, 149, 109, 0.15);
+      color: var(--sunrise);
+      border: 1px solid rgba(200, 149, 109, 0.25);
+    }
+    .feature-tag.cool {
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--lav);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+    }
+    .feature-tag.mint {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+    .feature-h2 {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: clamp(36px, 4vw, 56px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.08;
+      margin-bottom: 20px;
+    }
+    .feature-p {
+      font-size: 18px;
+      line-height: 1.65;
+      max-width: 420px;
+    }
+    .feature-visual {
+      height: 600px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    /* Feature 1 — dark */
+    .fp1 { background: #0D0D1A; color: white; }
+    .fp1 .feature-p { color: rgba(255,255,255,0.55); }
+    .fp1 .feature-visual { background: #06060F; }
+    .fp1-visual-inner {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .fp1-glow {
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%);
+      animation: glow-pulse 3s ease-in-out infinite;
+    }
+    /* Feature 2 — cream */
+    .fp2 { background: var(--cream); color: var(--ink); }
+    .fp2 .feature-p { color: var(--slate); }
+    .fp2 .feature-visual { background: #FFF0D6; }
+    /* Feature 3 — dark gradient */
+    .fp3 { background: #0A0814; color: white; }
+    .fp3 .feature-p { color: rgba(255,255,255,0.55); }
+    .fp3 .feature-visual { background: #060512; }
+
+    /* Step pills (for feature 2 before/after) */
+    .step-pills {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 32px;
+    }
+    .step-pill {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.07);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .step-pill:hover { transform: translateX(4px); box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12); }
+    .pill-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FFB07A, #C8956D);
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .pill-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .pill-crossed {
+      opacity: 0.35;
+      text-decoration: line-through;
+    }
+    .pill-badge {
+      margin-left: auto;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+    }
+    .badge-removed { background: #FEF2F2; color: var(--red); }
+    .badge-kept { background: #ECFDF5; color: var(--mint); }
+
+    /* PDF mockup for feature 3 */
+    .pdf-mockup {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      width: 280px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.4), 0 8px 24px rgba(99,102,241,0.15);
+      transform: rotate(-2deg);
+      transition: transform 0.4s cubic-bezier(0.34, 1.4, 0.64, 1);
+    }
+    .pdf-mockup:hover { transform: rotate(0deg) scale(1.03); }
+    .pdf-top {
+      height: 6px;
+      background: linear-gradient(90deg, #6366F1, #8B5CF6);
+      border-radius: 3px;
+      margin-bottom: 16px;
+    }
+    .pdf-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 14px;
+    }
+    .pdf-step {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .pdf-num {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FFB07A, #C8956D);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .pdf-line { font-size: 11px; color: var(--slate); line-height: 1.5; }
+    .pdf-img {
+      background: var(--snow);
+      border-radius: 8px;
+      height: 60px;
+      margin-left: 30px;
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pdf-img-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #E0E7FF, #C7D2FE);
+    }
+
+    /* ── MEET CAPPY ── */
+    .meet-cappy {
+      background: var(--cream);
+      color: var(--ink);
+      padding: 140px 24px;
+      text-align: center;
+    }
+    .meet-eyebrow {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--tan);
+      margin-bottom: 16px;
+    }
+    .meet-headline {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: clamp(40px, 5.5vw, 72px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.08;
+      color: var(--ink);
+      margin-bottom: 16px;
+    }
+    .meet-sub {
+      font-size: 19px;
+      color: var(--slate);
+      max-width: 600px;
+      margin: 0 auto 64px;
+      line-height: 1.6;
+    }
+    .expressions-row {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      flex-wrap: wrap;
+      max-width: 960px;
+      margin: 0 auto 48px;
+    }
+    .expression-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 24px 20px 20px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.07);
+      width: 140px;
+      transition: all 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
+      cursor: default;
+    }
+    .expression-card:hover { transform: translateY(-8px) scale(1.03); box-shadow: 0 8px 32px rgba(200,149,109,0.22); }
+    .expression-card:hover svg { animation: wiggle 600ms cubic-bezier(0.34, 1.4, 0.64, 1); }
+    .expression-card span {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--slate);
+      letter-spacing: -0.01em;
+    }
+
+    /* ── CTA SECTION ── */
+    .cta-section {
+      background: #080810;
+      padding: 160px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-bg-glow {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 900px;
+      height: 900px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,176,122,0.12) 0%, rgba(200,149,109,0.06) 35%, rgba(99,102,241,0.08) 60%, transparent 80%);
+      pointer-events: none;
+      animation: glow-pulse 6s ease-in-out infinite;
+    }
+    .cta-cappy-bg {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -55%);
+      opacity: 0.06;
+      pointer-events: none;
+      width: 500px;
+      height: 500px;
+    }
+    .cta-content { position: relative; z-index: 2; }
+    .cta-headline {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: clamp(48px, 7vw, 96px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.0;
+      color: white;
+      max-width: 900px;
+      margin: 0 auto 24px;
+    }
+    .cta-headline .grad {
+      background: linear-gradient(135deg, #FFD4A8 0%, #FFB07A 40%, #8B5CF6 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .cta-sub {
+      font-size: 20px;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 48px;
+    }
+    .btn-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 20px 44px;
+      border-radius: 16px;
+      font-size: 18px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 60%, #A78BFA 100%);
+      color: white;
+      text-decoration: none;
+      box-shadow: 0 8px 40px rgba(99, 102, 241, 0.5);
+      transition: all 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+      letter-spacing: -0.01em;
+      font-family: inherit;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-cta:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 20px 60px rgba(99, 102, 241, 0.6); }
+    .cta-note {
+      margin-top: 20px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.3);
+    }
+    .cta-note span { color: rgba(255,255,255,0.5); font-weight: 600; }
+    .confetti-host { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .confetti { position: absolute; border-radius: 2px; pointer-events: none; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #04040A;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 48px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: gap;
+      gap: 16px;
+    }
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .footer-text {
+      font-size: 14px;
+      color: rgba(255,255,255,0.25);
+      line-height: 1.6;
+    }
+    .footer-text a { color: rgba(255,255,255,0.45); text-decoration: none; }
+    .footer-text a:hover { color: white; }
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+    .footer-links a {
+      font-size: 14px;
+      color: rgba(255,255,255,0.35);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: white; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .feature-panel { grid-template-columns: 1fr; min-height: auto; }
+      .feature-panel:nth-child(odd) { direction: ltr; }
+      .feature-text { padding: 60px 32px; }
+      .feature-panel:nth-child(even) .feature-text { padding: 60px 32px; }
+      .feature-visual { height: 360px; }
+      .steps-grid { grid-template-columns: 1fr; gap: 20px; }
+    }
+    @media (max-width: 600px) {
+      nav { padding: 0 16px; }
+      .nav-logo-sub { display: none; }
+      .btn-nav { padding: 8px 14px; font-size: 13px; }
+      .hero { padding: 100px 16px 60px; }
+      .hero-cappy { width: 220px; height: 220px; }
+      .hero-cappy-glow { width: 280px; height: 280px; }
+      .expressions-row { gap: 12px; }
+      .expression-card { width: 120px; padding: 18px 14px 14px; }
+      footer { flex-direction: column; text-align: center; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav id="nav">
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-mark">
+      <svg width="28" height="28" viewBox="0 0 200 200">
+        <defs>
+          <radialGradient id="nbl" cx="40%" cy="30%" r="65%">
+            <stop offset="0%" stop-color="#E8A87C"/>
+            <stop offset="100%" stop-color="#A67050"/>
+          </radialGradient>
+        </defs>
+        <ellipse cx="100" cy="112" rx="86" ry="76" fill="url(#nbl)"/>
+        <ellipse cx="38" cy="50" rx="14" ry="11" transform="rotate(-20 38 50)" fill="#A67050"/>
+        <ellipse cx="162" cy="50" rx="14" ry="11" transform="rotate(20 162 50)" fill="#A67050"/>
+        <ellipse cx="100" cy="136" rx="46" ry="29" fill="#E8B98E"/>
+        <circle cx="74" cy="90" r="11" fill="#1A0F0A"/>
+        <circle cx="126" cy="90" r="11" fill="#1A0F0A"/>
+        <circle cx="78" cy="85" r="4" fill="white"/>
+        <circle cx="130" cy="85" r="4" fill="white"/>
+        <ellipse cx="100" cy="127" rx="9" ry="5" fill="#1A0F0A"/>
+        <path d="M86 143 Q100 155 114 143" stroke="#1A0F0A" stroke-width="3" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+    <span class="nav-logo-name">chingu</span>
+    <span class="nav-logo-sub">친구</span>
+  </a>
+  <div class="nav-actions">
+    <a class="nav-link" href="https://github.com/21428122/chingu" target="_blank" rel="noopener">GitHub</a>
+    <a class="btn-nav btn-primary-nav" href="https://chrome.google.com/webstore/detail/chingu" target="_blank" rel="noopener">
+      Add to Chrome
+    </a>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+
+  <div class="hero-badge">
+    <span class="rec-dot"></span>
+    Free forever · Open source · No account needed
+  </div>
+
+  <h1 class="hero-headline" id="heroHeadline" aria-label="SOPs that actually work.">
+    <span class="word-wrap"><span class="word" style="animation-delay:0.05s">SOPs</span></span>&nbsp;
+    <span class="word-wrap"><span class="word" style="animation-delay:0.18s"><span class="grad">that</span></span></span>&nbsp;
+    <span class="word-wrap"><span class="word" style="animation-delay:0.31s"><span class="grad">actually</span></span></span><br>
+    <span class="word-wrap"><span class="word" style="animation-delay:0.44s">work.</span></span>
+  </h1>
+
+  <p class="hero-sub">Chingu watches you work and quietly builds the guide.<br>No account. No nonsense. Just the doc.</p>
+
+  <div class="hero-actions">
+    <a class="btn-hero-primary" href="https://chrome.google.com/webstore/detail/chingu" target="_blank" rel="noopener">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg>
+      Add to Chrome — it's free
+    </a>
+    <a class="btn-hero-ghost" href="#how">See how it works ↓</a>
+  </div>
+
+  <div class="hero-cappy-wrap">
+    <div class="hero-cappy-glow"></div>
+    <svg class="hero-cappy" id="heroCappy" viewBox="0 0 200 200">
+      <defs>
+        <radialGradient id="hbody" cx="38%" cy="28%" r="70%">
+          <stop offset="0%" stop-color="#E8A87C"/>
+          <stop offset="50%" stop-color="#C8956D"/>
+          <stop offset="100%" stop-color="#A06840"/>
+        </radialGradient>
+        <radialGradient id="hsnout" cx="42%" cy="32%" r="62%">
+          <stop offset="0%" stop-color="#F2C99A"/>
+          <stop offset="100%" stop-color="#D4A070"/>
+        </radialGradient>
+        <radialGradient id="heye" cx="30%" cy="25%" r="75%">
+          <stop offset="0%" stop-color="#FFFFFF"/>
+          <stop offset="100%" stop-color="#EEEEf8"/>
+        </radialGradient>
+        <filter id="cshadow">
+          <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#80501A" flood-opacity="0.28"/>
+        </filter>
+      </defs>
+      <g filter="url(#cshadow)">
+        <!-- Body -->
+        <ellipse cx="100" cy="112" rx="88" ry="78" fill="url(#hbody)"/>
+        <!-- Ears -->
+        <ellipse cx="38" cy="50" rx="17" ry="13" transform="rotate(-22 38 50)" fill="#B87040"/>
+        <ellipse cx="162" cy="50" rx="17" ry="13" transform="rotate(22 162 50)" fill="#B87040"/>
+        <ellipse cx="38" cy="51" rx="8.5" ry="6" transform="rotate(-22 38 51)" fill="#FFD4A8"/>
+        <ellipse cx="162" cy="51" rx="8.5" ry="6" transform="rotate(22 162 51)" fill="#FFD4A8"/>
+        <!-- Cheeks -->
+        <ellipse cx="28" cy="118" rx="17" ry="11" fill="#FF8FA3" opacity="0.5"/>
+        <ellipse cx="172" cy="118" rx="17" ry="11" fill="#FF8FA3" opacity="0.5"/>
+        <!-- Snout -->
+        <ellipse cx="100" cy="138" rx="50" ry="32" fill="url(#hsnout)"/>
+        <!-- Eye whites -->
+        <ellipse cx="73" cy="89" rx="16" ry="17" fill="url(#heye)"/>
+        <ellipse cx="127" cy="89" rx="16" ry="17" fill="url(#heye)"/>
+        <!-- Pupils -->
+        <g class="eye-l">
+          <circle cx="75" cy="91" r="12" fill="#1A0A04"/>
+          <circle cx="79" cy="86" r="4.5" fill="white"/>
+          <circle cx="73" cy="94" r="1.8" fill="white" opacity="0.6"/>
+        </g>
+        <g class="eye-r">
+          <circle cx="129" cy="91" r="12" fill="#1A0A04"/>
+          <circle cx="133" cy="86" r="4.5" fill="white"/>
+          <circle cx="127" cy="94" r="1.8" fill="white" opacity="0.6"/>
+        </g>
+        <!-- Nose -->
+        <ellipse cx="100" cy="128" rx="10" ry="5.5" fill="#1A0A04"/>
+        <!-- Smile -->
+        <path d="M84 144 Q100 158 116 144" stroke="#1A0A04" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+        <!-- Top highlight -->
+        <ellipse cx="86" cy="72" rx="34" ry="20" fill="white" opacity="0.11"/>
+      </g>
+    </svg>
+    <div class="rec-badge"><span class="rec-dot"></span>REC</div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll to explore</span>
+    <svg width="16" height="20" viewBox="0 0 16 20" fill="none">
+      <path d="M8 4v10M4 10l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ══ STATEMENT ══ -->
+<section class="statement">
+  <p class="statement-eyebrow" data-reveal>The problem</p>
+  <h2 class="statement-headline" data-reveal data-delay="1">
+    Your team forgets <em>everything</em><br>the moment someone leaves.
+  </h2>
+  <p class="statement-sub" data-reveal data-delay="2">
+    SOPs exist for this. But writing them is brutal — screenshots, steps, formatting. Nobody has time. So nobody writes them.
+  </p>
+</section>
+
+<!-- ══ HOW IT WORKS ══ -->
+<section class="how" id="how">
+  <p class="section-label" data-reveal>How it works</p>
+  <h2 class="section-title" data-reveal data-delay="1">Three steps.<br>Seriously, just three.</h2>
+  <div class="steps-grid">
+
+    <div class="step-card" data-reveal data-delay="1">
+      <div class="step-number-big">01</div>
+      <div class="step-cappy-wrap">
+        <svg viewBox="0 0 200 200" width="110" height="110">
+          <defs>
+            <radialGradient id="sb1" cx="38%" cy="28%" r="70%">
+              <stop offset="0%" stop-color="#E8A87C"/>
+              <stop offset="100%" stop-color="#A06840"/>
+            </radialGradient>
+          </defs>
+          <ellipse cx="100" cy="112" rx="85" ry="75" fill="url(#sb1)"/>
+          <ellipse cx="38" cy="50" rx="15" ry="12" transform="rotate(-22 38 50)" fill="#B87040"/>
+          <ellipse cx="162" cy="50" rx="15" ry="12" transform="rotate(22 162 50)" fill="#B87040"/>
+          <ellipse cx="38" cy="51" rx="7.5" ry="5.5" transform="rotate(-22 38 51)" fill="#FFD4A8"/>
+          <ellipse cx="162" cy="51" rx="7.5" ry="5.5" transform="rotate(22 162 51)" fill="#FFD4A8"/>
+          <ellipse cx="28" cy="116" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
+          <ellipse cx="172" cy="116" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
+          <ellipse cx="100" cy="136" rx="46" ry="29" fill="#E8B98E"/>
+          <!-- Sleepy eyes -->
+          <path d="M64 90 Q74 100 84 90" stroke="#1A0A04" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+          <path d="M116 90 Q126 100 136 90" stroke="#1A0A04" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+          <ellipse cx="100" cy="126" rx="9" ry="5" fill="#1A0A04"/>
+          <path d="M90 143 Q100 150 110 143" stroke="#1A0A04" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <!-- Zzz -->
+          <text x="142" y="62" font-family="Inter" font-weight="700" font-size="16" fill="#94A3B8" opacity="0.8">z</text>
+          <text x="153" y="50" font-family="Inter" font-weight="700" font-size="12" fill="#94A3B8" opacity="0.6">z</text>
+        </svg>
+      </div>
+      <h3>Click record.</h3>
+      <p>Hit the Chingu icon and press Start. Cappy wakes up and gets to work.</p>
+    </div>
+
+    <div class="step-card" data-reveal data-delay="2">
+      <div class="step-number-big">02</div>
+      <div class="step-cappy-wrap">
+        <svg viewBox="0 0 200 200" width="110" height="110">
+          <defs>
+            <radialGradient id="sb2" cx="38%" cy="28%" r="70%">
+              <stop offset="0%" stop-color="#E8A87C"/>
+              <stop offset="100%" stop-color="#A06840"/>
+            </radialGradient>
+          </defs>
+          <ellipse cx="100" cy="112" rx="85" ry="75" fill="url(#sb2)"/>
+          <ellipse cx="38" cy="50" rx="15" ry="12" transform="rotate(-22 38 50)" fill="#B87040"/>
+          <ellipse cx="162" cy="50" rx="15" ry="12" transform="rotate(22 162 50)" fill="#B87040"/>
+          <ellipse cx="38" cy="51" rx="7.5" ry="5.5" transform="rotate(-22 38 51)" fill="#FFD4A8"/>
+          <ellipse cx="162" cy="51" rx="7.5" ry="5.5" transform="rotate(22 162 51)" fill="#FFD4A8"/>
+          <ellipse cx="28" cy="116" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
+          <ellipse cx="172" cy="116" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
+          <ellipse cx="100" cy="136" rx="46" ry="29" fill="#E8B98E"/>
+          <!-- Working eyes (focused arcs) -->
+          <path d="M62 88 Q73 99 84 88" stroke="#1A0A04" stroke-width="6" stroke-linecap="round" fill="none"/>
+          <path d="M116 88 Q127 99 138 88" stroke="#1A0A04" stroke-width="6" stroke-linecap="round" fill="none"/>
+          <ellipse cx="100" cy="126" rx="9" ry="5" fill="#1A0A04"/>
+          <line x1="90" y1="144" x2="110" y2="144" stroke="#1A0A04" stroke-width="3" stroke-linecap="round"/>
+          <!-- Clipboard -->
+          <rect x="136" y="110" width="44" height="54" rx="5" fill="white" stroke="#E2E8F0" stroke-width="1.5"/>
+          <rect x="148" y="105" width="20" height="10" rx="3" fill="#94A3B8"/>
+          <line x1="143" y1="124" x2="173" y2="124" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round"/>
+          <line x1="143" y1="134" x2="168" y2="134" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round"/>
+          <line x1="143" y1="144" x2="173" y2="144" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round"/>
+          <line x1="143" y1="154" x2="162" y2="154" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3>Use your app normally.</h3>
+      <p>Every click, every screen, every navigation — captured automatically.</p>
+    </div>
+
+    <div class="step-card" data-reveal data-delay="3">
+      <div class="step-number-big">03</div>
+      <div class="step-cappy-wrap">
+        <svg viewBox="0 0 200 200" width="110" height="110">
+          <defs>
+            <radialGradient id="sb3" cx="38%" cy="28%" r="70%">
+              <stop offset="0%" stop-color="#E8A87C"/>
+              <stop offset="100%" stop-color="#A06840"/>
+            </radialGradient>
+          </defs>
+          <ellipse cx="100" cy="112" rx="85" ry="75" fill="url(#sb3)"/>
+          <ellipse cx="38" cy="50" rx="15" ry="12" transform="rotate(-22 38 50)" fill="#B87040"/>
+          <ellipse cx="162" cy="50" rx="15" ry="12" transform="rotate(22 162 50)" fill="#B87040"/>
+          <ellipse cx="38" cy="51" rx="7.5" ry="5.5" transform="rotate(-22 38 51)" fill="#FFD4A8"/>
+          <ellipse cx="162" cy="51" rx="7.5" ry="5.5" transform="rotate(22 162 51)" fill="#FFD4A8"/>
+          <ellipse cx="28" cy="116" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
+          <ellipse cx="172" cy="116" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
+          <ellipse cx="100" cy="136" rx="46" ry="29" fill="#E8B98E"/>
+          <!-- Happy eyes (arcs up) -->
+          <path d="M61 94 Q74 76 87 94" stroke="#1A0A04" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <path d="M113 94 Q126 76 139 94" stroke="#1A0A04" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <ellipse cx="100" cy="126" rx="9" ry="5" fill="#1A0A04"/>
+          <path d="M82 143 Q100 161 118 143" stroke="#1A0A04" stroke-width="4" stroke-linecap="round" fill="none"/>
+          <!-- Stars -->
+          <text x="142" y="66" font-size="18">✨</text>
+        </svg>
+      </div>
+      <h3>Your guide is ready.</h3>
+      <p>Edit, reorder, delete noise, export as PDF. Done in under a minute.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FEATURE 1: RECORD ══ -->
+<div class="feature-panel fp1">
+  <div class="feature-text">
+    <span class="feature-tag cool" data-reveal>✦ Capture</span>
+    <h2 class="feature-h2" data-reveal data-delay="1">Every click.<br>Every screen.<br>Automatically.</h2>
+    <p class="feature-p" data-reveal data-delay="2">Just click Start Recording and use your app like normal. Chingu captures every click, every page navigation, every input — with a screenshot at each step. You never have to touch a camera or write a description.</p>
+  </div>
+  <div class="feature-visual">
+    <div class="fp1-visual-inner" data-reveal="scale">
+      <div class="fp1-glow"></div>
+      <svg viewBox="0 0 200 200" width="260" height="260" style="position:relative;z-index:2;filter:drop-shadow(0 24px 48px rgba(200,149,109,0.3));animation:float-slow 4s ease-in-out infinite">
+        <defs>
+          <radialGradient id="f1b" cx="38%" cy="28%" r="70%">
+            <stop offset="0%" stop-color="#E8A87C"/>
+            <stop offset="100%" stop-color="#A06840"/>
+          </radialGradient>
+          <radialGradient id="f1s" cx="42%" cy="32%" r="62%">
+            <stop offset="0%" stop-color="#F2C99A"/>
+            <stop offset="100%" stop-color="#D4A070"/>
+          </radialGradient>
+        </defs>
+        <ellipse cx="100" cy="112" rx="87" ry="77" fill="url(#f1b)"/>
+        <ellipse cx="38" cy="50" rx="16" ry="12" transform="rotate(-22 38 50)" fill="#B87040"/>
+        <ellipse cx="162" cy="50" rx="16" ry="12" transform="rotate(22 162 50)" fill="#B87040"/>
+        <ellipse cx="38" cy="51" rx="8" ry="6" transform="rotate(-22 38 51)" fill="#FFD4A8"/>
+        <ellipse cx="162" cy="51" rx="8" ry="6" transform="rotate(22 162 51)" fill="#FFD4A8"/>
+        <ellipse cx="28" cy="116" rx="16" ry="10" fill="#FF8FA3" opacity="0.48"/>
+        <ellipse cx="172" cy="116" rx="16" ry="10" fill="#FF8FA3" opacity="0.48"/>
+        <ellipse cx="100" cy="136" rx="48" ry="30" fill="url(#f1s)"/>
+        <path d="M62 88 Q73 99 84 88" stroke="#1A0A04" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <path d="M116 88 Q127 99 138 88" stroke="#1A0A04" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <ellipse cx="100" cy="126" rx="9.5" ry="5.5" fill="#1A0A04"/>
+        <line x1="89" y1="144" x2="111" y2="144" stroke="#1A0A04" stroke-width="3" stroke-linecap="round"/>
+        <ellipse cx="86" cy="72" rx="30" ry="17" fill="white" opacity="0.1"/>
+        <!-- Clipboard -->
+        <rect x="138" y="112" width="48" height="58" rx="6" fill="white" stroke="#E2E8F0" stroke-width="1.5" transform="rotate(8 138 112)"/>
+        <rect x="152" y="106" width="20" height="11" rx="3.5" fill="#94A3B8" transform="rotate(8 152 106)"/>
+        <line x1="146" y1="128" x2="178" y2="124" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round"/>
+        <line x1="146" y1="138" x2="174" y2="134" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round"/>
+        <line x1="146" y1="148" x2="178" y2="144" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round"/>
+        <!-- REC pill -->
+        <rect x="56" y="18" width="60" height="22" rx="11" fill="white"/>
+        <circle cx="70" cy="29" r="5" fill="#EF4444" opacity="0.95"/>
+        <text x="79" y="33" font-family="Inter" font-weight="800" font-size="10" fill="#0F172A" letter-spacing="0.5">REC</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FEATURE 2: POLISH ══ -->
+<div class="feature-panel fp2">
+  <div class="feature-text">
+    <span class="feature-tag warm" data-reveal>✦ Auto-Polish</span>
+    <h2 class="feature-h2" data-reveal data-delay="1">Noise removed.<br>Signal kept.</h2>
+    <p class="feature-p" data-reveal data-delay="2">Chingu's auto-polish removes duplicate steps, accidental clicks, and error-state screenshots. What you get is a clean, tight guide — not a raw recording with 40 meaningless steps.</p>
+  </div>
+  <div class="feature-visual">
+    <div class="step-pills" data-reveal="scale">
+      <div class="step-pill" style="animation-delay:0.1s">
+        <div class="pill-num">1</div>
+        <div class="pill-text">Click Settings</div>
+        <span class="pill-badge badge-kept">✓ kept</span>
+      </div>
+      <div class="step-pill" style="animation-delay:0.2s">
+        <div class="pill-num" style="opacity:0.35">2</div>
+        <div class="pill-text pill-crossed">Click Settings again</div>
+        <span class="pill-badge badge-removed">removed</span>
+      </div>
+      <div class="step-pill" style="animation-delay:0.3s">
+        <div class="pill-num">3</div>
+        <div class="pill-text">Click Security</div>
+        <span class="pill-badge badge-kept">✓ kept</span>
+      </div>
+      <div class="step-pill" style="animation-delay:0.4s">
+        <div class="pill-num" style="opacity:0.35">4</div>
+        <div class="pill-text pill-crossed">Error — page not loaded</div>
+        <span class="pill-badge badge-removed">removed</span>
+      </div>
+      <div class="step-pill" style="animation-delay:0.5s">
+        <div class="pill-num">5</div>
+        <div class="pill-text">Click Change Password</div>
+        <span class="pill-badge badge-kept">✓ kept</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FEATURE 3: SHARE ══ -->
+<div class="feature-panel fp3">
+  <div class="feature-text">
+    <span class="feature-tag mint" data-reveal>✦ Export</span>
+    <h2 class="feature-h2" data-reveal data-delay="1">Edit. Reorder.<br>Export. Done.</h2>
+    <p class="feature-p" data-reveal data-delay="2">Drag steps to reorder them. Delete the ones you don't need. Edit any description inline. Export as a beautiful PDF in one click — ready to share with your team right now.</p>
+  </div>
+  <div class="feature-visual">
+    <div class="pdf-mockup" data-reveal="scale">
+      <div class="pdf-top"></div>
+      <div class="pdf-title">How to Reset a Password</div>
+      <div class="pdf-step">
+        <div class="pdf-num">1</div>
+        <div>
+          <div class="pdf-line">Click the Settings icon in the top-right corner.</div>
+          <div class="pdf-img"><div class="pdf-img-inner"></div></div>
+        </div>
+      </div>
+      <div class="pdf-step">
+        <div class="pdf-num">2</div>
+        <div>
+          <div class="pdf-line">Navigate to Security → Change Password.</div>
+          <div class="pdf-img"><div class="pdf-img-inner" style="background:linear-gradient(135deg,#C7D2FE,#DDD6FE)"></div></div>
+        </div>
+      </div>
+      <div class="pdf-step">
+        <div class="pdf-num">3</div>
+        <div class="pdf-line">Enter your new password and click Save.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MEET CAPPY ══ -->
+<section class="meet-cappy">
+  <p class="meet-eyebrow" data-reveal>Your mascot</p>
+  <h2 class="meet-headline" data-reveal data-delay="1">Meet Cappy.</h2>
+  <p class="meet-sub" data-reveal data-delay="2">Capybaras are the internet's most famously chill animal. That's the product promise: Chingu absorbs the stressful part of your work without drama. Cappy never blames you. Cappy never panics. Cappy just gets it done.</p>
+
+  <div class="expressions-row" data-reveal data-delay="3">
+
+    <div class="expression-card">
+      <svg viewBox="0 0 200 200" width="80" height="80" style="animation:float 4s ease-in-out infinite">
+        <defs><radialGradient id="ec0" cx="38%" cy="28%" r="70%"><stop offset="0%" stop-color="#E8A87C"/><stop offset="100%" stop-color="#A06840"/></radialGradient></defs>
+        <ellipse cx="100" cy="112" rx="84" ry="74" fill="url(#ec0)"/>
+        <ellipse cx="38" cy="50" rx="14" ry="11" transform="rotate(-22 38 50)" fill="#B87040"/>
+        <ellipse cx="162" cy="50" rx="14" ry="11" transform="rotate(22 162 50)" fill="#B87040"/>
+        <ellipse cx="38" cy="51" rx="7" ry="5" transform="rotate(-22 38 51)" fill="#FFD4A8"/>
+        <ellipse cx="162" cy="51" rx="7" ry="5" transform="rotate(22 162 51)" fill="#FFD4A8"/>
+        <ellipse cx="28" cy="115" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
+        <ellipse cx="172" cy="115" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
+        <ellipse cx="100" cy="134" rx="46" ry="28" fill="#E8B98E"/>
+        <circle cx="74" cy="90" r="11" fill="#1A0A04"/><circle cx="78" cy="85" r="3.5" fill="white"/>
+        <circle cx="126" cy="90" r="11" fill="#1A0A04"/><circle cx="130" cy="85" r="3.5" fill="white"/>
+        <ellipse cx="100" cy="124" rx="9" ry="5" fill="#1A0A04"/>
+        <path d="M85 142 Q100 154 115 142" stroke="#1A0A04" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+      </svg>
+      <span>Chill</span>
+    </div>
+
+    <div class="expression-card">
+      <svg viewBox="0 0 200 200" width="80" height="80">
+        <defs><radialGradient id="ec1" cx="38%" cy="28%" r="70%"><stop offset="0%" stop-color="#E8A87C"/><stop offset="100%" stop-color="#A06840"/></radialGradient></defs>
+        <ellipse cx="100" cy="112" rx="84" ry="74" fill="url(#ec1)"/>
+        <ellipse cx="38" cy="50" rx="14" ry="11" transform="rotate(-22 38 50)" fill="#B87040"/>
+        <ellipse cx="162" cy="50" rx="14" ry="11" transform="rotate(22 162 50)" fill="#B87040"/>
+        <ellipse cx="38" cy="51" rx="7" ry="5" transform="rotate(-22 38 51)" fill="#FFD4A8"/>
+        <ellipse cx="162" cy="51" rx="7" ry="5" transform="rotate(22 162 51)" fill="#FFD4A8"/>
+        <ellipse cx="28" cy="115" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
+        <ellipse cx="172" cy="115" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
+        <ellipse cx="100" cy="134" rx="46" ry="28" fill="#E8B98E"/>
+        <path d="M62 88 Q73 99 84 88" stroke="#1A0A04" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <path d="M116 88 Q127 99 138 88" stroke="#1A0A04" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <ellipse cx="100" cy="124" rx="9" ry="5" fill="#1A0A04"/>
+        <line x1="89" y1="143" x2="111" y2="143" stroke="#1A0A04" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <span>Working</span>
+    </div>
+
+    <div class="expression-card">
+      <svg viewBox="0 0 200 200" width="80" height="80">
+        <defs><radialGradient id="ec2" cx="38%" cy="28%" r="70%"><stop offset="0%" stop-color="#E8A87C"/><stop offset="100%" stop-color="#A06840"/></radialGradient></defs>
+        <ellipse cx="100" cy="112" rx="84" ry="74" fill="url(#ec2)"/>
+        <ellipse cx="38" cy="50" rx="14" ry="11" transform="rotate(-22 38 50)" fill="#B87040"/>
+        <ellipse cx="162" cy="50" rx="14" ry="11" transform="rotate(22 162 50)" fill="#B87040"/>
+        <ellipse cx="38" cy="51" rx="7" ry="5" transform="rotate(-22 38 51)" fill="#FFD4A8"/>
+        <ellipse cx="162" cy="51" rx="7" ry="5" transform="rotate(22 162 51)" fill="#FFD4A8"/>
+        <ellipse cx="28" cy="115" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
+        <ellipse cx="172" cy="115" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
+        <ellipse cx="100" cy="134" rx="46" ry="28" fill="#E8B98E"/>
+        <path d="M61 93 Q74 75 87 93" stroke="#1A0A04" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <path d="M113 93 Q126 75 139 93" stroke="#1A0A04" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <ellipse cx="100" cy="124" rx="9" ry="5" fill="#1A0A04"/>
+        <path d="M82 142 Q100 160 118 142" stroke="#1A0A04" stroke-width="4" stroke-linecap="round" fill="none"/>
+      </svg>
+      <span>Happy</span>
+    </div>
+
+    <div class="expression-card">
+      <svg viewBox="0 0 200 200" width="80" height="80">
+        <defs><radialGradient id="ec3" cx="38%" cy="28%" r="70%"><stop offset="0%" stop-color="#E8A87C"/><stop offset="100%" stop-color="#A06840"/></radialGradient></defs>
+        <ellipse cx="100" cy="112" rx="84" ry="74" fill="url(#ec3)"/>
+        <ellipse cx="38" cy="50" rx="14" ry="11" transform="rotate(-22 38 50)" fill="#B87040"/>
+        <ellipse cx="162" cy="50" rx="14" ry="11" transform="rotate(22 162 50)" fill="#B87040"/>
+        <ellipse cx="38" cy="51" rx="7" ry="5" transform="rotate(-22 38 51)" fill="#FFD4A8"/>
+        <ellipse cx="162" cy="51" rx="7" ry="5" transform="rotate(22 162 51)" fill="#FFD4A8"/>
+        <ellipse cx="28" cy="115" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
+        <ellipse cx="172" cy="115" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
+        <ellipse cx="100" cy="134" rx="46" ry="28" fill="#E8B98E"/>
+        <circle cx="74" cy="90" r="10" fill="#1A0A04"/><circle cx="78" cy="86" r="3" fill="white"/>
+        <circle cx="126" cy="90" r="12" fill="none" stroke="#1A0A04" stroke-width="3"/>
+        <ellipse cx="100" cy="124" rx="9" ry="5" fill="#1A0A04"/>
+        <ellipse cx="100" cy="146" rx="5" ry="6" fill="none" stroke="#1A0A04" stroke-width="3"/>
+      </svg>
+      <span>Confused</span>
+    </div>
+
+    <div class="expression-card">
+      <svg viewBox="0 0 200 200" width="80" height="80" style="animation:float 5s ease-in-out infinite">
+        <defs><radialGradient id="ec4" cx="38%" cy="28%" r="70%"><stop offset="0%" stop-color="#E8A87C"/><stop offset="100%" stop-color="#A06840"/></radialGradient></defs>
+        <ellipse cx="100" cy="112" rx="84" ry="74" fill="url(#ec4)"/>
+        <ellipse cx="38" cy="50" rx="14" ry="11" transform="rotate(-22 38 50)" fill="#B87040"/>
+        <ellipse cx="162" cy="50" rx="14" ry="11" transform="rotate(22 162 50)" fill="#B87040"/>
+        <ellipse cx="38" cy="51" rx="7" ry="5" transform="rotate(-22 38 51)" fill="#FFD4A8"/>
+        <ellipse cx="162" cy="51" rx="7" ry="5" transform="rotate(22 162 51)" fill="#FFD4A8"/>
+        <ellipse cx="28" cy="115" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
+        <ellipse cx="172" cy="115" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
+        <ellipse cx="100" cy="134" rx="46" ry="28" fill="#E8B98E"/>
+        <path d="M64 91 Q74 100 84 91" stroke="#1A0A04" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+        <path d="M116 91 Q126 100 136 91" stroke="#1A0A04" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+        <ellipse cx="100" cy="124" rx="9" ry="5" fill="#1A0A04"/>
+        <path d="M90 142 Q100 149 110 142" stroke="#1A0A04" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <text x="130" y="68" font-family="Inter" font-weight="700" font-size="20" fill="#94A3B8" opacity="0.8">z</text>
+        <text x="143" y="55" font-family="Inter" font-weight="700" font-size="14" fill="#94A3B8" opacity="0.6">z</text>
+      </svg>
+      <span>Sleepy</span>
+    </div>
+
+  </div>
+  <p style="font-size:15px;color:var(--grey);font-style:italic">"친구 means friend in Korean. Cappy is your friend."</p>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="cta-section" id="cta">
+  <div class="cta-bg-glow"></div>
+  <svg class="cta-cappy-bg" viewBox="0 0 200 200">
+    <defs><radialGradient id="ctab" cx="38%" cy="28%" r="70%"><stop offset="0%" stop-color="#E8A87C"/><stop offset="100%" stop-color="#A06840"/></radialGradient></defs>
+    <ellipse cx="100" cy="112" rx="88" ry="78" fill="url(#ctab)"/>
+    <ellipse cx="38" cy="50" rx="17" ry="13" transform="rotate(-22 38 50)" fill="#B87040"/>
+    <ellipse cx="162" cy="50" rx="17" ry="13" transform="rotate(22 162 50)" fill="#B87040"/>
+    <ellipse cx="100" cy="138" rx="50" ry="32" fill="#E8B98E"/>
+    <path d="M61 93 Q74 75 87 93" stroke="#1A0A04" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <path d="M113 93 Q126 75 139 93" stroke="#1A0A04" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <ellipse cx="100" cy="128" rx="9" ry="5" fill="#1A0A04"/>
+    <path d="M82 143 Q100 161 118 143" stroke="#1A0A04" stroke-width="4" stroke-linecap="round" fill="none"/>
+  </svg>
+
+  <div class="cta-content">
+    <div class="confetti-host" id="confettiHost"></div>
+    <h2 class="cta-headline" data-reveal>
+      Your chillest<br>coworker is <span class="grad">waiting.</span>
+    </h2>
+    <p class="cta-sub" data-reveal data-delay="1">Free forever. Open source. Remove anytime.</p>
+    <a class="btn-cta" id="ctaBtn" href="https://chrome.google.com/webstore/detail/chingu" target="_blank" rel="noopener" data-reveal data-delay="2">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 8v8M8 12l4 4 4-4" stroke-width="2"/></svg>
+      Add Chingu to Chrome
+    </a>
+    <p class="cta-note" data-reveal data-delay="3"><span>No account needed.</span> Just install and click Record.</p>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <a class="footer-brand nav-logo" href="#">
+    <div class="nav-logo-mark" style="width:28px;height:28px">
+      <svg width="22" height="22" viewBox="0 0 200 200">
+        <defs><radialGradient id="fb" cx="38%" cy="28%" r="70%"><stop offset="0%" stop-color="#E8A87C"/><stop offset="100%" stop-color="#A06840"/></radialGradient></defs>
+        <ellipse cx="100" cy="112" rx="85" ry="75" fill="url(#fb)"/>
+        <ellipse cx="100" cy="134" rx="46" ry="28" fill="#E8B98E"/>
+        <circle cx="74" cy="90" r="11" fill="#1A0A04"/><circle cx="78" cy="85" r="3.5" fill="white"/>
+        <circle cx="126" cy="90" r="11" fill="#1A0A04"/><circle cx="130" cy="85" r="3.5" fill="white"/>
+        <ellipse cx="100" cy="124" rx="9" ry="5" fill="#1A0A04"/>
+        <path d="M85 142 Q100 154 115 142" stroke="#1A0A04" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+    <span class="nav-logo-name">chingu</span>
+  </a>
+  <p class="footer-text">
+    Made with ☕ · <a href="https://github.com/21428122/chingu" target="_blank">Open source, MIT</a> · 친구 means friend in Korean
+  </p>
+  <div class="footer-links">
+    <a href="https://github.com/21428122/chingu" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://chrome.google.com/webstore/detail/chingu" target="_blank" rel="noopener">Chrome Store</a>
+  </div>
+</footer>
+
+<script>
+  // ── Nav scroll state ──
+  window.addEventListener('scroll', () => {
+    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 20);
+  }, { passive: true });
+
+  // ── Headline word animation ──
+  window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      document.querySelectorAll('.hero-headline .word').forEach(w => w.classList.add('animate'));
+    }, 100);
+  });
+
+  // ── Scroll reveal (Intersection Observer) ──
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+
+  // ── Confetti on CTA hover ──
+  const ctaBtn = document.getElementById('ctaBtn');
+  const confettiHost = document.getElementById('confettiHost');
+  const colors = ['#FFB07A', '#6366F1', '#10B981', '#A78BFA', '#C8956D', '#F59E0B', '#EF4444'];
+  let confettiFired = false;
+
+  ctaBtn.addEventListener('mouseenter', () => {
+    if (confettiFired) return;
+    confettiFired = true;
+    for (let i = 0; i < 22; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.cssText = `
+        background:${colors[i % colors.length]};
+        width:${6 + Math.random() * 6}px;
+        height:${3 + Math.random() * 4}px;
+        left:${30 + Math.random() * 40}%;
+        top:40%;
+        transform:rotate(${Math.random()*360}deg);
+        animation:confetti-fall ${700 + Math.random() * 600}ms ${i * 40}ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+        border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
+      `;
+      confettiHost.appendChild(c);
+      setTimeout(() => c.remove(), 1600);
+    }
+    setTimeout(() => { confettiFired = false; }, 2000);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Chingu — Cappy Motion Studio</title>
+<link rel="icon" href="icons/favicon.svg"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    /* Warm */
+    --cappy-tan:    #C8956D;
+    --cocoa:        #A6754F;
+    --sunrise:      #FFB07A;
+    --soft-peach:   #FFD4A8;
+    --cream:        #FFF5E4;
+    /* Cool */
+    --indigo:       #6366F1;
+    --violet:       #8B5CF6;
+    --purple:       #7C3AED;
+    --lavender:     #A78BFA;
+    /* Neutrals */
+    --ink:          #0F172A;
+    --slate:        #334155;
+    --grey:         #94A3B8;
+    --silver:       #E2E8F0;
+    --snow:         #F8FAFC;
+    /* Semantic */
+    --rec-red:      #EF4444;
+    --mint:         #10B981;
+    --honey:        #F59E0B;
+
+    --warm-hug: linear-gradient(135deg, #FFE4C4 0%, #FFB07A 55%, #C8956D 100%);
+    --cool-focus: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A78BFA 100%);
+    --capybara-sunset: linear-gradient(135deg, #FFD4A8 0%, #C8956D 40%, #8B5CF6 100%);
+
+    --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.06);
+    --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(15, 23, 42, 0.04);
+    --shadow-warm: 0 12px 32px rgba(200, 149, 109, 0.22), 0 4px 8px rgba(166, 117, 79, 0.12);
+
+    --easing-quick: cubic-bezier(0.4, 0, 0.2, 1);
+    --easing-soft:  cubic-bezier(0.22, 0.61, 0.36, 1);
+    --easing-pop:   cubic-bezier(0.34, 1.4, 0.64, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+  body {
+    background: var(--cream);
+    min-height: 100vh;
+    padding: 56px 24px 80px;
+  }
+
+  .wrap { max-width: 1080px; margin: 0 auto; }
+
+  /* Hero */
+  .hero { text-align: center; margin-bottom: 56px; }
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    background: var(--capybara-sunset);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero p {
+    margin-top: 12px;
+    font-size: 17px;
+    color: var(--slate);
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    background: white;
+    box-shadow: var(--shadow-sm);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--indigo);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .hero .badge .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--rec-red);
+    animation: record-pulse 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Section heads */
+  h2 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 48px 0 18px;
+    color: var(--ink);
+  }
+  h2 .label {
+    display: inline-block;
+    margin-left: 10px;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    background: var(--soft-peach);
+    color: var(--cocoa);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    vertical-align: middle;
+  }
+
+  /* Grid of states */
+  .states {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: white;
+    border-radius: 22px;
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    transition: transform 320ms var(--easing-pop), box-shadow 320ms var(--easing-pop);
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+  }
+  .card .stage {
+    background: var(--cream);
+    border-radius: 16px;
+    padding: 18px 8px;
+    margin-bottom: 14px;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .card h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .card p {
+    font-size: 12px;
+    color: var(--grey);
+    line-height: 1.4;
+  }
+
+  /* Cappy SVG sizing inside cards */
+  .cappy { width: 130px; height: 130px; }
+  .cappy.float-anim { animation: float 3.6s ease-in-out infinite; }
+  .cappy.success-anim { animation: success-wiggle 600ms var(--easing-pop) 1; }
+
+  /* Eyes use class hooks for blink */
+  .eye-l, .eye-r { transform-origin: center; transform-box: fill-box; }
+  .blink-anim .eye-l, .blink-anim .eye-r { animation: blink 4s ease-in-out infinite; }
+
+  /* Color tokens panel */
+  .palette {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+  }
+  .swatch {
+    border-radius: 14px;
+    padding: 14px;
+    color: white;
+    font-size: 12px;
+    box-shadow: var(--shadow-sm);
+    min-height: 88px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .swatch .name { font-weight: 700; letter-spacing: -0.01em; }
+  .swatch .hex { font-family: 'JetBrains Mono', ui-monospace, monospace; opacity: 0.85; font-size: 11px; }
+  .swatch.light { color: var(--ink); }
+
+  /* Motion playground */
+  .playground {
+    background: white;
+    border-radius: 22px;
+    padding: 32px;
+    box-shadow: var(--shadow-sm);
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 32px;
+    align-items: center;
+  }
+  @media (max-width: 720px) {
+    .playground { grid-template-columns: 1fr; }
+  }
+  .playground .stage-big {
+    background: var(--cream);
+    border-radius: 18px;
+    padding: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    position: relative;
+  }
+  .playground .controls h3 {
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+  .playground .controls p {
+    color: var(--slate);
+    font-size: 13px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  button {
+    border: 1.5px solid var(--silver);
+    background: white;
+    color: var(--ink);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 180ms var(--easing-quick);
+  }
+  button:hover { border-color: var(--indigo); color: var(--indigo); transform: translateY(-1px); }
+  button.primary {
+    background: var(--cool-focus);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  }
+  button.primary:hover { box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4); color: white; }
+  button.warm {
+    background: var(--warm-hug);
+    color: var(--ink);
+    border-color: transparent;
+    box-shadow: var(--shadow-warm);
+  }
+
+  /* Big stage Cappy */
+  #stageCappy { width: 240px; height: 240px; }
+
+  /* Recording overlay */
+  .rec-overlay {
+    position: absolute;
+    top: 16px; right: 16px;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    padding: 6px 12px;
+    border-radius: 9999px;
+    box-shadow: var(--shadow-sm);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--rec-red);
+    letter-spacing: 0.06em;
+  }
+  .rec-overlay.visible { display: flex; }
+  .rec-overlay .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--rec-red);
+    animation: record-pulse 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Motion tokens table */
+  .tokens {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .tokens th, .tokens td {
+    padding: 14px 18px;
+    text-align: left;
+    font-size: 13px;
+    border-bottom: 1px solid var(--silver);
+  }
+  .tokens th {
+    background: var(--snow);
+    font-weight: 700;
+    color: var(--slate);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 11px;
+  }
+  .tokens code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    background: var(--snow);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--purple);
+  }
+  .tokens tr:last-child td { border-bottom: none; }
+
+  /* Footer */
+  .footer {
+    margin-top: 64px;
+    text-align: center;
+    color: var(--grey);
+    font-size: 12px;
+  }
+  .footer code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    background: white;
+    padding: 2px 8px;
+    border-radius: 6px;
+    color: var(--purple);
+  }
+
+  /* Animations */
+  @keyframes record-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(0.78); opacity: 0.55; }
+  }
+  @keyframes blink {
+    0%, 92%, 100% { transform: scaleY(1); }
+    95%, 98%      { transform: scaleY(0.1); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+  }
+  @keyframes success-wiggle {
+    0%   { transform: scale(1) rotate(0deg); }
+    35%  { transform: scale(1.08) rotate(-3deg); }
+    70%  { transform: scale(0.98) rotate(2deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+  @keyframes confetti-fall {
+    0% { transform: translateY(-12px) rotate(0deg); opacity: 0; }
+    20% { opacity: 1; }
+    100% { transform: translateY(80px) rotate(360deg); opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Confetti dots for success demo */
+  .confetti {
+    position: absolute;
+    width: 8px; height: 4px;
+    border-radius: 2px;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Hero -->
+  <section class="hero">
+    <span class="badge"><span class="dot"></span>Cappy v2 · Motion Studio</span>
+    <h1>The chillest friend in your toolbar.</h1>
+    <p>This is the live brand demo for Chingu — every Cappy expression, every motion token, in one page. Hover anywhere to feel the easings. Click the playground to trigger states.</p>
+  </section>
+
+  <!-- Expression grid -->
+  <h2>Expressions <span class="label">5 STATES</span></h2>
+  <div class="states">
+
+    <div class="card">
+      <div class="stage">
+        <svg class="cappy float-anim blink-anim" id="cappyDefault" viewBox="0 0 200 200"></svg>
+      </div>
+      <h3>Default · chill</h3>
+      <p>Idle states, marketing, default avatar.</p>
+    </div>
+
+    <div class="card">
+      <div class="stage">
+        <svg class="cappy" viewBox="0 0 200 200" data-state="working"></svg>
+      </div>
+      <h3>Working · focused</h3>
+      <p>Recording or autopilot in progress.</p>
+    </div>
+
+    <div class="card">
+      <div class="stage">
+        <svg class="cappy" viewBox="0 0 200 200" data-state="happy"></svg>
+      </div>
+      <h3>Happy · win</h3>
+      <p>Success, completion, exports.</p>
+    </div>
+
+    <div class="card">
+      <div class="stage">
+        <svg class="cappy" viewBox="0 0 200 200" data-state="confused"></svg>
+      </div>
+      <h3>Confused · oops</h3>
+      <p>Errors. Never angry, never sad.</p>
+    </div>
+
+    <div class="card">
+      <div class="stage">
+        <svg class="cappy" viewBox="0 0 200 200" data-state="sleepy"></svg>
+      </div>
+      <h3>Sleepy · idle</h3>
+      <p>"No recordings yet" empty states.</p>
+    </div>
+  </div>
+
+  <!-- Motion playground -->
+  <h2>Motion playground <span class="label">CLICK ME</span></h2>
+  <div class="playground">
+    <div class="stage-big">
+      <svg id="stageCappy" viewBox="0 0 200 200"></svg>
+      <div id="recOverlay" class="rec-overlay"><span class="dot"></span>REC</div>
+    </div>
+    <div class="controls">
+      <h3>Trigger a state</h3>
+      <p>Each button runs the named animation token from <code>BRAND.md</code>. The recording dot uses <code>motion-breathe</code>. The success wiggle uses <code>motion-default</code>'s gentle overshoot.</p>
+      <div class="btn-row">
+        <button class="primary" data-action="record">Start recording</button>
+        <button class="warm" data-action="success">Trigger success</button>
+        <button data-action="confused">Show confused</button>
+        <button data-action="sleepy">Go to sleep</button>
+        <button data-action="default">Reset to default</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Motion tokens -->
+  <h2>Motion tokens <span class="label">REFERENCE</span></h2>
+  <table class="tokens">
+    <thead>
+      <tr><th>Token</th><th>Duration</th><th>Easing</th><th>Use</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>motion-instant</code></td><td>100ms</td><td><code>ease-out</code></td><td>Hover tints, focus rings</td></tr>
+      <tr><td><code>motion-quick</code></td><td>180ms</td><td><code>cubic-bezier(0.4, 0, 0.2, 1)</code></td><td>Buttons, tab switches</td></tr>
+      <tr><td><code>motion-default</code></td><td>320ms</td><td><code>cubic-bezier(0.34, 1.4, 0.64, 1)</code></td><td>Mascot reactions, modals</td></tr>
+      <tr><td><code>motion-soft</code></td><td>500ms</td><td><code>cubic-bezier(0.22, 0.61, 0.36, 1)</code></td><td>Page enters, illustrations</td></tr>
+      <tr><td><code>motion-breathe</code></td><td>2400ms</td><td><code>ease-in-out</code></td><td>Idle blink, ambient float</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Palette -->
+  <h2>Palette <span class="label">WARM + COOL</span></h2>
+  <div class="palette">
+    <div class="swatch" style="background:#C8956D"><span class="name">Cappy Tan</span><span class="hex">#C8956D</span></div>
+    <div class="swatch" style="background:#A6754F"><span class="name">Cocoa</span><span class="hex">#A6754F</span></div>
+    <div class="swatch" style="background:#FFB07A"><span class="name">Sunrise</span><span class="hex">#FFB07A</span></div>
+    <div class="swatch light" style="background:#FFD4A8"><span class="name">Soft Peach</span><span class="hex">#FFD4A8</span></div>
+    <div class="swatch light" style="background:#FFF5E4"><span class="name">Cream</span><span class="hex">#FFF5E4</span></div>
+    <div class="swatch" style="background:#6366F1"><span class="name">Indigo</span><span class="hex">#6366F1</span></div>
+    <div class="swatch" style="background:#8B5CF6"><span class="name">Violet</span><span class="hex">#8B5CF6</span></div>
+    <div class="swatch" style="background:#7C3AED"><span class="name">Purple</span><span class="hex">#7C3AED</span></div>
+    <div class="swatch" style="background:#A78BFA"><span class="name">Lavender</span><span class="hex">#A78BFA</span></div>
+    <div class="swatch" style="background:#10B981"><span class="name">Mint</span><span class="hex">#10B981</span></div>
+    <div class="swatch" style="background:#EF4444"><span class="name">Rec Red</span><span class="hex">#EF4444</span></div>
+    <div class="swatch" style="background:#0F172A"><span class="name">Ink</span><span class="hex">#0F172A</span></div>
+  </div>
+
+  <div class="footer">
+    Live brand demo — <code>brand-demo.html</code> · Source for all assets in <code>/icons</code> and <code>/illustrations</code>.
+  </div>
+</div>
+
+<script>
+  // ----- Cappy SVG generator -----
+  // Builds the same mascot in 5 expressions. Single function so visuals stay consistent.
+  function cappySVG(state) {
+    // state: 'default' | 'working' | 'happy' | 'confused' | 'sleepy'
+    let eyes, mouth;
+    switch (state) {
+      case 'working':
+        eyes = `<path d="M 65 90 Q 75 100 85 90" stroke="#0F172A" stroke-width="6" stroke-linecap="round" fill="none"/>
+                <path d="M 115 90 Q 125 100 135 90" stroke="#0F172A" stroke-width="6" stroke-linecap="round" fill="none"/>`;
+        mouth = `<line x1="92" y1="148" x2="108" y2="148" stroke="#0F172A" stroke-width="2.8" stroke-linecap="round"/>`;
+        break;
+      case 'happy':
+        eyes = `<path d="M 62 95 Q 75 78 88 95" stroke="#0F172A" stroke-width="5" stroke-linecap="round" fill="none"/>
+                <path d="M 112 95 Q 125 78 138 95" stroke="#0F172A" stroke-width="5" stroke-linecap="round" fill="none"/>`;
+        mouth = `<path d="M 80 144 Q 100 162 120 144" stroke="#0F172A" stroke-width="4" stroke-linecap="round" fill="none"/>`;
+        break;
+      case 'confused':
+        eyes = `<circle cx="75" cy="92" r="9" fill="#0F172A"/>
+                <circle cx="78" cy="89" r="2.5" fill="#FFFFFF"/>
+                <circle cx="125" cy="92" r="11" fill="none" stroke="#0F172A" stroke-width="3"/>`;
+        mouth = `<ellipse cx="100" cy="148" rx="5" ry="6" fill="none" stroke="#0F172A" stroke-width="3"/>`;
+        break;
+      case 'sleepy':
+        eyes = `<path d="M 65 92 Q 75 100 85 92" stroke="#0F172A" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+                <path d="M 115 92 Q 125 100 135 92" stroke="#0F172A" stroke-width="3.5" stroke-linecap="round" fill="none"/>`;
+        mouth = `<path d="M 92 146 Q 100 152 108 146" stroke="#0F172A" stroke-width="2.5" stroke-linecap="round" fill="none"/>`;
+        break;
+      default: // 'default'
+        eyes = `<g class="eye-l"><circle cx="75" cy="92" r="10" fill="#0F172A"/><circle cx="78" cy="88" r="3" fill="#FFFFFF"/></g>
+                <g class="eye-r"><circle cx="125" cy="92" r="10" fill="#0F172A"/><circle cx="128" cy="88" r="3" fill="#FFFFFF"/></g>`;
+        mouth = `<path d="M 85 144 Q 100 156 115 144" stroke="#0F172A" stroke-width="3.5" stroke-linecap="round" fill="none"/>`;
+    }
+
+    return `
+      <ellipse cx="100" cy="115" rx="92" ry="80" fill="#C8956D"/>
+      <ellipse cx="42" cy="53" rx="15" ry="12" transform="rotate(-22 42 53)" fill="#A6754F"/>
+      <ellipse cx="158" cy="53" rx="15" ry="12" transform="rotate(22 158 53)" fill="#A6754F"/>
+      <ellipse cx="43" cy="55" rx="7" ry="5" transform="rotate(-22 43 55)" fill="#FFD4A8"/>
+      <ellipse cx="157" cy="55" rx="7" ry="5" transform="rotate(22 157 55)" fill="#FFD4A8"/>
+      <ellipse cx="32" cy="118" rx="14" ry="8" fill="#FF8FA3" opacity="0.42"/>
+      <ellipse cx="168" cy="118" rx="14" ry="8" fill="#FF8FA3" opacity="0.42"/>
+      <ellipse cx="100" cy="140" rx="48" ry="30" fill="#E8B98E"/>
+      ${eyes}
+      <ellipse cx="100" cy="130" rx="9" ry="5" fill="#0F172A"/>
+      ${mouth}
+    `;
+  }
+
+  // Render all small-grid expressions
+  document.getElementById('cappyDefault').innerHTML = cappySVG('default');
+  document.querySelectorAll('[data-state]').forEach(el => {
+    el.innerHTML = cappySVG(el.dataset.state);
+  });
+
+  // ----- Playground -----
+  const stage = document.getElementById('stageCappy');
+  const recOverlay = document.getElementById('recOverlay');
+
+  function setStage(state, { wiggle = false, recording = false } = {}) {
+    stage.innerHTML = cappySVG(state);
+    stage.classList.remove('success-anim', 'float-anim', 'blink-anim');
+
+    // Force reflow so animation can re-trigger
+    void stage.offsetWidth;
+
+    if (wiggle) stage.classList.add('success-anim');
+    if (state === 'default' || state === 'sleepy') stage.classList.add('float-anim');
+    if (state === 'default') stage.classList.add('blink-anim');
+
+    recOverlay.classList.toggle('visible', recording);
+  }
+
+  // Initial state
+  setStage('default');
+
+  // Confetti burst
+  function burstConfetti(host) {
+    const colors = ['#10B981', '#FFB07A', '#6366F1', '#A78BFA', '#F59E0B'];
+    for (let i = 0; i < 14; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.background = colors[i % colors.length];
+      c.style.left = (45 + Math.random() * 40) + '%';
+      c.style.top = '20%';
+      c.style.transform = `rotate(${Math.random() * 360}deg)`;
+      c.style.animation = `confetti-fall ${600 + Math.random() * 400}ms ${i * 30}ms cubic-bezier(0.34, 1.4, 0.64, 1) forwards`;
+      host.appendChild(c);
+      setTimeout(() => c.remove(), 1400);
+    }
+  }
+
+  document.querySelectorAll('[data-action]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const a = btn.dataset.action;
+      switch (a) {
+        case 'record':
+          setStage('working', { recording: true });
+          break;
+        case 'success':
+          setStage('happy', { wiggle: true });
+          burstConfetti(document.querySelector('.stage-big'));
+          break;
+        case 'confused':
+          setStage('confused');
+          break;
+        case 'sleepy':
+          setStage('sleepy');
+          break;
+        case 'default':
+        default:
+          setStage('default');
+      }
+    });
+  });
+</script>
+</body>
+</html>

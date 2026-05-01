@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <title>Chingu — favicon, optimized for 16–32px</title>
+  <defs>
+    <linearGradient id="favBg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFE4C4"/>
+      <stop offset="60%" stop-color="#FFB07A"/>
+      <stop offset="100%" stop-color="#C8956D"/>
+    </linearGradient>
+    <clipPath id="favFrame">
+      <rect x="1" y="1" width="30" height="30" rx="7"/>
+    </clipPath>
+  </defs>
+  <rect x="1" y="1" width="30" height="30" rx="7" fill="url(#favBg)"/>
+  <g clip-path="url(#favFrame)">
+    <!-- Chunky body -->
+    <ellipse cx="16" cy="21" rx="12.5" ry="11.5" fill="#C8956D"/>
+    <!-- Big ears -->
+    <ellipse cx="8.6" cy="11.5" rx="2.6" ry="2.1" transform="rotate(-22 8.6 11.5)" fill="#A6754F"/>
+    <ellipse cx="23.4" cy="11.5" rx="2.6" ry="2.1" transform="rotate(22 23.4 11.5)" fill="#A6754F"/>
+    <!-- Snout patch -->
+    <ellipse cx="16" cy="24.5" rx="7" ry="4.5" fill="#E8B98E"/>
+    <!-- Big eyes — must read at 16px -->
+    <circle cx="12.5" cy="17.5" r="2.1" fill="#0F172A"/>
+    <circle cx="19.5" cy="17.5" r="2.1" fill="#0F172A"/>
+    <!-- Nose -->
+    <ellipse cx="16" cy="22.5" rx="1.5" ry="0.9" fill="#0F172A"/>
+  </g>
+</svg>

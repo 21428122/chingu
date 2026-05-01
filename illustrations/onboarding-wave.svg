@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" fill="none">
+  <title>Onboarding — Cappy waves hi (안녕!)</title>
+  <defs>
+    <linearGradient id="hi-bg" x1="0" y1="0" x2="0" y2="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFF5E4"/>
+      <stop offset="100%" stop-color="#FFE4C4"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="360" rx="22" fill="url(#hi-bg)"/>
+
+  <!-- Sparkles around the wave -->
+  <g fill="#FFB07A">
+    <path d="M 360 100 L 364 108 L 372 112 L 364 116 L 360 124 L 356 116 L 348 112 L 356 108 Z"/>
+    <path d="M 400 60 L 402 64 L 406 66 L 402 68 L 400 72 L 398 68 L 394 66 L 398 64 Z"/>
+  </g>
+  <circle cx="380" cy="160" r="3" fill="#A78BFA"/>
+  <circle cx="420" cy="120" r="2.5" fill="#10B981"/>
+
+  <!-- Cappy with raised paw -->
+  <g transform="translate(120, 90)">
+    <!-- Raised paw (behind body so it pokes out from side) -->
+    <ellipse cx="178" cy="80" rx="22" ry="28" transform="rotate(20 178 80)" fill="#C8956D"/>
+    <ellipse cx="178" cy="62" rx="14" ry="16" transform="rotate(20 178 62)" fill="#E8B98E"/>
+    <!-- Body -->
+    <ellipse cx="90" cy="110" rx="92" ry="80" fill="#C8956D"/>
+    <ellipse cx="32" cy="48" rx="15" ry="12" transform="rotate(-22 32 48)" fill="#A6754F"/>
+    <ellipse cx="148" cy="48" rx="15" ry="12" transform="rotate(22 148 48)" fill="#A6754F"/>
+    <ellipse cx="33" cy="50" rx="7" ry="5" transform="rotate(-22 33 50)" fill="#FFD4A8"/>
+    <ellipse cx="147" cy="50" rx="7" ry="5" transform="rotate(22 147 50)" fill="#FFD4A8"/>
+    <ellipse cx="22" cy="112" rx="14" ry="8" fill="#FF8FA3" opacity="0.5"/>
+    <ellipse cx="158" cy="112" rx="14" ry="8" fill="#FF8FA3" opacity="0.5"/>
+    <ellipse cx="90" cy="135" rx="48" ry="30" fill="#E8B98E"/>
+    <!-- Default chill eyes with sparkle -->
+    <circle cx="68" cy="92" r="10" fill="#0F172A"/>
+    <circle cx="112" cy="92" r="10" fill="#0F172A"/>
+    <circle cx="71" cy="88" r="3" fill="#FFFFFF"/>
+    <circle cx="115" cy="88" r="3" fill="#FFFFFF"/>
+    <ellipse cx="90" cy="125" rx="9" ry="5" fill="#0F172A"/>
+    <!-- Friendly smile -->
+    <path d="M76 144 Q 90 156 104 144" stroke="#0F172A" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  </g>
+
+  <!-- Speech bubble: 안녕! -->
+  <g transform="translate(50, 70)">
+    <path d="M 8 0 L 80 0 Q 96 0 96 16 L 96 40 Q 96 56 80 56 L 30 56 L 16 70 L 20 56 L 8 56 Q -8 56 -8 40 L -8 16 Q -8 0 8 0 Z"
+          fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2"/>
+    <text x="44" y="36" text-anchor="middle" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', Inter, sans-serif" font-weight="700" font-size="22" fill="#6366F1">안녕!</text>
+  </g>
+
+  <text x="240" y="335" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="16" fill="#0F172A" letter-spacing="-0.01em">I'm Cappy. Let's make some SOPs.</text>
+</svg>

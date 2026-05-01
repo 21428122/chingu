@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" fill="none">
+  <title>Empty state — no recordings yet (Cappy sleepy)</title>
+  <defs>
+    <linearGradient id="emp-bg" x1="0" y1="0" x2="0" y2="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFF5E4"/>
+      <stop offset="100%" stop-color="#FFE4C4"/>
+    </linearGradient>
+    <radialGradient id="emp-pond" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#A78BFA" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#A78BFA" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="480" height="360" rx="22" fill="url(#emp-bg)"/>
+  <!-- Onsen pond -->
+  <ellipse cx="240" cy="280" rx="170" ry="36" fill="url(#emp-pond)"/>
+  <ellipse cx="180" cy="278" rx="6" ry="2" fill="#FFFFFF" opacity="0.8"/>
+  <ellipse cx="300" cy="282" rx="8" ry="2" fill="#FFFFFF" opacity="0.7"/>
+  <ellipse cx="240" cy="276" rx="5" ry="1.5" fill="#FFFFFF" opacity="0.7"/>
+
+  <!-- Cappy, sleepy, floating in onsen (only top half visible) -->
+  <g transform="translate(150, 130)">
+    <!-- Body -->
+    <ellipse cx="90" cy="110" rx="92" ry="78" fill="#C8956D"/>
+    <!-- Ears -->
+    <ellipse cx="32" cy="48" rx="15" ry="12" transform="rotate(-22 32 48)" fill="#A6754F"/>
+    <ellipse cx="148" cy="48" rx="15" ry="12" transform="rotate(22 148 48)" fill="#A6754F"/>
+    <ellipse cx="33" cy="50" rx="7" ry="5" transform="rotate(-22 33 50)" fill="#FFD4A8"/>
+    <ellipse cx="147" cy="50" rx="7" ry="5" transform="rotate(22 147 50)" fill="#FFD4A8"/>
+    <!-- Cheek blush -->
+    <ellipse cx="22" cy="112" rx="14" ry="8" fill="#FF8FA3" opacity="0.42"/>
+    <ellipse cx="158" cy="112" rx="14" ry="8" fill="#FF8FA3" opacity="0.42"/>
+    <!-- Snout -->
+    <ellipse cx="90" cy="135" rx="48" ry="30" fill="#E8B98E"/>
+    <!-- Sleepy eyes (closed arcs) -->
+    <path d="M58 92 Q 68 102 78 92" stroke="#0F172A" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+    <path d="M102 92 Q 112 102 122 92" stroke="#0F172A" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+    <!-- Nose -->
+    <ellipse cx="90" cy="125" rx="9" ry="5" fill="#0F172A"/>
+    <!-- Tiny content smile -->
+    <path d="M82 145 Q 90 152 98 145" stroke="#0F172A" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  </g>
+
+  <!-- Z bubble cluster (sleeping) -->
+  <g font-family="Inter, sans-serif" font-weight="700" fill="#94A3B8">
+    <text x="370" y="100" font-size="26" opacity="0.9">z</text>
+    <text x="385" y="80" font-size="20" opacity="0.7">z</text>
+    <text x="395" y="60" font-size="14" opacity="0.5">z</text>
+  </g>
+</svg>
