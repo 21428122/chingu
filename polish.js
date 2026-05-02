@@ -9,7 +9,7 @@ const ChinguPolish = {
    * Main entry: polish an array of steps
    * Returns { title, steps } with cleaned data
    */
-  polish(steps, options = {}) {
+  polish(steps) {
     if (!steps || steps.length === 0) return { title: 'Untitled Guide', steps: [] };
 
     let cleaned = [...steps];
@@ -49,9 +49,10 @@ const ChinguPolish = {
 
       const sameElement = curr.elementTag === prev.elementTag &&
         curr.elementText === prev.elementText &&
-        curr.elementId === prev.elementId;
+        curr.elementId === prev.elementId &&
+        curr.url === prev.url;   // must be on the same page — never merge cross-page clicks
 
-      const quickRepeat = Math.abs(curr.timestamp - prev.timestamp) < 2000;
+      const quickRepeat = Math.abs(curr.timestamp - prev.timestamp) < 1500;
 
       if (sameElement && quickRepeat) {
         // Keep the second one (it has the updated state after click)
@@ -84,7 +85,6 @@ const ChinguPolish = {
     const tag = (step.elementTag || '').toLowerCase();
     const text = (step.elementText || '').trim();
     const id = step.elementId || '';
-    const url = step.url || '';
 
     // Already has a good description with quoted text? Keep it
     if (step.description && step.description.includes('"') && !step.description.includes('Click on the page')) {

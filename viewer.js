@@ -119,8 +119,10 @@ function buildStepEl(step, arrayIdx) {
 // ── Sync state from DOM ────────────────────────────────────────────────────
 
 function syncAll() {
-  stepsContainer.querySelectorAll('[data-array-index]').forEach(el => {
+  // Only sync container elements (.step and .section-divider), not inner buttons
+  stepsContainer.querySelectorAll('.step, .section-divider').forEach(el => {
     const idx = parseInt(el.dataset.arrayIndex);
+    if (isNaN(idx)) return;
     const item = currentSteps[idx];
     if (!item) return;
 
@@ -426,21 +428,35 @@ function initViewer(rawSteps, titleStr) {
 loadDoc(_docId);
 
 // ── Auto-Polish ────────────────────────────────────────────────────────────
+// Runs on currentSteps (the live in-memory state), never re-reads storage.
+// Preserves section dividers, user edits, annotations, and the current title.
 
 document.getElementById('btnPolish').addEventListener('click', () => {
-  chrome.storage.local.get('steps', data => {
-    const rawSteps = data.steps || [];
-    if (!rawSteps.length) return;
-    const onlySteps = rawSteps.filter(s => !s._type);
-    const polished = window.ChinguPolish
-      ? window.ChinguPolish.polish(onlySteps)
-      : { title: 'Untitled Guide', steps: onlySteps };
-    const removed = onlySteps.length - polished.steps.length;
-    renderSteps(polished.steps, polished.title);
-    const btn = document.getElementById('btnPolish');
-    btn.textContent = removed > 0 ? `Cleaned ${removed}` : 'Already clean!';
-    setTimeout(() => { btn.textContent = '✨ Polish'; }, 2500);
+  syncAll();
+
+  const onlySteps = currentSteps.filter(s => !s._type);
+  const sections  = currentSteps.filter(s => s._type === 'section');
+
+  if (!onlySteps.length) return;
+
+  const polished = window.ChinguPolish
+    ? window.ChinguPolish.polish(onlySteps)
+    : { steps: onlySteps };
+
+  const removed = onlySteps.length - polished.steps.length;
+
+  // Re-merge sections at their original positions
+  const merged = [...polished.steps];
+  sections.forEach(sec => {
+    const insertAt = merged.findIndex(s => s.number >= (sec._afterNumber || 1));
+    merged.splice(insertAt < 0 ? 0 : insertAt, 0, sec);
   });
+
+  renderSteps(merged, currentTitle); // keep the user's saved title
+
+  const btn = document.getElementById('btnPolish');
+  btn.textContent = removed > 0 ? `Removed ${removed} duplicates` : 'Already clean!';
+  setTimeout(() => { btn.textContent = '✨ Polish'; }, 2500);
 });
 
 // ── Copy link ──────────────────────────────────────────────────────────────
@@ -1041,9 +1057,9 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
     }
 
     if (tool === 'labelbox') {
+      // No restore needed — we skip preview for this tool so canvas is clean
       const label = prompt('Enter label text:');
       if (label) {
-        if (history.length > 0) restoreSnapshot(history[history.length - 1]);
         drawLabelBox(sx, sy, ex, ey, label);
         commitSnapshot();
       }
