@@ -69,6 +69,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
   if (msg.action === 'stopRecording') {
     recording = false;
+    chrome.action.setBadgeText({ text: '' });
     const tabId = activeTabId;
     if (tabId) {
       chrome.tabs.sendMessage(tabId, { action: 'stopListening' }).catch(() => {});
@@ -109,6 +110,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     steps = [];
     recording = false;
     currentDocId = null;
+    chrome.action.setBadgeText({ text: '' });
     sendResponse({ ok: true });
     return true;
   }
@@ -159,6 +161,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         });
         chrome.runtime.sendMessage({ action: 'stepCaptured', stepCount: steps.length }).catch(() => {});
         chrome.tabs.sendMessage(captureTabId, { action: 'updateStepCount', count: steps.length }).catch(() => {});
+        // Live badge on extension icon
+        chrome.action.setBadgeText({ text: String(steps.length) });
+        chrome.action.setBadgeBackgroundColor({ color: '#EF4444' });
       });
     }, 300);
   }

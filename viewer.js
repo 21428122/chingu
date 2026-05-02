@@ -366,6 +366,15 @@ document.getElementById('btnLibrary').addEventListener('click', () => {
   chrome.tabs.create({ url: chrome.runtime.getURL('library.html') });
 });
 
+// ── Settings dropdown ──────────────────────────────────────────────────────
+
+const settingsMenu = document.getElementById('settingsMenu');
+document.getElementById('btnSettingsToggle').addEventListener('click', e => {
+  e.stopPropagation();
+  settingsMenu.classList.toggle('open');
+});
+document.addEventListener('click', () => settingsMenu.classList.remove('open'));
+
 // ── Initial load ───────────────────────────────────────────────────────────
 
 function loadDoc(docId) {
@@ -417,12 +426,24 @@ function initViewer(rawSteps, titleStr) {
     ? window.ChinguPolish.polish(onlySteps)
     : { title: titleStr, steps: onlySteps };
 
+  // Auto-apply polished title when the doc still has the default name
+  const finalTitle = (titleStr === 'Untitled Guide' && polished.title && polished.title !== 'Untitled Guide')
+    ? polished.title
+    : titleStr;
+  if (finalTitle !== titleStr && _docId) {
+    chrome.storage.local.get('documents', d => {
+      const docs = d.documents || [];
+      const idx  = docs.findIndex(doc => doc.id === _docId);
+      if (idx >= 0) { docs[idx].title = finalTitle; chrome.storage.local.set({ documents: docs }); }
+    });
+  }
+
   const merged = [...polished.steps];
   sections.forEach(sec => {
     const insertAt = merged.findIndex(s => s.number >= (sec._afterNumber || 1));
     merged.splice(insertAt < 0 ? 0 : insertAt, 0, sec);
   });
-  renderSteps(merged, titleStr || polished.title);
+  renderSteps(merged, finalTitle || polished.title);
 }
 
 loadDoc(_docId);

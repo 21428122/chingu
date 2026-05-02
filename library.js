@@ -160,6 +160,38 @@ document.getElementById('btnNewRecording').addEventListener('click', () => {
   });
 });
 
+// ── Import JSON backup ─────────────────────────────────────────────────────
+
+document.getElementById('btnImport').addEventListener('click', () => {
+  document.getElementById('importInput').click();
+});
+
+document.getElementById('importInput').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const imported = JSON.parse(ev.target.result);
+      if (!Array.isArray(imported)) throw new Error('Not an array');
+      chrome.storage.local.get('documents', data => {
+        const existing = data.documents || [];
+        const fresh    = imported.filter(d => d.id && !existing.some(ex => ex.id === d.id));
+        const merged   = [...existing, ...fresh];
+        chrome.storage.local.set({ documents: merged }, () => {
+          allDocs = merged;
+          renderDocs(filterDocs(document.getElementById('searchInput').value));
+          alert(`Imported ${fresh.length} guide${fresh.length !== 1 ? 's' : ''}. ${imported.length - fresh.length} skipped (already exist).`);
+        });
+      });
+    } catch {
+      alert('Invalid file. Please use a backup exported from Chingu (⬇ Export All).');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
 // ── Export All (download JSON backup) ─────────────────────────────────────
 
 document.getElementById('btnExportAll').addEventListener('click', () => {
