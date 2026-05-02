@@ -119,24 +119,28 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (!tabId) return;
     const captureTabId = tabId;
     setTimeout(async () => {
-      // Hide overlay so it doesn't appear in the screenshot
+      // Hide overlay and wait for TWO animation frames so the browser
+      // has actually repainted before we call captureVisibleTab.
+      // executeScript resolves when the injected function's Promise resolves.
       try {
         await chrome.scripting.executeScript({
           target: { tabId: captureTabId },
-          func: () => {
+          func: () => new Promise(resolve => {
             const el = document.getElementById('__chingu_overlay__');
-            if (el) el.style.opacity = '0';
-          }
+            if (el) el.style.display = 'none';
+            // rAF #1 queues the paint, rAF #2 confirms it finished
+            requestAnimationFrame(() => requestAnimationFrame(resolve));
+          })
         });
       } catch (_) {}
 
       chrome.tabs.captureVisibleTab(null, { format: 'png' }, (dataUrl) => {
-        // Restore overlay immediately after capture
+        // Restore overlay after capture
         chrome.scripting.executeScript({
           target: { tabId: captureTabId },
           func: () => {
             const el = document.getElementById('__chingu_overlay__');
-            if (el) el.style.opacity = '1';
+            if (el) el.style.display = '';
           }
         }).catch(() => {});
 
