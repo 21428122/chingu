@@ -122,6 +122,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           description: buildDescription(msg)
         });
         chrome.runtime.sendMessage({ action: 'stepCaptured', stepCount: steps.length }).catch(() => {});
+        // Also update the floating overlay on the active tab
+        if (activeTabId) {
+          chrome.tabs.sendMessage(activeTabId, { action: 'updateStepCount', count: steps.length }).catch(() => {});
+        }
       });
     }, 300);
   }
