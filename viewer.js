@@ -886,30 +886,43 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
 // ANNOTATION ENGINE
 // ══════════════════════════════════════════════════════════════════════════
 
+// ══════════════════════════════════════════════════════════════════════════
+// ANNOTATION ENGINE v2 — object-based, fully moveable
+// Each shape is stored as a plain object and re-drawn every frame.
+// Click any shape to select it, then drag to move. Delete key removes it.
+// ══════════════════════════════════════════════════════════════════════════
 (function initAnnotationEngine() {
-  const modal   = document.getElementById('annotateModal');
-  const canvas  = document.getElementById('annotateCanvas');
-  const ctx     = canvas.getContext('2d');
+  const modal  = document.getElementById('annotateModal');
+  const canvas = document.getElementById('annotateCanvas');
+  const ctx    = canvas.getContext('2d');
 
   let annStepIdx  = null;
-  let history     = [];          // undo stack of dataURLs
+  let annotations = [];    // the live objects — source of truth
+  let history     = [];    // undo stack: deep-copied annotation arrays
+  let baseImg     = null;  // HTMLImageElement of the original screenshot
   let tool        = 'arrow';
   let color       = '#EF4444';
   let lineWidth   = 3;
-  let isDrawing   = false;
-  let sx = 0, sy = 0;            // drag start coords
-  let penPoints   = [];          // for freehand pen
-  let scale       = 1;           // canvas px / natural image px
-  let badgeCount  = 0;           // auto-increment for number badges
+  let badgeCount  = 0;
+  let scale       = 1;
 
-  // ── Tool / color / thickness buttons ──────────────────────────────────
+  // Interaction state
+  let isDrawing   = false;
+  let isDragging  = false;
+  let selectedId  = null;
+  let sx = 0, sy = 0;
+  let penPoints   = [];
+  let preview     = null;  // annotation being drawn but not committed yet
+
+  // ── Tool buttons ──────────────────────────────────────────────────────
 
   document.querySelectorAll('[data-tool]').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('[data-tool]').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       tool = btn.dataset.tool;
-      canvas.style.cursor = tool === 'text' ? 'text' : 'crosshair';
+      selectedId = null;
+      redrawAll();
     });
   });
 
@@ -918,6 +931,11 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
       document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
       dot.classList.add('active');
       color = dot.dataset.color;
+      // Apply to selected annotation immediately
+      if (selectedId) {
+        const a = annotations.find(a => a.id === selectedId);
+        if (a) { a.color = color; pushHistory(); redrawAll(); }
+      }
     });
   });
 
@@ -926,6 +944,10 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
       document.querySelectorAll('.thick-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       lineWidth = parseInt(btn.dataset.w);
+      if (selectedId) {
+        const a = annotations.find(a => a.id === selectedId);
+        if (a) { a.lineWidth = lineWidth; pushHistory(); redrawAll(); }
+      }
     });
   });
 
@@ -935,37 +957,287 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
     annStepIdx = arrayIdx;
     const step = currentSteps[arrayIdx];
     if (!step || !step.screenshot) return;
-
     const img = new Image();
     img.onload = () => {
-      const maxW = window.innerWidth  * 0.92;
+      const maxW = window.innerWidth * 0.92;
       const maxH = (window.innerHeight - 80) * 0.90;
       scale = Math.min(1, maxW / img.naturalWidth, maxH / img.naturalHeight);
-
       canvas.width  = Math.round(img.naturalWidth  * scale);
       canvas.height = Math.round(img.naturalHeight * scale);
-
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      baseImg    = img;
+      annotations = [];
+      history    = [];
       badgeCount = 0;
-      const initSnap = canvas.toDataURL();
-      history = [initSnap];
-      // Pre-load the initial snapshot into cache so it restores synchronously
-      const initImg = new Image();
-      initImg.src = initSnap;
-      imgSnapshotCache.set(initSnap, initImg);
-
+      selectedId = null;
+      preview    = null;
+      pushHistory();
+      redrawAll();
       modal.classList.add('active');
     };
     img.src = step.screenshot;
   };
 
-  // ── Close / cancel ────────────────────────────────────────────────────
+  // ── Redraw everything from annotation objects ──────────────────────────
 
-  document.getElementById('annCancel').addEventListener('click', closeAnnotation);
-  function closeAnnotation() {
-    modal.classList.remove('active');
-    annStepIdx = null;
-    history = [];
+  function redrawAll() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (baseImg) ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
+    for (const ann of annotations) renderAnn(ann, false);
+    if (preview) renderAnn(preview, true);
+    if (selectedId) {
+      const sel = annotations.find(a => a.id === selectedId);
+      if (sel) drawSelectionBox(sel);
+    }
+  }
+
+  // ── Render one annotation object ──────────────────────────────────────
+
+  function renderAnn(ann, ghost) {
+    ctx.save();
+    ctx.strokeStyle = ann.color; ctx.fillStyle = ann.color;
+    ctx.lineWidth   = ann.lineWidth || 3;
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    if (ghost) ctx.globalAlpha = 0.75;
+    const lw = ann.lineWidth || 3;
+    switch (ann.type) {
+      case 'arrow': {
+        const hl = Math.max(14, lw * 4), angle = Math.atan2(ann.y2 - ann.y1, ann.x2 - ann.x1);
+        ctx.beginPath(); ctx.moveTo(ann.x1, ann.y1); ctx.lineTo(ann.x2, ann.y2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(ann.x2, ann.y2);
+        ctx.lineTo(ann.x2 - hl*Math.cos(angle-Math.PI/6), ann.y2 - hl*Math.sin(angle-Math.PI/6));
+        ctx.lineTo(ann.x2 - hl*Math.cos(angle+Math.PI/6), ann.y2 - hl*Math.sin(angle+Math.PI/6));
+        ctx.closePath(); ctx.fill(); break;
+      }
+      case 'rect':
+        ctx.strokeRect(ann.x1, ann.y1, ann.x2-ann.x1, ann.y2-ann.y1); break;
+      case 'ellipse': {
+        const cx=(ann.x1+ann.x2)/2, cy=(ann.y1+ann.y2)/2;
+        const rx=Math.abs(ann.x2-ann.x1)/2, ry=Math.abs(ann.y2-ann.y1)/2;
+        if (rx>0 && ry>0) { ctx.beginPath(); ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2); ctx.stroke(); } break;
+      }
+      case 'highlight': {
+        const pa=ctx.globalAlpha; ctx.globalAlpha=(ghost?0.22:0.38);
+        ctx.fillRect(ann.x1,ann.y1,ann.x2-ann.x1,ann.y2-ann.y1); ctx.globalAlpha=pa; break;
+      }
+      case 'pen':
+        if (ann.points?.length > 1) {
+          ctx.beginPath(); ctx.moveTo(ann.points[0].x, ann.points[0].y);
+          ann.points.forEach(p => ctx.lineTo(p.x, p.y)); ctx.stroke();
+        } break;
+      case 'text': {
+        const fs = Math.max(10, Math.min(lw*5, 28));
+        ctx.font = `bold ${fs}px Inter, Arial, sans-serif`;
+        ctx.strokeStyle = 'rgba(0,0,0,0.4)'; ctx.lineWidth = 3;
+        ctx.strokeText(ann.text||'', ann.x1, ann.y1);
+        ctx.fillText(ann.text||'', ann.x1, ann.y1); break;
+      }
+      case 'labelbox': {
+        const x=Math.min(ann.x1,ann.x2), y=Math.min(ann.y1,ann.y2);
+        const w=Math.abs(ann.x2-ann.x1)||120, h=Math.abs(ann.y2-ann.y1)||30;
+        const r=Math.min(6,w/2,h/2);
+        ctx.beginPath();
+        ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.arcTo(x+w,y,x+w,y+r,r);
+        ctx.lineTo(x+w,y+h-r); ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+        ctx.lineTo(x+r,y+h); ctx.arcTo(x,y+h,x,y+h-r,r);
+        ctx.lineTo(x,y+r); ctx.arcTo(x,y,x+r,y,r);
+        ctx.closePath(); ctx.fill();
+        ctx.font = `bold ${Math.max(10,Math.min(h*.55,18))}px Inter, Arial, sans-serif`;
+        ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(ann.text||'', x+w/2, y+h/2, w-8);
+        ctx.textAlign='left'; ctx.textBaseline='alphabetic'; break;
+      }
+      case 'numberbadge': {
+        const r=Math.max(14,lw*5);
+        ctx.beginPath(); ctx.arc(ann.x1,ann.y1,r,0,Math.PI*2); ctx.fill();
+        ctx.strokeStyle='rgba(255,255,255,0.6)'; ctx.lineWidth=2; ctx.stroke();
+        ctx.font=`bold ${r>16?14:11}px Inter, Arial, sans-serif`;
+        ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(String(ann.num||1), ann.x1, ann.y1+1);
+        ctx.textAlign='left'; ctx.textBaseline='alphabetic'; break;
+      }
+    }
+    ctx.restore();
+  }
+
+  // ── Selection box with delete handle ─────────────────────────────────
+
+  function drawSelectionBox(ann) {
+    const bb = bbox(ann); if (!bb) return;
+    const pad = 8;
+    ctx.save();
+    ctx.strokeStyle = '#6366F1'; ctx.lineWidth = 1.5; ctx.setLineDash([5,4]);
+    ctx.strokeRect(bb.x-pad, bb.y-pad, bb.w+pad*2, bb.h+pad*2);
+    ctx.setLineDash([]);
+    // × delete handle top-right
+    const hx = bb.x+bb.w+pad, hy = bb.y-pad;
+    ctx.fillStyle = '#EF4444'; ctx.beginPath(); ctx.arc(hx, hy, 9, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = 'white'; ctx.font = 'bold 13px Arial';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('×', hx, hy+1);
+    ctx.restore();
+  }
+
+  // ── Bounding box ──────────────────────────────────────────────────────
+
+  function bbox(ann) {
+    switch(ann.type) {
+      case 'arrow': case 'rect': case 'ellipse': case 'highlight': case 'labelbox':
+        return { x:Math.min(ann.x1,ann.x2), y:Math.min(ann.y1,ann.y2),
+                 w:Math.abs(ann.x2-ann.x1), h:Math.abs(ann.y2-ann.y1) };
+      case 'text': {
+        ctx.font=`bold ${Math.max(10,Math.min((ann.lineWidth||3)*5,28))}px Inter,Arial,sans-serif`;
+        const tw=ctx.measureText(ann.text||'').width;
+        return { x:ann.x1, y:ann.y1-18, w:tw, h:22 };
+      }
+      case 'numberbadge': {
+        const r=Math.max(14,(ann.lineWidth||3)*5);
+        return { x:ann.x1-r, y:ann.y1-r, w:r*2, h:r*2 };
+      }
+      case 'pen':
+        if (!ann.points?.length) return null;
+        const xs=ann.points.map(p=>p.x), ys=ann.points.map(p=>p.y);
+        return { x:Math.min(...xs), y:Math.min(...ys),
+                 w:Math.max(...xs)-Math.min(...xs), h:Math.max(...ys)-Math.min(...ys) };
+      default: return null;
+    }
+  }
+
+  // ── Hit test ──────────────────────────────────────────────────────────
+
+  function hitTest(x, y) {
+    // Check delete handle on selected annotation first
+    if (selectedId) {
+      const sel = annotations.find(a => a.id === selectedId);
+      if (sel) {
+        const bb = bbox(sel);
+        if (bb) {
+          const dx = x-(bb.x+bb.w+8), dy = y-(bb.y-8);
+          if (Math.sqrt(dx*dx+dy*dy) <= 12) return { action:'delete', id:selectedId };
+        }
+      }
+    }
+    // Annotations top-most first
+    for (let i = annotations.length-1; i >= 0; i--) {
+      const bb = bbox(annotations[i]);
+      if (!bb) continue;
+      const pad = 8;
+      if (x>=bb.x-pad && x<=bb.x+bb.w+pad && y>=bb.y-pad && y<=bb.y+bb.h+pad)
+        return { action:'move', ann:annotations[i] };
+    }
+    return null;
+  }
+
+  // ── Mouse: down ───────────────────────────────────────────────────────
+
+  canvas.addEventListener('mousedown', e => {
+    const r = canvas.getBoundingClientRect();
+    const x = e.clientX-r.left, y = e.clientY-r.top;
+    const hit = hitTest(x, y);
+
+    if (hit?.action === 'delete') {
+      annotations = annotations.filter(a => a.id !== hit.id);
+      selectedId = null; pushHistory(); redrawAll(); return;
+    }
+    if (hit?.action === 'move') {
+      selectedId  = hit.ann.id;
+      isDragging  = true;
+      sx = x; sy = y;
+      canvas.style.cursor = 'grabbing';
+      redrawAll(); return;
+    }
+
+    selectedId = null;
+    isDrawing  = true;
+    sx = x; sy = y;
+    if (tool === 'pen') penPoints = [{x, y}];
+  });
+
+  // ── Mouse: move ───────────────────────────────────────────────────────
+
+  canvas.addEventListener('mousemove', e => {
+    const r = canvas.getBoundingClientRect();
+    const x = e.clientX-r.left, y = e.clientY-r.top;
+
+    // Cursor feedback when idle
+    if (!isDrawing && !isDragging) {
+      const hit = hitTest(x, y);
+      canvas.style.cursor = hit ? (hit.action==='delete'?'pointer':'move') : 'crosshair';
+    }
+
+    if (isDragging && selectedId) {
+      const ann = annotations.find(a => a.id === selectedId);
+      if (ann) { moveAnn(ann, x-sx, y-sy); sx=x; sy=y; redrawAll(); } return;
+    }
+    if (!isDrawing) return;
+
+    if (tool === 'pen') {
+      penPoints.push({x, y});
+      preview = { id:'_p', type:'pen', color, lineWidth, points:[...penPoints] };
+      redrawAll(); return;
+    }
+    if (tool === 'text' || tool === 'labelbox' || tool === 'numberbadge') return;
+
+    preview = { id:'_p', type:tool, color, lineWidth, x1:sx, y1:sy, x2:x, y2:y };
+    redrawAll();
+  });
+
+  // ── Mouse: up ────────────────────────────────────────────────────────
+
+  canvas.addEventListener('mouseup', e => {
+    const r = canvas.getBoundingClientRect();
+    const x = e.clientX-r.left, y = e.clientY-r.top;
+    canvas.style.cursor = 'crosshair';
+    preview = null;
+
+    if (isDragging) {
+      isDragging = false; pushHistory(); redrawAll(); return;
+    }
+    if (!isDrawing) return;
+    isDrawing = false;
+
+    if (tool === 'text') {
+      const txt = prompt('Enter text:');
+      if (txt) { annotations.push({id:gid(), type:'text', color, lineWidth, x1:x, y1:y, text:txt}); pushHistory(); }
+      redrawAll(); return;
+    }
+    if (tool === 'labelbox') {
+      const txt = prompt('Enter label text:');
+      if (txt && (Math.abs(x-sx)>8 || Math.abs(y-sy)>8))
+        annotations.push({id:gid(), type:'labelbox', color, lineWidth, x1:sx, y1:sy, x2:x, y2:y, text:txt});
+      pushHistory(); redrawAll(); return;
+    }
+    if (tool === 'numberbadge') {
+      badgeCount++;
+      annotations.push({id:gid(), type:'numberbadge', color, lineWidth, x1:x, y1:y, num:badgeCount});
+      pushHistory(); redrawAll(); return;
+    }
+    if (tool === 'pen') {
+      if (penPoints.length > 1)
+        annotations.push({id:gid(), type:'pen', color, lineWidth, points:[...penPoints]});
+      pushHistory(); redrawAll(); return;
+    }
+    if (Math.abs(x-sx)>3 || Math.abs(y-sy)>3)
+      annotations.push({id:gid(), type:tool, color, lineWidth, x1:sx, y1:sy, x2:x, y2:y});
+    pushHistory(); redrawAll();
+  });
+
+  canvas.addEventListener('mouseleave', () => {
+    if (isDrawing && tool!=='pen') { isDrawing=false; preview=null; redrawAll(); }
+  });
+
+  // ── Move ──────────────────────────────────────────────────────────────
+
+  function moveAnn(ann, dx, dy) {
+    if (ann.x1 !== undefined) { ann.x1+=dx; ann.y1+=dy; }
+    if (ann.x2 !== undefined) { ann.x2+=dx; ann.y2+=dy; }
+    if (ann.points) ann.points = ann.points.map(p=>({x:p.x+dx, y:p.y+dy}));
+  }
+
+  // ── History ───────────────────────────────────────────────────────────
+
+  function pushHistory() {
+    history.push(JSON.parse(JSON.stringify(annotations)));
+    if (history.length > 30) history.shift();
   }
 
   // ── Undo ──────────────────────────────────────────────────────────────
@@ -973,283 +1245,53 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
   document.getElementById('annUndo').addEventListener('click', () => {
     if (history.length <= 1) return;
     history.pop();
-    restoreSnapshot(history[history.length - 1]);
+    annotations = JSON.parse(JSON.stringify(history[history.length-1]));
+    selectedId = null; redrawAll();
   });
 
-  // ── Clear all ─────────────────────────────────────────────────────────
+  // ── Clear ─────────────────────────────────────────────────────────────
 
   document.getElementById('annClear').addEventListener('click', () => {
-    if (history.length === 0) return;
-    restoreSnapshot(history[0]);
-    history = [history[0]];
+    annotations = []; history = [[]]; selectedId = null; redrawAll();
   });
 
   // ── Save ──────────────────────────────────────────────────────────────
 
   document.getElementById('annDone').addEventListener('click', () => {
     if (annStepIdx === null) return;
+    selectedId = null; preview = null; redrawAll(); // render without selection handles
     const item = currentSteps[annStepIdx];
     if (item) {
       item.screenshot = canvas.toDataURL('image/png');
-      // Update the visible thumbnail immediately
-      const thumbEl = stepsContainer.querySelector(`[data-array-index="${annStepIdx}"] .step-screenshot`);
-      if (thumbEl) thumbEl.src = item.screenshot;
+      const thumb = stepsContainer.querySelector(`[data-array-index="${annStepIdx}"] .step-screenshot`);
+      if (thumb) thumb.src = item.screenshot;
     }
     closeAnnotation();
   });
 
-  // ── Canvas drawing events ─────────────────────────────────────────────
+  // ── Close ─────────────────────────────────────────────────────────────
 
-  canvas.addEventListener('mousedown', e => {
-    isDrawing = true;
-    const r = canvas.getBoundingClientRect();
-    sx = e.clientX - r.left;
-    sy = e.clientY - r.top;
-
-    if (tool === 'pen') {
-      penPoints = [{ x: sx, y: sy }];
-    }
-    if (tool === 'text') {
-      // Text is handled on mouseup/click
-    }
-  });
-
-  canvas.addEventListener('mousemove', e => {
-    if (!isDrawing) return;
-    const r  = canvas.getBoundingClientRect();
-    const cx = e.clientX - r.left;
-    const cy = e.clientY - r.top;
-
-    if (tool === 'pen') {
-      penPoints.push({ x: cx, y: cy });
-      drawPenStroke(penPoints, false);
-      return;
-    }
-
-    // numberbadge and text/labelbox: no drag preview needed
-    if (tool === 'numberbadge' || tool === 'text' || tool === 'labelbox') return;
-
-    // For shape tools: restore last committed state then draw preview
-    if (history.length > 0) restoreSnapshot(history[history.length - 1]);
-    drawShape(sx, sy, cx, cy);
-  });
-
-  canvas.addEventListener('mouseup', e => {
-    if (!isDrawing) return;
-    isDrawing = false;
-    const r  = canvas.getBoundingClientRect();
-    const ex = e.clientX - r.left;
-    const ey = e.clientY - r.top;
-
-    if (tool === 'text') {
-      const label = prompt('Enter label text:');
-      if (label) {
-        const fs = Math.round(16 / scale);
-        ctx.font = `bold ${fs}px Inter, sans-serif`;
-        ctx.fillStyle = color;
-        ctx.strokeStyle = 'rgba(0,0,0,0.45)';
-        ctx.lineWidth = 3;
-        ctx.strokeText(label, ex, ey);
-        ctx.fillText(label, ex, ey);
-        commitSnapshot();
-      }
-      return;
-    }
-
-    if (tool === 'labelbox') {
-      // No restore needed — we skip preview for this tool so canvas is clean
-      const label = prompt('Enter label text:');
-      if (label) {
-        drawLabelBox(sx, sy, ex, ey, label);
-        commitSnapshot();
-      }
-      return;
-    }
-
-    if (tool === 'numberbadge') {
-      badgeCount++;
-      drawNumberBadge(ex, ey, badgeCount);
-      commitSnapshot();
-      return;
-    }
-
-    if (tool === 'pen') {
-      drawPenStroke(penPoints, true);
-    } else {
-      if (history.length > 0) restoreSnapshot(history[history.length - 1]);
-      drawShape(sx, sy, ex, ey);
-    }
-    commitSnapshot();
-  });
-
-  canvas.addEventListener('mouseleave', () => {
-    if (isDrawing && tool !== 'pen') {
-      isDrawing = false;
-      if (history.length > 0) restoreSnapshot(history[history.length - 1]);
-    }
-  });
-
-  // ── Drawing primitives ────────────────────────────────────────────────
-
-  function setStyle() {
-    ctx.strokeStyle = color;
-    ctx.fillStyle   = color;
-    ctx.lineWidth   = lineWidth;
-    ctx.lineCap     = 'round';
-    ctx.lineJoin    = 'round';
+  document.getElementById('annCancel').addEventListener('click', closeAnnotation);
+  function closeAnnotation() {
+    modal.classList.remove('active');
+    annStepIdx=null; annotations=[]; history=[]; baseImg=null;
+    selectedId=null; preview=null;
   }
 
-  function drawShape(x1, y1, x2, y2) {
-    setStyle();
-    switch (tool) {
-      case 'arrow':     drawArrow(x1, y1, x2, y2);     break;
-      case 'rect':      drawRect(x1, y1, x2, y2);      break;
-      case 'ellipse':   drawEllipse(x1, y1, x2, y2);   break;
-      case 'highlight': drawHighlight(x1, y1, x2, y2); break;
-    }
-  }
-
-  function drawArrow(x1, y1, x2, y2) {
-    const headLen = Math.max(14, lineWidth * 4);
-    const angle   = Math.atan2(y2 - y1, x2 - x1);
-
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
-
-    // Filled arrowhead
-    ctx.beginPath();
-    ctx.moveTo(x2, y2);
-    ctx.lineTo(x2 - headLen * Math.cos(angle - Math.PI / 6),
-               y2 - headLen * Math.sin(angle - Math.PI / 6));
-    ctx.lineTo(x2 - headLen * Math.cos(angle + Math.PI / 6),
-               y2 - headLen * Math.sin(angle + Math.PI / 6));
-    ctx.closePath();
-    ctx.fill();
-  }
-
-  function drawRect(x1, y1, x2, y2) {
-    ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
-  }
-
-  function drawEllipse(x1, y1, x2, y2) {
-    const cx = (x1 + x2) / 2, cy = (y1 + y2) / 2;
-    const rx = Math.abs(x2 - x1) / 2, ry = Math.abs(y2 - y1) / 2;
-    if (rx < 1 || ry < 1) return;
-    ctx.beginPath();
-    ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
-    ctx.stroke();
-  }
-
-  function drawHighlight(x1, y1, x2, y2) {
-    const prevAlpha = ctx.globalAlpha;
-    ctx.globalAlpha = 0.38;
-    ctx.fillRect(x1, y1, x2 - x1, y2 - y1);
-    ctx.globalAlpha = prevAlpha;
-  }
-
-  // Filled rounded box with white text centred inside
-  function drawLabelBox(x1, y1, x2, y2, label) {
-    const x = Math.min(x1, x2), y = Math.min(y1, y2);
-    const w = Math.abs(x2 - x1) || 120, h = Math.abs(y2 - y1) || 28;
-    const r = Math.min(6, w / 2, h / 2);
-
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.lineTo(x + w - r, y); ctx.arcTo(x + w, y, x + w, y + r, r);
-    ctx.lineTo(x + w, y + h - r); ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
-    ctx.lineTo(x + r, y + h); ctx.arcTo(x, y + h, x, y + h - r, r);
-    ctx.lineTo(x, y + r); ctx.arcTo(x, y, x + r, y, r);
-    ctx.closePath();
-    ctx.fill();
-
-    const fs = Math.max(10, Math.min(h * 0.55, 18));
-    ctx.font = `bold ${fs}px Inter, Arial, sans-serif`;
-    ctx.fillStyle = '#FFFFFF';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(label, x + w / 2, y + h / 2, w - 8);
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'alphabetic';
-  }
-
-  // Filled circle with white number — auto-increments each click
-  function drawNumberBadge(cx, cy, num) {
-    const r = Math.max(14, lineWidth * 5);
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.fill();
-
-    // White ring
-    ctx.strokeStyle = 'rgba(255,255,255,0.6)';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    const fs = r > 16 ? 14 : 11;
-    ctx.font = `bold ${fs}px Inter, Arial, sans-serif`;
-    ctx.fillStyle = '#FFFFFF';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(String(num), cx, cy + 1);
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'alphabetic';
-  }
-
-  function drawPenStroke(pts, final) {
-    if (pts.length < 2) return;
-    if (!final && history.length > 0) restoreSnapshot(history[history.length - 1]);
-    setStyle();
-    ctx.beginPath();
-    ctx.moveTo(pts[0].x, pts[0].y);
-    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
-    ctx.stroke();
-  }
-
-  // ── Snapshot helpers ──────────────────────────────────────────────────
-  // Keep a parallel cache of pre-loaded Image objects so restoreSnapshot
-  // is fully synchronous (no async onload flicker during mousemove preview).
-
-  const imgSnapshotCache = new Map();   // dataUrl → HTMLImageElement
-
-  function commitSnapshot() {
-    const dataUrl = canvas.toDataURL();
-    history.push(dataUrl);
-    if (history.length > 30) {
-      imgSnapshotCache.delete(history.shift());
-    }
-    // Pre-load now so it's ready instantly when needed
-    if (!imgSnapshotCache.has(dataUrl)) {
-      const img = new Image();
-      img.src = dataUrl;
-      imgSnapshotCache.set(dataUrl, img);
-    }
-  }
-
-  function restoreSnapshot(dataUrl) {
-    const cached = imgSnapshotCache.get(dataUrl);
-    if (cached && cached.complete) {
-      ctx.drawImage(cached, 0, 0);
-    } else {
-      // Fallback: async load (first frame only, no flicker risk)
-      const img = new Image();
-      img.onload = () => { ctx.drawImage(img, 0, 0); imgSnapshotCache.set(dataUrl, img); };
-      img.src = dataUrl;
-    }
-  }
-
-  // ── Keyboard shortcuts ────────────────────────────────────────────────
+  // ── Keyboard ──────────────────────────────────────────────────────────
 
   document.addEventListener('keydown', e => {
     if (!modal.classList.contains('active')) return;
-    if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+    if ((e.ctrlKey||e.metaKey) && e.key==='z') { e.preventDefault(); document.getElementById('annUndo').click(); }
+    if (e.key==='Escape') { if (selectedId) { selectedId=null; redrawAll(); } else closeAnnotation(); }
+    if ((e.key==='Delete'||e.key==='Backspace') && selectedId) {
       e.preventDefault();
-      document.getElementById('annUndo').click();
+      annotations = annotations.filter(a=>a.id!==selectedId);
+      selectedId=null; pushHistory(); redrawAll();
     }
-    if (e.key === 'Escape') closeAnnotation();
   });
+
+  function gid() { return 'a'+Math.random().toString(36).slice(2,8); }
 
 })();
 
