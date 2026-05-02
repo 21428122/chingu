@@ -125,15 +125,18 @@ document.getElementById('confirmCancel').addEventListener('click', () => {
 
 document.getElementById('confirmDelete').addEventListener('click', () => {
   if (!pendingDeleteId) return;
+  // Capture the id synchronously BEFORE any async calls
+  const idToDelete = pendingDeleteId;
+  pendingDeleteId = null;
+  document.getElementById('confirmOverlay').classList.remove('active');
+
   chrome.storage.local.get('documents', data => {
-    const docs = (data.documents || []).filter(d => d.id !== pendingDeleteId);
+    const docs = (data.documents || []).filter(d => d.id !== idToDelete);
     chrome.storage.local.set({ documents: docs }, () => {
       allDocs = docs;
       renderDocs(filterDocs(document.getElementById('searchInput').value));
     });
   });
-  pendingDeleteId = null;
-  document.getElementById('confirmOverlay').classList.remove('active');
 });
 
 // ── Search ─────────────────────────────────────────────────────────────────

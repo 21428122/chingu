@@ -110,6 +110,63 @@ if (!window.__chinguListening) {
     setTimeout(() => bar.remove(), 320);
   }
 
+  function showSuccessToast(stepCount, viewUrl) {
+    const existing = document.getElementById('__chingu_toast__');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = '__chingu_toast__';
+    toast.style.cssText = [
+      'position:fixed',
+      'bottom:24px',
+      'right:24px',
+      'z-index:2147483647',
+      'display:flex',
+      'align-items:center',
+      'gap:12px',
+      'padding:12px 16px',
+      'background:white',
+      'border-radius:14px',
+      'border:1px solid #E2E8F0',
+      'box-shadow:0 8px 32px rgba(15,23,42,0.15)',
+      'font-family:Inter,-apple-system,sans-serif',
+      'font-size:13px',
+      'font-weight:600',
+      'color:#0F172A',
+      'animation:__cg_slidein__ 0.35s cubic-bezier(0.34,1.4,0.64,1) both',
+      'max-width:320px',
+    ].join(';');
+
+    toast.innerHTML = `
+      <span style="font-size:20px;line-height:1">✅</span>
+      <span style="flex:1">
+        <span style="color:#10B981">${stepCount} step${stepCount !== 1 ? 's' : ''} captured</span>
+        <span style="color:#94A3B8;font-weight:400"> — guide is ready</span>
+      </span>
+      <a href="${viewUrl}" target="_blank" style="
+        background:linear-gradient(135deg,#6366F1,#8B5CF6);
+        color:white;text-decoration:none;border-radius:8px;
+        padding:7px 14px;font-size:12px;font-weight:700;
+        font-family:inherit;white-space:nowrap;flex-shrink:0;
+      ">View Guide →</a>
+      <button onclick="this.parentElement.remove()" style="
+        background:none;border:none;cursor:pointer;color:#CBD5E1;
+        font-size:18px;line-height:1;padding:0 2px;font-family:inherit;
+        flex-shrink:0;
+      ">×</button>
+    `;
+
+    (document.body || document.documentElement).appendChild(toast);
+
+    // Auto-dismiss after 8 seconds
+    setTimeout(() => {
+      if (toast.parentElement) {
+        toast.style.animation = '__cg_fadeout__ 0.3s ease forwards';
+        setTimeout(() => toast.remove(), 300);
+      }
+    }, 8000);
+  }
+
   // ── Element info ──────────────────────────────────────────────────────────
 
   function getElementInfo(el) {
@@ -190,6 +247,9 @@ if (!window.__chinguListening) {
     }
     if (msg.action === 'updateStepCount') {
       updateOverlayCount(msg.count);
+    }
+    if (msg.action === 'showSuccessToast') {
+      showSuccessToast(msg.stepCount, msg.viewUrl);
     }
   });
 

@@ -21,15 +21,16 @@ function genDocId() {
 
 // Persist a document into the documents array
 function saveDocument(docId, stepData, extra, cb) {
-  chrome.storage.local.get(['documents', 'guideTitle', 'guideMetadata', 'brandLogo'], (data) => {
+  chrome.storage.local.get(['documents', 'brandLogo'], (data) => {
     const docs = data.documents || [];
     const idx  = docs.findIndex(d => d.id === docId);
     const now  = Date.now();
+    // New documents always start as "Untitled Guide" — viewer polish generates the real title
     const base = idx >= 0 ? docs[idx] : {
       id: docId,
       createdAt: now,
-      title: data.guideTitle || 'Untitled Guide',
-      metadata: data.guideMetadata || {},
+      title: 'Untitled Guide',
+      metadata: {},
       brandLogo: data.brandLogo || null,
     };
     const updated = { ...base, ...extra, steps: stepData, updatedAt: now };
@@ -68,12 +69,23 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
   if (msg.action === 'stopRecording') {
     recording = false;
-    if (activeTabId) {
-      chrome.tabs.sendMessage(activeTabId, { action: 'stopListening' }).catch(() => {});
+    const tabId = activeTabId;
+    if (tabId) {
+      chrome.tabs.sendMessage(tabId, { action: 'stopListening' }).catch(() => {});
     }
     const docId = currentDocId || genDocId();
     currentDocId = docId;
-    saveDocument(docId, steps, {}, () => sendResponse({ ok: true }));
+    saveDocument(docId, steps, {}, () => {
+      sendResponse({ ok: true });
+      // Show success toast so user knows what to do next
+      if (tabId) {
+        chrome.tabs.sendMessage(tabId, {
+          action: 'showSuccessToast',
+          stepCount: steps.length,
+          viewUrl: chrome.runtime.getURL(`viewer.html?docId=${docId}`)
+        }).catch(() => {});
+      }
+    });
     return true;
   }
 
@@ -105,9 +117,29 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.action === 'clickCaptured' && recording) {
     const tabId = sender.tab ? sender.tab.id : activeTabId;
     if (!tabId) return;
+    const captureTabId = tabId;
+    setTimeout(async () => {
+      // Hide overlay so it doesn't appear in the screenshot
+      try {
+        await chrome.scripting.executeScript({
+          target: { tabId: captureTabId },
+          func: () => {
+            const el = document.getElementById('__chingu_overlay__');
+            if (el) el.style.opacity = '0';
+          }
+        });
+      } catch (_) {}
 
-    setTimeout(() => {
       chrome.tabs.captureVisibleTab(null, { format: 'png' }, (dataUrl) => {
+        // Restore overlay immediately after capture
+        chrome.scripting.executeScript({
+          target: { tabId: captureTabId },
+          func: () => {
+            const el = document.getElementById('__chingu_overlay__');
+            if (el) el.style.opacity = '1';
+          }
+        }).catch(() => {});
+
         if (chrome.runtime.lastError || !dataUrl) return;
         steps.push({
           number: steps.length + 1,
@@ -122,10 +154,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           description: buildDescription(msg)
         });
         chrome.runtime.sendMessage({ action: 'stepCaptured', stepCount: steps.length }).catch(() => {});
-        // Also update the floating overlay on the active tab
-        if (activeTabId) {
-          chrome.tabs.sendMessage(activeTabId, { action: 'updateStepCount', count: steps.length }).catch(() => {});
-        }
+        chrome.tabs.sendMessage(captureTabId, { action: 'updateStepCount', count: steps.length }).catch(() => {});
       });
     }, 300);
   }
