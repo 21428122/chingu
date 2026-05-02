@@ -402,6 +402,22 @@
       text-decoration: none;
       font-weight: 500;
     }
+
+    .btn-library {
+      width: 100%;
+      padding: 10px 16px;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      background: white;
+      color: #6366F1;
+      margin-top: 8px;
+      transition: all 0.15s ease;
+    }
+    .btn-library:hover { background: #EEF2FF; border-color: #6366F1; }
   </style>
 </head>
 <body>
@@ -453,6 +469,7 @@
 
     <div id="idleControls">
       <button class="btn-record" id="btnRecord">Start Recording</button>
+      <button class="btn-library" id="btnLibrary">📚 My Guides</button>
     </div>
 
     <div id="recordingControls" class="hidden">
@@ -462,6 +479,7 @@
     <div id="doneControls" class="hidden">
       <button class="btn-view" id="btnView">View Guide</button>
       <button class="btn-new" id="btnNew">New Recording</button>
+      <button class="btn-library" id="btnLibraryDone">📚 My Guides</button>
     </div>
   </div>
 

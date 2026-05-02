@@ -10,32 +10,50 @@ async function _devPoll() {
 _devPoll();
 setInterval(_devPoll, 1000);
 
-let recording = false;
-let steps = [];
+let recording   = false;
+let steps       = [];
 let activeTabId = null;
+let currentDocId = null;
+
+function genDocId() {
+  return 'doc_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+// Persist a document into the documents array
+function saveDocument(docId, stepData, extra, cb) {
+  chrome.storage.local.get(['documents', 'guideTitle', 'guideMetadata', 'brandLogo'], (data) => {
+    const docs = data.documents || [];
+    const idx  = docs.findIndex(d => d.id === docId);
+    const now  = Date.now();
+    const base = idx >= 0 ? docs[idx] : {
+      id: docId,
+      createdAt: now,
+      title: data.guideTitle || 'Untitled Guide',
+      metadata: data.guideMetadata || {},
+      brandLogo: data.brandLogo || null,
+    };
+    const updated = { ...base, ...extra, steps: stepData, updatedAt: now };
+    if (idx >= 0) docs[idx] = updated; else docs.unshift(updated);
+    chrome.storage.local.set({ documents: docs, currentDocId: docId }, cb);
+  });
+}
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+
   if (msg.action === 'getState') {
-    sendResponse({ recording, stepCount: steps.length });
+    sendResponse({ recording, stepCount: steps.length, currentDocId });
     return true;
   }
 
   if (msg.action === 'startRecording') {
     steps = [];
     recording = true;
+    currentDocId = genDocId();
 
-    // Get the active tab and inject the content script
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (!tabs[0]) {
-        sendResponse({ ok: false });
-        return;
-      }
+      if (!tabs[0]) { sendResponse({ ok: false }); return; }
       activeTabId = tabs[0].id;
-
-      chrome.scripting.executeScript({
-        target: { tabId: activeTabId },
-        files: ['content.js']
-      }, () => {
+      chrome.scripting.executeScript({ target: { tabId: activeTabId }, files: ['content.js'] }, () => {
         if (chrome.runtime.lastError) {
           console.error('Failed to inject content script:', chrome.runtime.lastError.message);
           recording = false;
@@ -45,26 +63,32 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         sendResponse({ ok: true });
       });
     });
-    return true; // async response
+    return true;
   }
 
   if (msg.action === 'stopRecording') {
     recording = false;
-
-    // Tell content script to stop
     if (activeTabId) {
       chrome.tabs.sendMessage(activeTabId, { action: 'stopListening' }).catch(() => {});
     }
-
-    // Save steps to storage
-    chrome.storage.local.set({ steps }, () => {
-      sendResponse({ ok: true });
-    });
+    const docId = currentDocId || genDocId();
+    currentDocId = docId;
+    saveDocument(docId, steps, {}, () => sendResponse({ ok: true }));
     return true;
   }
 
   if (msg.action === 'viewGuide') {
-    chrome.tabs.create({ url: chrome.runtime.getURL('viewer.html') });
+    const docId = currentDocId || msg.docId;
+    const url   = docId
+      ? chrome.runtime.getURL(`viewer.html?docId=${docId}`)
+      : chrome.runtime.getURL('viewer.html');
+    chrome.tabs.create({ url });
+    sendResponse({ ok: true });
+    return true;
+  }
+
+  if (msg.action === 'openLibrary') {
+    chrome.tabs.create({ url: chrome.runtime.getURL('library.html') });
     sendResponse({ ok: true });
     return true;
   }
@@ -72,7 +96,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.action === 'newRecording') {
     steps = [];
     recording = false;
-    chrome.storage.local.remove('steps');
+    currentDocId = null;
     sendResponse({ ok: true });
     return true;
   }
@@ -82,14 +106,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     const tabId = sender.tab ? sender.tab.id : activeTabId;
     if (!tabId) return;
 
-    // Small delay to let the page update after the click
     setTimeout(() => {
       chrome.tabs.captureVisibleTab(null, { format: 'png' }, (dataUrl) => {
-        if (chrome.runtime.lastError || !dataUrl) {
-          console.error('Screenshot failed:', chrome.runtime.lastError?.message);
-          return;
-        }
-
+        if (chrome.runtime.lastError || !dataUrl) return;
         steps.push({
           number: steps.length + 1,
           screenshot: dataUrl,
@@ -102,26 +121,16 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           timestamp: Date.now(),
           description: buildDescription(msg)
         });
-
-        // Notify popup of new step count
-        chrome.runtime.sendMessage({
-          action: 'stepCaptured',
-          stepCount: steps.length
-        }).catch(() => {}); // popup might be closed
+        chrome.runtime.sendMessage({ action: 'stepCaptured', stepCount: steps.length }).catch(() => {});
       });
     }, 300);
   }
 });
 
-// Also capture when user navigates to a new page while recording
 chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
   if (!recording || tabId !== activeTabId) return;
   if (changeInfo.status === 'complete') {
-    // Re-inject content script on navigation
-    chrome.scripting.executeScript({
-      target: { tabId },
-      files: ['content.js']
-    }).catch(() => {});
+    chrome.scripting.executeScript({ target: { tabId }, files: ['content.js'] }).catch(() => {});
   }
 });
 
@@ -132,51 +141,30 @@ function buildDescription(msg) {
   const id = msg.elementId || '';
   const cls = msg.elementClass || '';
 
-  // Input / textarea: "Type [value] in [field]"
   if ((tag === 'input' || tag === 'textarea') && msg.inputValue) {
     const label = msg.placeholder || id || 'the field';
     return `Type "${msg.inputValue}" in ${label}`;
   }
-
-  // Button / link with text
   if (tag === 'button' || tag === 'a' || msg.role === 'button') {
     if (truncated) return `Click "${truncated}"`;
-    // Try to use id or aria-label as fallback
     if (id) return `Click the "${id}" ${tag === 'a' ? 'link' : 'button'}`;
     return `Click the ${tag === 'a' ? 'link' : 'button'}`;
   }
-
-  // Select / dropdown
-  if (tag === 'select') {
-    return msg.inputValue ? `Select "${msg.inputValue}"` : 'Open the dropdown';
-  }
-
-  // Checkbox / radio
+  if (tag === 'select') return msg.inputValue ? `Select "${msg.inputValue}"` : 'Open the dropdown';
   if (tag === 'input' && (msg.inputType === 'checkbox' || msg.inputType === 'radio')) {
     return truncated ? `Toggle "${truncated}"` : `Toggle the ${msg.inputType}`;
   }
-
-  // Navigation / menu items
   if (tag === 'li' || tag === 'nav' || tag === 'span' || tag === 'div') {
     if (truncated) return `Click "${truncated}"`;
   }
-
-  // Table rows / cells
   if (tag === 'td' || tag === 'tr' || tag === 'th') {
     if (truncated) return `Click "${truncated}" in the table`;
   }
-
-  // Generic click with text
-  if (truncated) {
-    return `Click "${truncated}"`;
-  }
-
-  // Last resort: try to build something useful from id or class
+  if (truncated) return `Click "${truncated}"`;
   if (id) return `Click the "${id}" element`;
   if (cls) {
     const friendlyClass = cls.split(' ')[0].replace(/[-_]/g, ' ');
     return `Click the ${friendlyClass} area`;
   }
-
   return `Click on the page`;
 }

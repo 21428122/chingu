@@ -322,47 +322,108 @@ document.getElementById('setupSave').addEventListener('click', () => {
 
 document.getElementById('btnSave').addEventListener('click', () => {
   syncAll();
-  chrome.storage.local.set({ steps: currentSteps, guideTitle: currentTitle, guideMetadata }, () => {
+
+  const savePayload = () => {
     const btn = document.getElementById('btnSave');
     btn.textContent = 'Saved ✓';
     btn.style.cssText = 'background:linear-gradient(135deg,#10B981,#059669);color:white;border-color:transparent';
     setTimeout(() => { btn.textContent = 'Save'; btn.style.cssText = ''; }, 2000);
-  });
+  };
+
+  if (_docId) {
+    // Save back into the documents array
+    chrome.storage.local.get('documents', data => {
+      const docs = data.documents || [];
+      const idx  = docs.findIndex(d => d.id === _docId);
+      const now  = Date.now();
+      const entry = {
+        id: _docId,
+        title: currentTitle,
+        steps: currentSteps,
+        metadata: guideMetadata,
+        brandLogo: brandLogoEl.classList.contains('visible') ? brandLogoEl.src : null,
+        createdAt: idx >= 0 ? (docs[idx].createdAt || now) : now,
+        updatedAt: now,
+      };
+      if (idx >= 0) docs[idx] = entry; else docs.unshift(entry);
+      chrome.storage.local.set({ documents: docs }, savePayload);
+    });
+  } else {
+    // Legacy flat storage
+    chrome.storage.local.set({ steps: currentSteps, guideTitle: currentTitle, guideMetadata }, savePayload);
+  }
+});
+
+// ── Doc ID from URL ────────────────────────────────────────────────────────
+
+const _docId = new URLSearchParams(window.location.search).get('docId') || null;
+
+// ── Library back button ────────────────────────────────────────────────────
+
+document.getElementById('btnLibrary').addEventListener('click', () => {
+  chrome.tabs.create({ url: chrome.runtime.getURL('library.html') });
 });
 
 // ── Initial load ───────────────────────────────────────────────────────────
 
-chrome.storage.local.get(['steps', 'guideTitle', 'guideMetadata'], data => {
-  const rawSteps = data.steps || [];
+function loadDoc(docId) {
+  if (docId) {
+    // Load specific document from documents array
+    chrome.storage.local.get(['documents', 'brandLogo'], data => {
+      const docs = data.documents || [];
+      const doc  = docs.find(d => d.id === docId);
+      if (!doc) {
+        emptyState.classList.remove('hidden');
+        document.getElementById('brandingSection').style.display = 'none';
+        return;
+      }
+      if (doc.metadata) Object.assign(guideMetadata, doc.metadata);
+      if (doc.brandLogo) {
+        brandLogoEl.src = doc.brandLogo;
+        brandLogoEl.classList.add('visible');
+      } else if (data.brandLogo) {
+        brandLogoEl.src = data.brandLogo;
+        brandLogoEl.classList.add('visible');
+      }
+      initViewer(doc.steps || [], doc.title || 'Untitled Guide');
+    });
+  } else {
+    // Legacy: load from flat storage keys
+    chrome.storage.local.get(['steps', 'guideTitle', 'guideMetadata', 'brandLogo'], data => {
+      const rawSteps = data.steps || [];
+      if (data.guideMetadata) Object.assign(guideMetadata, data.guideMetadata);
+      if (data.brandLogo) {
+        brandLogoEl.src = data.brandLogo;
+        brandLogoEl.classList.add('visible');
+      }
+      initViewer(rawSteps, data.guideTitle || 'Untitled Guide');
+    });
+  }
+}
 
+function initViewer(rawSteps, titleStr) {
   if (rawSteps.length === 0) {
     emptyState.classList.remove('hidden');
     document.getElementById('brandingSection').style.display = 'none';
     return;
   }
-
-  if (data.guideMetadata) Object.assign(guideMetadata, data.guideMetadata);
   emptyState.classList.add('hidden');
 
-  // Separate sections from steps for polish (sections pass through)
   const onlySteps = rawSteps.filter(s => !s._type);
   const sections  = rawSteps.filter(s => s._type === 'section');
-
-  const polished = window.ChinguPolish
+  const polished  = window.ChinguPolish
     ? window.ChinguPolish.polish(onlySteps)
-    : { title: 'Untitled Guide', steps: onlySteps };
+    : { title: titleStr, steps: onlySteps };
 
-  // Re-merge sections back at their approximate positions
   const merged = [...polished.steps];
   sections.forEach(sec => {
-    // Insert sections near where they were originally (by closest step number)
-    const insertAt = merged.findIndex(s => s.number >= (sec._afterNumber || 1)) ;
+    const insertAt = merged.findIndex(s => s.number >= (sec._afterNumber || 1));
     merged.splice(insertAt < 0 ? 0 : insertAt, 0, sec);
   });
+  renderSteps(merged, titleStr || polished.title);
+}
 
-  const title = data.guideTitle || polished.title;
-  renderSteps(merged, title);
-});
+loadDoc(_docId);
 
 // ── Auto-Polish ────────────────────────────────────────────────────────────
 
@@ -823,6 +884,7 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
   let sx = 0, sy = 0;            // drag start coords
   let penPoints   = [];          // for freehand pen
   let scale       = 1;           // canvas px / natural image px
+  let badgeCount  = 0;           // auto-increment for number badges
 
   // ── Tool / color / thickness buttons ──────────────────────────────────
 
@@ -868,6 +930,7 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
       canvas.height = Math.round(img.naturalHeight * scale);
 
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      badgeCount = 0;
       const initSnap = canvas.toDataURL();
       history = [initSnap];
       // Pre-load the initial snapshot into cache so it restores synchronously
@@ -947,6 +1010,9 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
       return;
     }
 
+    // numberbadge and text/labelbox: no drag preview needed
+    if (tool === 'numberbadge' || tool === 'text' || tool === 'labelbox') return;
+
     // For shape tools: restore last committed state then draw preview
     if (history.length > 0) restoreSnapshot(history[history.length - 1]);
     drawShape(sx, sy, cx, cy);
@@ -962,14 +1028,32 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
     if (tool === 'text') {
       const label = prompt('Enter label text:');
       if (label) {
-        ctx.font = `bold ${Math.round(16 / scale)}px Inter, sans-serif`;
+        const fs = Math.round(16 / scale);
+        ctx.font = `bold ${fs}px Inter, sans-serif`;
         ctx.fillStyle = color;
-        ctx.strokeStyle = 'rgba(0,0,0,0.5)';
-        ctx.lineWidth = 3 / scale;
+        ctx.strokeStyle = 'rgba(0,0,0,0.45)';
+        ctx.lineWidth = 3;
         ctx.strokeText(label, ex, ey);
         ctx.fillText(label, ex, ey);
         commitSnapshot();
       }
+      return;
+    }
+
+    if (tool === 'labelbox') {
+      const label = prompt('Enter label text:');
+      if (label) {
+        if (history.length > 0) restoreSnapshot(history[history.length - 1]);
+        drawLabelBox(sx, sy, ex, ey, label);
+        commitSnapshot();
+      }
+      return;
+    }
+
+    if (tool === 'numberbadge') {
+      badgeCount++;
+      drawNumberBadge(ex, ey, badgeCount);
+      commitSnapshot();
       return;
     }
 
@@ -1047,6 +1131,55 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
     ctx.globalAlpha = 0.38;
     ctx.fillRect(x1, y1, x2 - x1, y2 - y1);
     ctx.globalAlpha = prevAlpha;
+  }
+
+  // Filled rounded box with white text centred inside
+  function drawLabelBox(x1, y1, x2, y2, label) {
+    const x = Math.min(x1, x2), y = Math.min(y1, y2);
+    const w = Math.abs(x2 - x1) || 120, h = Math.abs(y2 - y1) || 28;
+    const r = Math.min(6, w / 2, h / 2);
+
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y); ctx.arcTo(x + w, y, x + w, y + r, r);
+    ctx.lineTo(x + w, y + h - r); ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+    ctx.lineTo(x + r, y + h); ctx.arcTo(x, y + h, x, y + h - r, r);
+    ctx.lineTo(x, y + r); ctx.arcTo(x, y, x + r, y, r);
+    ctx.closePath();
+    ctx.fill();
+
+    const fs = Math.max(10, Math.min(h * 0.55, 18));
+    ctx.font = `bold ${fs}px Inter, Arial, sans-serif`;
+    ctx.fillStyle = '#FFFFFF';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, x + w / 2, y + h / 2, w - 8);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  // Filled circle with white number — auto-increments each click
+  function drawNumberBadge(cx, cy, num) {
+    const r = Math.max(14, lineWidth * 5);
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fill();
+
+    // White ring
+    ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    const fs = r > 16 ? 14 : 11;
+    ctx.font = `bold ${fs}px Inter, Arial, sans-serif`;
+    ctx.fillStyle = '#FFFFFF';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(String(num), cx, cy + 1);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
   }
 
   function drawPenStroke(pts, final) {

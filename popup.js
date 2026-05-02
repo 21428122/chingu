@@ -83,6 +83,13 @@ btnNew.addEventListener('click', () => {
   });
 });
 
+document.getElementById('btnLibrary').addEventListener('click', () => {
+  chrome.runtime.sendMessage({ action: 'openLibrary' });
+});
+document.getElementById('btnLibraryDone').addEventListener('click', () => {
+  chrome.runtime.sendMessage({ action: 'openLibrary' });
+});
+
 // --- Autopilot Tab ---
 const btnAutopilot = document.getElementById('btnAutopilot');
 const btnAutopilotStop = document.getElementById('btnAutopilotStop');
