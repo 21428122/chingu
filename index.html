@@ -3,1487 +3,1188 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Chingu · SOPs that actually work</title>
-  <meta name="description" content="Click record. Use your app. Get a finished guide in 30 seconds. Free forever. No account. Stays local.">
+  <title>Chingu — SOPs that make themselves</title>
+  <meta name="description" content="The only active open source Chrome extension for SOPs. Record any workflow, get a step-by-step guide. Free forever, no paywall, no seat minimums.">
+  <meta property="og:title" content="Chingu — SOPs that make themselves">
+  <meta property="og:description" content="Free open source SOP tool. The Scribe alternative that doesn't charge $23 per seat.">
   <link rel="icon" href="icons/favicon.svg">
+
+  <!-- Awwwards-tier typography stack -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <style>
-    /* ── Reset ── */
+    /* ─────────────────────────────────────────────────────────────────────
+       AWWWARDS-TIER DESIGN SYSTEM
+       Editorial typography · Custom cursor · Scroll-driven motion
+       Cream on near-black with warm tan accents (Cappy brand)
+    ───────────────────────────────────────────────────────────────────── */
+
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
 
-    /* ── Tokens ── */
     :root {
-      --tan:     #C8956D;
-      --cocoa:   #A6754F;
-      --sunrise: #FFB07A;
-      --peach:   #FFD4A8;
-      --cream:   #FFF5E4;
-      --indigo:  #6366F1;
-      --violet:  #8B5CF6;
-      --purple:  #7C3AED;
-      --lav:     #A78BFA;
-      --ink:     #0F172A;
-      --slate:   #334155;
-      --grey:    #94A3B8;
-      --silver:  #E2E8F0;
-      --snow:    #F8FAFC;
-      --red:     #EF4444;
-      --mint:    #10B981;
+      --bg:        #0A0A0A;
+      --bg-2:      #141414;
+      --fg:        #F5F1E8;
+      --fg-mute:   #8A857A;
+      --line:      #1F1F1F;
+      --tan:       #E8A87C;
+      --cocoa:     #C8956D;
+      --cream:     #FFF5E4;
+      --mint:      #10B981;
+      --red:       #EF4444;
     }
 
-    /* ── Base ── */
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #080810;
-      color: white;
+      font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 400;
+      background: var(--bg);
+      color: var(--fg);
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
       overflow-x: hidden;
+      cursor: none;
     }
 
-    /* ── Keyframes ── */
-    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-14px); } }
-    @keyframes float-slow { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-8px) rotate(1.5deg); } }
-    @keyframes blink { 0%, 90%, 100% { transform: scaleY(1); } 94%, 97% { transform: scaleY(0.08); } }
-    @keyframes rec-pulse { 0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(239,68,68,0.5); } 50% { transform: scale(0.75); opacity: 0.6; box-shadow: 0 0 0 8px rgba(239,68,68,0); } }
-    @keyframes wiggle { 0% { transform: scale(1) rotate(0deg); } 20% { transform: scale(1.12) rotate(-4deg); } 45% { transform: scale(0.96) rotate(3deg); } 70% { transform: scale(1.05) rotate(-2deg); } 100% { transform: scale(1) rotate(0deg); } }
-    @keyframes glow-pulse { 0%, 100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
-    @keyframes slide-up { from { opacity: 0; transform: translateY(60px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes confetti-fall { 0% { transform: translateY(-20px) rotate(0deg); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(120px) rotate(420deg); opacity: 0; } }
-    @keyframes word-rise { from { opacity: 0; transform: translateY(100%) skewY(3deg); } to { opacity: 1; transform: translateY(0) skewY(0deg); } }
-    @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
-    @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    /* Subtle film grain — gives it texture, not flat */
+    body::before {
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 1;
+      background-image:
+        radial-gradient(rgba(255,255,255,0.012) 1px, transparent 1px);
+      background-size: 3px 3px;
+      mix-blend-mode: overlay;
+      opacity: 0.4;
+    }
 
-    /* ── Scroll reveal system ── */
+    /* ── Custom cursor ── */
+    .cursor-dot, .cursor-ring {
+      position: fixed; top: 0; left: 0; pointer-events: none;
+      z-index: 9999; border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: transform 0.18s cubic-bezier(0.22, 0.61, 0.36, 1),
+                  width 0.18s cubic-bezier(0.22, 0.61, 0.36, 1),
+                  height 0.18s cubic-bezier(0.22, 0.61, 0.36, 1),
+                  background 0.18s ease;
+      will-change: transform;
+    }
+    .cursor-dot {
+      width: 6px; height: 6px;
+      background: var(--fg);
+    }
+    .cursor-ring {
+      width: 36px; height: 36px;
+      border: 1px solid rgba(245, 241, 232, 0.4);
+      transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+                  width 0.3s ease, height 0.3s ease,
+                  border-color 0.3s ease, background 0.3s ease;
+    }
+    .cursor-ring.hover {
+      width: 64px; height: 64px;
+      background: rgba(232, 168, 124, 0.15);
+      border-color: var(--tan);
+      mix-blend-mode: difference;
+    }
+    @media (max-width: 768px), (pointer: coarse) {
+      body { cursor: auto; }
+      .cursor-dot, .cursor-ring { display: none; }
+    }
+
+    /* ── Reveal animations ── */
     [data-reveal] {
       opacity: 0;
-      transform: translateY(48px);
-      transition: opacity 0.9s cubic-bezier(0.22, 0.61, 0.36, 1), transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
+      transform: translateY(40px);
+      transition: opacity 1.2s cubic-bezier(0.22, 0.61, 0.36, 1),
+                  transform 1.2s cubic-bezier(0.22, 0.61, 0.36, 1);
     }
-    [data-reveal].visible { opacity: 1; transform: translateY(0); }
-    [data-reveal][data-delay="1"] { transition-delay: 0.1s; }
-    [data-reveal][data-delay="2"] { transition-delay: 0.2s; }
-    [data-reveal][data-delay="3"] { transition-delay: 0.35s; }
-    [data-reveal][data-delay="4"] { transition-delay: 0.5s; }
-    [data-reveal="left"] { transform: translateX(-60px); }
-    [data-reveal="left"].visible { transform: translateX(0); }
-    [data-reveal="right"] { transform: translateX(60px); }
-    [data-reveal="right"].visible { transform: translateX(0); }
-    [data-reveal="scale"] { transform: scale(0.82); }
-    [data-reveal="scale"].visible { transform: scale(1); }
+    [data-reveal].in {
+      opacity: 1; transform: none;
+    }
+    [data-reveal][data-d="1"] { transition-delay: 0.08s; }
+    [data-reveal][data-d="2"] { transition-delay: 0.16s; }
+    [data-reveal][data-d="3"] { transition-delay: 0.24s; }
+    [data-reveal][data-d="4"] { transition-delay: 0.32s; }
+    [data-reveal][data-d="5"] { transition-delay: 0.4s; }
+
+    /* ── Word-by-word headline reveal ── */
+    .split { display: inline-flex; flex-wrap: wrap; gap: 0.18em; }
+    .split .word {
+      display: inline-block; overflow: hidden; line-height: 1;
+      padding-bottom: 0.06em;
+    }
+    .split .word > span {
+      display: inline-block;
+      transform: translateY(110%) skewY(6deg);
+      transition: transform 1.1s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    .split.in .word > span { transform: translateY(0) skewY(0); }
+    .split.in .word:nth-child(1) > span { transition-delay: 0.05s; }
+    .split.in .word:nth-child(2) > span { transition-delay: 0.12s; }
+    .split.in .word:nth-child(3) > span { transition-delay: 0.19s; }
+    .split.in .word:nth-child(4) > span { transition-delay: 0.26s; }
+    .split.in .word:nth-child(5) > span { transition-delay: 0.33s; }
+    .split.in .word:nth-child(6) > span { transition-delay: 0.40s; }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 1320px; margin: 0 auto;
+      padding: 0 32px;
+    }
+    section { position: relative; }
 
     /* ── Nav ── */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      padding: 0 32px; height: 64px;
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+      padding: 22px 32px;
       display: flex; align-items: center; justify-content: space-between;
-      transition: background 0.3s ease, backdrop-filter 0.3s ease;
+      transition: backdrop-filter 0.3s ease, background 0.3s ease;
     }
-    nav.scrolled { background: rgba(8, 8, 16, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.06); }
-    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-    .nav-logo-mark { width: 36px; height: 36px; border-radius: 10px; overflow: hidden; background: linear-gradient(135deg, #FFE4C4, #FFB07A, #C8956D); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .nav-logo-name { font-size: 18px; font-weight: 800; color: white; letter-spacing: -0.03em; }
-    .nav-logo-sub { font-size: 12px; color: var(--indigo); font-weight: 600; margin-left: 6px; }
-    .nav-center { display: flex; gap: 28px; align-items: center; }
-    .nav-actions { display: flex; gap: 12px; align-items: center; }
-    .nav-link { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.2s; }
-    .nav-link:hover { color: white; }
-    .btn-nav { padding: 9px 20px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); font-family: inherit; letter-spacing: -0.01em; }
-    .btn-primary-nav { background: linear-gradient(135deg, #6366F1, #8B5CF6); color: white; border: none; box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4); }
-    .btn-primary-nav:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(99, 102, 241, 0.5); }
-
-    /* ── HERO ── */
-    .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 120px 24px 80px; position: relative; overflow: hidden; }
-    .hero-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -55%); width: 800px; height: 800px; border-radius: 50%; background: radial-gradient(circle, rgba(200,149,109,0.22) 0%, rgba(99,102,241,0.12) 45%, transparent 70%); pointer-events: none; animation: glow-pulse 5s ease-in-out infinite; }
-    .hero-glow2 { position: absolute; top: 30%; left: 20%; width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(139,92,246,0.1) 0%, transparent 70%); pointer-events: none; }
-    .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 7px 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); backdrop-filter: blur(8px); font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.75); margin-bottom: 32px; animation: slide-up 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
-    .rec-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: rec-pulse 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite; display: inline-block; }
-
-    .hero-headline { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', Inter, sans-serif; font-size: clamp(48px, 7.5vw, 96px); font-weight: 800; line-height: 0.97; letter-spacing: -0.04em; margin-bottom: 28px; overflow: hidden; }
-    .hero-headline .word-wrap { overflow: hidden; display: inline-block; }
-    .hero-headline .word { display: inline-block; opacity: 0; transform: translateY(110%) skewY(4deg); }
-    .hero-headline .word.animate { animation: word-rise 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) forwards; }
-    .hero-headline .grad { background: linear-gradient(135deg, #FFD4A8 0%, #FFB07A 40%, #C8956D 70%, #8B5CF6 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-
-    .hero-sub { font-size: clamp(15px, 1.8vw, 18px); color: rgba(255,255,255,0.55); max-width: 560px; line-height: 1.7; margin-bottom: 16px; font-weight: 400; letter-spacing: 0.01em; animation: slide-up 0.9s 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
-    .hero-metric { display:inline-flex; align-items:center; gap:10px; font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 36px; font-weight: 500; animation: slide-up 0.9s 0.5s ease both; }
-    .hero-metric strong { color: white; font-weight: 700; }
-    .hero-metric-dot { width:4px; height:4px; border-radius:50%; background:rgba(255,255,255,0.2); }
-
-    .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; animation: slide-up 0.9s 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
-    .btn-hero-primary { padding: 16px 32px; border-radius: 14px; font-size: 16px; font-weight: 700; background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 60%, #A78BFA 100%); color: white; border: none; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 8px 32px rgba(99, 102, 241, 0.45); transition: all 0.2s cubic-bezier(0.34, 1.4, 0.64, 1); position: relative; overflow: hidden; font-family: inherit; letter-spacing: -0.01em; }
-    .btn-hero-primary::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent); opacity: 0; transition: opacity 0.2s; }
-    .btn-hero-primary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 16px 48px rgba(99, 102, 241, 0.55); }
-    .btn-hero-primary:hover::after { opacity: 1; }
-    .btn-hero-ghost { padding: 16px 28px; border-radius: 14px; font-size: 15px; font-weight: 600; background: transparent; color: rgba(255,255,255,0.6); border: 1.5px solid rgba(255,255,255,0.14); cursor: pointer; text-decoration: none; transition: all 0.2s ease; font-family: inherit; }
-    .btn-hero-ghost:hover { border-color: rgba(255,255,255,0.35); color: white; background: rgba(255,255,255,0.05); }
-
-    .hero-trust { display:flex; justify-content:center; align-items:center; gap:16px; flex-wrap:wrap; margin-top: 24px; font-size: 12px; color: rgba(255,255,255,0.35); font-weight: 500; animation: slide-up 0.9s 0.7s ease both; }
-    .hero-trust .stars { color: #FFB07A; letter-spacing: 1px; }
-    .hero-trust .sep { color: rgba(255,255,255,0.15); }
-
-    .hero-cappy-wrap { margin-top: 56px; position: relative; display: inline-block; animation: slide-up 1s 0.3s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
-    .hero-cappy-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 380px; height: 380px; border-radius: 50%; background: radial-gradient(circle, rgba(255,176,122,0.35) 0%, rgba(200,149,109,0.15) 45%, transparent 70%); pointer-events: none; animation: glow-pulse 3.5s ease-in-out infinite; }
-    .hero-cappy { width: 260px; height: 260px; position: relative; z-index: 2; animation: float 4s ease-in-out infinite; filter: drop-shadow(0 24px 48px rgba(200, 149, 109, 0.35)); }
-    .hero-cappy .eye-l, .hero-cappy .eye-r { transform-origin: center; transform-box: fill-box; animation: blink 4.5s ease-in-out infinite; }
-    .rec-badge { position: absolute; top: 20px; right: -10px; display: flex; align-items: center; gap: 6px; background: white; color: var(--red); font-size: 11px; font-weight: 800; padding: 6px 12px; border-radius: 999px; letter-spacing: 0.06em; box-shadow: 0 4px 16px rgba(239, 68, 68, 0.25); z-index: 3; animation: slide-up 1s 1s cubic-bezier(0.34, 1.4, 0.64, 1) both; }
-
-    /* ── PROOF BAR ── */
-    .proof-bar { background: #0A0A14; border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 28px 24px; }
-    .proof-items { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 32px; flex-wrap: wrap; }
-    .proof-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(255,255,255,0.55); font-weight: 600; letter-spacing: -0.005em; }
-    .proof-item .ic { font-size: 16px; }
-    .proof-item .stars { color: #FFB07A; letter-spacing: 1px; font-weight: 700; }
-    .proof-sep { width: 1px; height: 14px; background: rgba(255,255,255,0.08); }
-
-    /* ── STATEMENT ── */
-    .statement { background: var(--cream); color: var(--ink); padding: 140px 24px; text-align: center; }
-    .statement-eyebrow { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--tan); margin-bottom: 20px; }
-    .statement-headline { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Inter, sans-serif; font-size: clamp(36px, 5.5vw, 72px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.03; color: var(--ink); max-width: 860px; margin: 0 auto 24px; }
-    .statement-headline em { font-style: italic; color: var(--tan); }
-    .statement-sub { font-size: 17px; color: var(--slate); max-width: 500px; margin: 0 auto; line-height: 1.72; letter-spacing: 0.005em; }
-
-    /* ── HOW IT WORKS ── */
-    .how { background: #0A0A14; padding: 140px 24px; }
-    .section-label { text-align: center; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--indigo); margin-bottom: 16px; }
-    .section-title { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Inter, sans-serif; font-size: clamp(34px, 4.5vw, 58px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.05; text-align: center; color: white; max-width: 720px; margin: 0 auto 24px; }
-    .section-sub { text-align: center; color: rgba(255,255,255,0.4); max-width: 480px; margin: 0 auto 72px; font-size: 16px; line-height: 1.7; }
-    .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; max-width: 1100px; margin: 0 auto; }
-    .step-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 40px 32px; text-align: center; transition: all 0.3s cubic-bezier(0.34, 1.4, 0.64, 1); }
-    .step-card:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.15); transform: translateY(-6px); }
-    .step-number-big { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Inter, sans-serif; font-size: 72px; font-weight: 800; line-height: 1; background: linear-gradient(135deg, #FFD4A8, #C8956D); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 24px; }
-    .step-cappy-wrap { margin: 0 auto 20px; width: 110px; height: 110px; }
-    .step-card h3 { font-size: 19px; font-weight: 700; color: white; letter-spacing: -0.025em; margin-bottom: 10px; }
-    .step-card p { font-size: 14px; color: rgba(255,255,255,0.45); line-height: 1.7; letter-spacing: 0.005em; }
-
-    /* ── PRODUCT SHOWCASE ── */
-    .showcase { background: #06060F; padding: 140px 24px; overflow: hidden; position: relative; }
-    .showcase-glow { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:1000px; height:600px; border-radius:50%; background: radial-gradient(ellipse, rgba(99,102,241,0.08) 0%, transparent 70%); pointer-events:none; }
-    .showcase-grid { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 280px 1fr 280px; gap: 28px; align-items: start; position:relative; z-index:2; }
-    .mockup { background: #1C1C2E; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; box-shadow: 0 32px 64px rgba(0,0,0,0.5); }
-    .mockup-bar { background: #252538; padding: 11px 14px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid rgba(255,255,255,0.07); }
-    .mockup-dot { width: 9px; height: 9px; border-radius: 50%; }
-    .mockup-dot.r { background: #FF5F57; }
-    .mockup-dot.y { background: #FEBC2E; }
-    .mockup-dot.g { background: #28C840; }
-    .mockup-tab { margin-left: 10px; font-size: 10px; color: rgba(255,255,255,0.35); font-weight: 600; letter-spacing: 0.04em; }
-    .mockup-search { flex:1; background:rgba(255,255,255,0.06); border-radius:6px; padding:5px 12px; font-size:11px; color:rgba(255,255,255,0.35); margin-left:8px; }
-    .mockup-action { padding: 5px 10px; border-radius: 6px; background: rgba(99,102,241,0.2); color: #A78BFA; font-size: 11px; font-weight: 700; }
-    .mockup-body { padding: 20px; }
-
-    .ext-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-    .ext-mark { width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(135deg, #FFE4C4, #C8956D); display: flex; align-items: center; justify-content: center; }
-    .ext-name { font-size: 15px; font-weight: 800; color: white; letter-spacing: -0.02em; }
-    .ext-ver { margin-left: auto; font-size: 10px; color: rgba(255,255,255,0.3); font-weight: 600; }
-    .ext-rec-btn { width: 100%; padding: 14px; border-radius: 12px; background: linear-gradient(135deg, #6366F1, #8B5CF6); border: none; color: white; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4); }
-    .ext-divider { margin: 18px 0; display: flex; align-items: center; gap: 10px; }
-    .ext-divider .line { flex: 1; height: 1px; background: rgba(255,255,255,0.07); }
-    .ext-divider .lbl { font-size: 10px; color: rgba(255,255,255,0.3); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
-    .guide-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: rgba(255,255,255,0.04); border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 8px; }
-    .guide-thumb { width: 32px; height: 24px; border-radius: 5px; flex-shrink: 0; }
-    .guide-info { min-width: 0; }
-    .guide-title { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .guide-meta { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 2px; }
-
-    .step-block { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 14px; display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: start; margin-bottom: 12px; }
-    .step-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: white; flex-shrink: 0; }
-    .step-num.n1 { background: linear-gradient(135deg, #FFB07A, #C8956D); }
-    .step-num.n2 { background: linear-gradient(135deg, #6366F1, #8B5CF6); }
-    .step-num.n3 { background: linear-gradient(135deg, #10B981, #059669); }
-    .step-text { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.9); margin-bottom: 8px; line-height: 1.4; }
-    .step-shot { height: 70px; border-radius: 8px; overflow: hidden; position: relative; }
-    .step-shot.s1 { background: linear-gradient(135deg, #1E293B, #334155); }
-    .step-shot.s2 { background: linear-gradient(135deg, #1E1B4B, #312E81); }
-    .step-shot.s3 { background: linear-gradient(135deg, #064E3B, #065F46); }
-    .step-anno-circle { position: absolute; width: 22px; height: 22px; border-radius: 50%; background: rgba(239,68,68,0.9); border: 2px solid white; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: white; }
-    .step-anno-box { position: absolute; border: 2px solid rgba(239,68,68,0.8); border-radius: 6px; }
-    .step-anno-line { position: absolute; height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; }
-    .step-anno-btn { position: absolute; border-radius: 6px; }
-    .step-kept { font-size: 10px; color: #34d399; font-weight: 700; white-space: nowrap; }
-    .step-removed { font-size: 10px; color: rgba(255,255,255,0.3); font-weight: 700; white-space: nowrap; }
-
-    .anno-bar { display: flex; gap: 8px; align-items: center; padding: 12px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; margin-top: 4px; }
-    .anno-lbl { font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 600; }
-    .anno-tools { display: flex; gap: 6px; }
-    .anno-tool { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
-    .anno-tool.arrow { background: rgba(239,68,68,0.18); border: 1px solid rgba(239,68,68,0.3); color: #F87171; }
-    .anno-tool.box { background: rgba(99,102,241,0.18); border: 1px solid rgba(99,102,241,0.3); color: #A78BFA; }
-    .anno-tool.text { background: rgba(16,185,129,0.18); border: 1px solid rgba(16,185,129,0.3); color: #34D399; }
-    .anno-export { margin-left: auto; padding: 7px 14px; border-radius: 8px; background: linear-gradient(135deg, #6366F1, #8B5CF6); font-size: 11px; font-weight: 700; color: white; }
-
-    /* PDF mockup */
-    .pdf-card { background: white; border-radius: 18px; overflow: hidden; box-shadow: 0 32px 64px rgba(0,0,0,0.6); transform: rotate(1.5deg); transition: transform 0.4s cubic-bezier(0.34,1.4,0.64,1); }
-    .pdf-card:hover { transform: rotate(0deg) scale(1.02); }
-    .pdf-strip { height: 8px; background: linear-gradient(90deg, #6366F1, #8B5CF6, #C8956D); }
-    .pdf-content { padding: 22px 22px 18px; }
-    .pdf-eyebrow { font-size: 9px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #94A3B8; margin-bottom: 8px; }
-    .pdf-title-big { font-size: 17px; font-weight: 800; color: #0F172A; letter-spacing: -0.02em; line-height: 1.18; margin-bottom: 4px; }
-    .pdf-meta-line { font-size: 10px; color: #94A3B8; margin-bottom: 16px; }
-    .pdf-toc { background: #F8FAFC; border-radius: 8px; padding: 12px; margin-bottom: 14px; }
-    .pdf-toc-lbl { font-size: 9px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #94A3B8; margin-bottom: 8px; }
-    .pdf-toc-item { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; }
-    .pdf-toc-num { width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 7px; font-weight: 800; color: white; }
-    .pdf-toc-text { font-size: 10px; color: #334155; font-weight: 500; flex: 1; }
-    .pdf-toc-page { font-size: 9px; color: #94A3B8; }
-    .pdf-detail { margin-bottom: 12px; }
-    .pdf-detail-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; }
-    .pdf-detail-num { width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; color: white; flex-shrink: 0; margin-top: 1px; }
-    .pdf-detail-text { font-size: 10px; color: #334155; line-height: 1.5; }
-    .pdf-detail-text strong { color: #0F172A; }
-    .pdf-detail-shot { height: 48px; background: linear-gradient(135deg, #EEF2FF, #E0E7FF); border-radius: 6px; margin-left: 24px; position: relative; overflow: hidden; }
-    .pdf-detail-anno { position: absolute; top: 8px; right: 12px; width: 14px; height: 14px; border-radius: 50%; background: rgba(239,68,68,0.85); border: 1.5px solid white; display: flex; align-items: center; justify-content: center; font-size: 7px; font-weight: 800; color: white; }
-    .pdf-footer { border-top: 1px solid #E2E8F0; padding-top: 10px; display: flex; align-items: center; justify-content: space-between; }
-    .pdf-footer span { font-size: 9px; color: #CBD5E1; font-weight: 600; }
-
-    /* REC bar floating illustration */
-    .rec-bar-demo { display: flex; justify-content: center; margin-top: 56px; }
-    .rec-bar { display: inline-flex; align-items: center; gap: 12px; background: #1C1C2E; border: 1px solid rgba(255,255,255,0.12); border-radius: 999px; padding: 10px 18px 10px 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); animation: float 4s ease-in-out infinite; }
-    .rec-bar .rec-lbl { font-size: 12px; font-weight: 800; color: white; letter-spacing: 0.04em; }
-    .rec-bar .sep { width: 1px; height: 14px; background: rgba(255,255,255,0.15); }
-    .rec-bar .step-count { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.6); }
-    .rec-bar .step-count strong { color: white; }
-    .rec-bar .stop-btn { width: 22px; height: 22px; border-radius: 6px; background: rgba(239,68,68,0.2); border: 1.5px solid rgba(239,68,68,0.5); display: flex; align-items: center; justify-content: center; }
-    .rec-bar .stop-btn::after { content: ''; width: 8px; height: 8px; background: #EF4444; border-radius: 2px; }
-    .rec-bar-note { display: block; font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 14px; text-align: center; }
-
-    /* ── FEATURES (existing panels) ── */
-    .feature-panel { display: grid; grid-template-columns: 1fr 1fr; align-items: center; min-height: 600px; padding: 0; overflow: hidden; }
-    .feature-panel:nth-child(odd) { direction: rtl; }
-    .feature-panel:nth-child(odd) > * { direction: ltr; }
-    .feature-text { padding: 80px 64px 80px 80px; }
-    .feature-panel:nth-child(even) .feature-text { padding: 80px 80px 80px 64px; }
-    .feature-tag { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 20px; }
-    .feature-tag.warm { background: rgba(200, 149, 109, 0.15); color: var(--sunrise); border: 1px solid rgba(200, 149, 109, 0.25); }
-    .feature-tag.cool { background: rgba(99, 102, 241, 0.15); color: var(--lav); border: 1px solid rgba(99, 102, 241, 0.25); }
-    .feature-tag.mint { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.25); }
-    .feature-h2 { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Inter, sans-serif; font-size: clamp(32px, 3.5vw, 52px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.03; margin-bottom: 20px; }
-    .feature-p { font-size: 16px; line-height: 1.72; max-width: 400px; letter-spacing: 0.005em; }
-    .feature-visual { height: 600px; display: flex; align-items: center; justify-content: center; position: relative; }
-    .fp1 { background: #0D0D1A; color: white; }
-    .fp1 .feature-p { color: rgba(255,255,255,0.55); }
-    .fp1 .feature-visual { background: #06060F; }
-    .fp1-visual-inner { position: relative; display: flex; align-items: center; justify-content: center; }
-    .fp1-glow { position: absolute; width: 320px; height: 320px; border-radius: 50%; background: radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%); animation: glow-pulse 3s ease-in-out infinite; }
-    .fp2 { background: var(--cream); color: var(--ink); }
-    .fp2 .feature-p { color: var(--slate); }
-    .fp2 .feature-visual { background: #FFF0D6; }
-    .fp3 { background: #0A0814; color: white; }
-    .fp3 .feature-p { color: rgba(255,255,255,0.55); }
-    .fp3 .feature-visual { background: #060512; }
-
-    .step-pills { display: flex; flex-direction: column; gap: 10px; padding: 32px; }
-    .step-pill { display: flex; align-items: center; gap: 12px; padding: 14px 18px; background: white; border-radius: 14px; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.07); transition: transform 0.2s, box-shadow 0.2s; }
-    .step-pill:hover { transform: translateX(4px); box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12); }
-    .pill-num { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #FFB07A, #C8956D); color: white; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .pill-text { font-size: 14px; font-weight: 600; color: var(--ink); }
-    .pill-crossed { opacity: 0.35; text-decoration: line-through; }
-    .pill-badge { margin-left: auto; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
-    .badge-removed { background: #FEF2F2; color: var(--red); }
-    .badge-kept { background: #ECFDF5; color: var(--mint); }
-
-    .pdf-mockup { background: white; border-radius: 16px; padding: 24px; width: 280px; box-shadow: 0 24px 64px rgba(0,0,0,0.4), 0 8px 24px rgba(99,102,241,0.15); transform: rotate(-2deg); transition: transform 0.4s cubic-bezier(0.34, 1.4, 0.64, 1); }
-    .pdf-mockup:hover { transform: rotate(0deg) scale(1.03); }
-    .pdf-top { height: 6px; background: linear-gradient(90deg, #6366F1, #8B5CF6); border-radius: 3px; margin-bottom: 16px; }
-    .pdf-title { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 14px; }
-    .pdf-step { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; }
-    .pdf-num { width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(135deg, #FFB07A, #C8956D); color: white; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-    .pdf-line { font-size: 11px; color: var(--slate); line-height: 1.5; }
-    .pdf-img { background: var(--snow); border-radius: 8px; height: 60px; margin-left: 30px; margin-top: 6px; display: flex; align-items: center; justify-content: center; }
-    .pdf-img-inner { width: 100%; height: 100%; border-radius: 8px; background: linear-gradient(135deg, #E0E7FF, #C7D2FE); }
-
-    /* ── FEATURES GRID ── */
-    .features-grid-section { background:#F8FAFC; padding:120px 24px; }
-    .feat-card { background: white; border-radius: 16px; padding: 24px 20px; border: 1px solid #E2E8F0; box-shadow: 0 1px 3px rgba(15,23,42,0.05); transition: transform 0.2s, box-shadow 0.2s; }
-    .feat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(15,23,42,0.1); }
-    .feat-icon { font-size: 28px; margin-bottom: 12px; }
-    .feat-card h3 { font-size: 14px; font-weight: 700; color: #0F172A; margin-bottom: 5px; letter-spacing: -0.015em; }
-    .feat-card p { font-size: 13px; color: #64748B; line-height: 1.6; letter-spacing: 0.005em; }
-
-    /* ── WHO IT'S FOR ── */
-    .for-section { background: #08080F; padding: 140px 24px; position: relative; overflow: hidden; }
-    .for-glow { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 800px; height: 600px; border-radius: 50%; background: radial-gradient(ellipse, rgba(255,176,122,0.06) 0%, transparent 70%); pointer-events: none; }
-    .persona-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; position: relative; z-index: 2; }
-    .persona-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 32px 24px; text-align: left; transition: all 0.3s cubic-bezier(0.34, 1.4, 0.64, 1); }
-    .persona-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,176,122,0.25); transform: translateY(-4px); }
-    .persona-icon { width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, rgba(255,176,122,0.2), rgba(99,102,241,0.2)); display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 18px; }
-    .persona-card h3 { font-size: 17px; font-weight: 700; color: white; margin-bottom: 10px; letter-spacing: -0.02em; }
-    .persona-card p { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.65; }
-
-    /* ── PRIVACY CALLOUT ── */
-    .privacy-section { background: #06060F; padding: 100px 24px; }
-    .privacy-callout { max-width: 1000px; margin: 0 auto; background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(99,102,241,0.06)); border: 1px solid rgba(16,185,129,0.2); border-radius: 28px; padding: 48px 56px; display: grid; grid-template-columns: auto 1fr auto; gap: 32px; align-items: center; position: relative; overflow: hidden; }
-    .privacy-callout::before { content: ''; position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(16,185,129,0.15) 0%, transparent 70%); pointer-events: none; }
-    .privacy-icon-big { width: 64px; height: 64px; border-radius: 18px; background: linear-gradient(135deg, #10B981, #059669); display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 8px 24px rgba(16,185,129,0.3); position: relative; z-index: 2; }
-    .privacy-text { position: relative; z-index: 2; }
-    .privacy-text h3 { font-size: 24px; font-weight: 800; color: white; letter-spacing: -0.025em; margin-bottom: 8px; line-height: 1.2; }
-    .privacy-text p { font-size: 15px; color: rgba(255,255,255,0.6); line-height: 1.65; max-width: 560px; }
-    .privacy-link { display: inline-flex; align-items: center; gap: 6px; padding: 12px 20px; border-radius: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: white; font-size: 14px; font-weight: 600; text-decoration: none; white-space: nowrap; transition: all 0.2s; position: relative; z-index: 2; }
-    .privacy-link:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
-
-    /* ── COMPARISON ── */
-    .compare-section { background: #0A0A14; padding: 140px 24px; }
-    .compare-wrap { max-width: 1000px; margin: 0 auto; overflow-x: auto; }
-    .compare-table { width: 100%; border-collapse: separate; border-spacing: 0; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; overflow: hidden; }
-    .compare-table th, .compare-table td { padding: 18px 20px; text-align: left; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-    .compare-table th { font-weight: 700; color: rgba(255,255,255,0.5); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; background: rgba(255,255,255,0.02); }
-    .compare-table td { color: rgba(255,255,255,0.7); font-weight: 500; }
-    .compare-table tr:last-child td { border-bottom: none; }
-    .compare-table th.highlight, .compare-table td.highlight { background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.06)); border-left: 1px solid rgba(99,102,241,0.2); border-right: 1px solid rgba(99,102,241,0.2); color: white; }
-    .compare-table thead th.highlight { background: linear-gradient(135deg, rgba(99,102,241,0.18), rgba(139,92,246,0.14)); color: #A78BFA; font-size: 13px; font-weight: 800; text-transform: none; letter-spacing: -0.01em; }
-    .compare-table tbody tr td.highlight { font-weight: 700; color: white; }
-    .compare-table tbody tr:first-child td.highlight { border-top: none; }
-    .compare-yes { color: #34D399; font-weight: 700; }
-    .compare-no { color: rgba(255,255,255,0.3); font-weight: 600; }
-    .compare-paid { color: #FBBF24; font-weight: 600; }
-    .compare-feature-name { font-weight: 600; color: white !important; }
-    .compare-note { text-align: center; font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 20px; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
-
-    /* ── TESTIMONIALS ── */
-    .testimonials { background: #06060F; padding: 140px 24px; }
-    .testimonial-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-    .testimonial-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 32px 28px; transition: all 0.3s cubic-bezier(0.34, 1.4, 0.64, 1); }
-    .testimonial-card:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.15); transform: translateY(-4px); }
-    .testimonial-stars { color: #FFB07A; letter-spacing: 1px; font-size: 14px; margin-bottom: 16px; }
-    .testimonial-quote { font-size: 15px; color: rgba(255,255,255,0.85); line-height: 1.7; margin-bottom: 24px; letter-spacing: -0.005em; }
-    .testimonial-author { display: flex; align-items: center; gap: 12px; }
-    .author-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: white; }
-    .author-avatar.a1 { background: linear-gradient(135deg, #FFB07A, #C8956D); }
-    .author-avatar.a2 { background: linear-gradient(135deg, #6366F1, #8B5CF6); }
-    .author-avatar.a3 { background: linear-gradient(135deg, #10B981, #059669); }
-    .author-name { font-size: 14px; font-weight: 700; color: white; display: block; }
-    .author-role { font-size: 12px; color: rgba(255,255,255,0.4); }
-
-    /* ── PRICING ── */
-    .pricing-section { background: #0A0A14; padding: 140px 24px; }
-    .pricing-card { max-width: 480px; margin: 0 auto; background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.06)); border: 1px solid rgba(99,102,241,0.3); border-radius: 28px; padding: 48px 40px; text-align: center; position: relative; overflow: hidden; }
-    .pricing-card::before { content: ''; position: absolute; top: -150px; left: -150px; width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(circle, rgba(255,176,122,0.15) 0%, transparent 70%); pointer-events: none; }
-    .pricing-badge { display: inline-block; padding: 6px 14px; border-radius: 999px; background: linear-gradient(135deg, #FFB07A, #C8956D); color: white; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 20px; position: relative; z-index: 2; }
-    .pricing-price { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Inter, sans-serif; font-size: 72px; font-weight: 800; color: white; letter-spacing: -0.04em; line-height: 1; margin-bottom: 8px; position: relative; z-index: 2; }
-    .pricing-price span { font-size: 18px; color: rgba(255,255,255,0.4); font-weight: 600; }
-    .pricing-tagline { font-size: 15px; color: rgba(255,255,255,0.55); line-height: 1.65; margin-bottom: 32px; position: relative; z-index: 2; }
-    .pricing-features { list-style: none; text-align: left; margin-bottom: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; position: relative; z-index: 2; }
-    .pricing-features li { font-size: 14px; color: rgba(255,255,255,0.75); display: flex; align-items: center; gap: 8px; }
-    .pricing-features li::before { content: '✓'; color: #34D399; font-weight: 800; }
-    .pricing-cta { position: relative; z-index: 2; }
-
-    /* ── FAQ ── */
-    .faq-section { background: var(--cream); color: var(--ink); padding: 140px 24px; }
-    .faq-section .section-label { color: var(--tan); }
-    .faq-section .section-title { color: var(--ink); }
-    .faq-list { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
-    .faq-item { background: white; border-radius: 16px; border: 1px solid rgba(15,23,42,0.06); overflow: hidden; transition: all 0.2s ease; }
-    .faq-item:hover { border-color: rgba(200,149,109,0.3); box-shadow: 0 4px 16px rgba(15,23,42,0.04); }
-    .faq-q { width: 100%; padding: 22px 28px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-family: inherit; font-size: 16px; font-weight: 700; color: var(--ink); text-align: left; letter-spacing: -0.015em; }
-    .faq-q:hover { color: var(--tan); }
-    .faq-q .chev { width: 22px; height: 22px; border-radius: 50%; background: rgba(15,23,42,0.05); display: flex; align-items: center; justify-content: center; color: var(--slate); font-size: 12px; font-weight: 700; flex-shrink: 0; transition: transform 0.3s ease, background 0.2s; }
-    .faq-item.open .chev { transform: rotate(45deg); background: var(--tan); color: white; }
-    .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.22, 0.61, 0.36, 1); }
-    .faq-item.open .faq-a { max-height: 400px; }
-    .faq-a-inner { padding: 0 28px 24px; font-size: 15px; color: var(--slate); line-height: 1.72; letter-spacing: 0.005em; }
-    .faq-a-inner a { color: var(--tan); font-weight: 600; text-decoration: none; }
-    .faq-a-inner a:hover { text-decoration: underline; }
-
-    /* ── MEET CAPPY ── */
-    .meet-cappy { background: var(--cream); color: var(--ink); padding: 140px 24px; text-align: center; }
-    .meet-eyebrow { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--tan); margin-bottom: 16px; }
-    .meet-headline { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Inter, sans-serif; font-size: clamp(38px, 5vw, 68px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.0; color: var(--ink); margin-bottom: 16px; }
-    .meet-sub { font-size: 16px; color: var(--slate); max-width: 560px; margin: 0 auto 64px; line-height: 1.75; letter-spacing: 0.005em; }
-    .expressions-row { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; max-width: 960px; margin: 0 auto 48px; }
-    .expression-card { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 24px 20px 20px; background: white; border-radius: 20px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.07); width: 140px; transition: all 0.3s cubic-bezier(0.34, 1.4, 0.64, 1); cursor: default; }
-    .expression-card:hover { transform: translateY(-8px) scale(1.03); box-shadow: 0 8px 32px rgba(200,149,109,0.22); }
-    .expression-card:hover svg { animation: wiggle 600ms cubic-bezier(0.34, 1.4, 0.64, 1); }
-    .expression-card span { font-size: 13px; font-weight: 700; color: var(--slate); letter-spacing: -0.01em; }
-
-    /* ── CTA ── */
-    .cta-section { background: #080810; padding: 160px 24px; text-align: center; position: relative; overflow: hidden; }
-    .cta-bg-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 900px; height: 900px; border-radius: 50%; background: radial-gradient(circle, rgba(255,176,122,0.12) 0%, rgba(200,149,109,0.06) 35%, rgba(99,102,241,0.08) 60%, transparent 80%); pointer-events: none; animation: glow-pulse 6s ease-in-out infinite; }
-    .cta-cappy-bg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -55%); opacity: 0.06; pointer-events: none; width: 500px; height: 500px; }
-    .cta-content { position: relative; z-index: 2; }
-    .cta-headline { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Inter, sans-serif; font-size: clamp(44px, 6.5vw, 88px); font-weight: 800; letter-spacing: -0.04em; line-height: 0.97; color: white; max-width: 860px; margin: 0 auto 24px; }
-    .cta-headline .grad { background: linear-gradient(135deg, #FFD4A8 0%, #FFB07A 40%, #8B5CF6 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-    .cta-sub { font-size: 16px; color: rgba(255,255,255,0.4); margin-bottom: 48px; letter-spacing: 0.01em; }
-    .btn-cta { display: inline-flex; align-items: center; gap: 10px; padding: 20px 44px; border-radius: 16px; font-size: 18px; font-weight: 700; background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 60%, #A78BFA 100%); color: white; text-decoration: none; box-shadow: 0 8px 40px rgba(99, 102, 241, 0.5); transition: all 0.3s cubic-bezier(0.34, 1.4, 0.64, 1); position: relative; overflow: hidden; letter-spacing: -0.01em; font-family: inherit; border: none; cursor: pointer; }
-    .btn-cta:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 20px 60px rgba(99, 102, 241, 0.6); }
-    .cta-note { margin-top: 20px; font-size: 14px; color: rgba(255,255,255,0.3); }
-    .cta-note span { color: rgba(255,255,255,0.5); font-weight: 600; }
-    .confetti-host { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-    .confetti { position: absolute; border-radius: 2px; pointer-events: none; }
-
-    /* ── FOOTER ── */
-    footer { background: #04040A; border-top: 1px solid rgba(255,255,255,0.05); padding: 56px 32px 40px; }
-    .footer-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 40px; }
-    .footer-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; margin-bottom: 14px; }
-    .footer-tagline { font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.65; max-width: 280px; }
-    .footer-col h4 { font-size: 12px; font-weight: 800; color: white; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px; }
-    .footer-col a { display: block; font-size: 14px; color: rgba(255,255,255,0.45); text-decoration: none; margin-bottom: 10px; transition: color 0.2s; }
-    .footer-col a:hover { color: white; }
-    .footer-bottom { max-width: 1200px; margin: 0 auto; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
-    .footer-bottom p { font-size: 13px; color: rgba(255,255,255,0.3); }
-    .footer-bottom a { color: rgba(255,255,255,0.45); text-decoration: none; font-weight: 600; }
-    .footer-bottom a:hover { color: white; }
-
-    /* ── Responsive ── */
-    @media (max-width: 1024px) {
-      .showcase-grid { grid-template-columns: 1fr; max-width: 600px; }
-      .persona-grid { grid-template-columns: repeat(2, 1fr); }
-      .testimonial-grid { grid-template-columns: 1fr; max-width: 560px; }
-      .footer-inner { grid-template-columns: 1fr 1fr; }
+    .nav.scrolled {
+      backdrop-filter: blur(16px);
+      background: rgba(10, 10, 10, 0.7);
+      border-bottom: 1px solid var(--line);
     }
-    @media (max-width: 900px) {
-      .feature-panel { grid-template-columns: 1fr; min-height: auto; }
-      .feature-panel:nth-child(odd) { direction: ltr; }
-      .feature-text { padding: 60px 32px; }
-      .feature-panel:nth-child(even) .feature-text { padding: 60px 32px; }
-      .feature-visual { height: 360px; }
-      .steps-grid { grid-template-columns: 1fr; gap: 20px; }
-      .nav-center { display: none; }
-      .privacy-callout { grid-template-columns: 1fr; padding: 36px 28px; text-align: center; }
-      .privacy-icon-big { margin: 0 auto; }
-      .pricing-features { grid-template-columns: 1fr; }
-      .compare-table th, .compare-table td { padding: 14px 12px; font-size: 13px; }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-mark {
+      width: 32px; height: 32px;
+      background: var(--tan);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
     }
-    @media (max-width: 600px) {
-      nav { padding: 0 16px; }
-      .nav-logo-sub { display: none; }
-      .btn-nav { padding: 8px 14px; font-size: 13px; }
-      .hero { padding: 100px 16px 60px; }
-      .hero-cappy { width: 200px; height: 200px; }
-      .hero-cappy-glow { width: 280px; height: 280px; }
-      .expressions-row { gap: 12px; }
-      .expression-card { width: 120px; padding: 18px 14px 14px; }
-      .persona-grid { grid-template-columns: 1fr; }
-      .footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
-      .proof-items { gap: 16px; }
-      .proof-sep { display: none; }
-      .pricing-card { padding: 36px 24px; }
-      .pricing-price { font-size: 56px; }
-      .compare-wrap { font-size: 12px; }
-      .compare-table th, .compare-table td { padding: 12px 8px; font-size: 12px; }
+    .brand-mark svg { width: 22px; height: 22px; }
+    .brand-name {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-size: 26px;
+      letter-spacing: -0.02em;
+      color: var(--fg);
+    }
+    .nav-links {
+      display: flex; gap: 32px;
+      font-size: 14px;
+      letter-spacing: -0.01em;
+    }
+    .nav-links a {
+      color: var(--fg-mute); text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .nav-links a:hover { color: var(--fg); }
+    .nav-cta {
+      padding: 10px 18px;
+      background: var(--fg);
+      color: var(--bg);
+      border-radius: 999px;
+      font-size: 13px; font-weight: 600;
+      text-decoration: none;
+      letter-spacing: -0.01em;
+      transition: background 0.15s ease;
+    }
+    .nav-cta:hover { background: var(--tan); }
+    @media (max-width: 720px) {
+      .nav-links { display: none; }
     }
 
+    /* ════════════════════════════════════════════════════════════════════
+       HERO
+    ════════════════════════════════════════════════════════════════════ */
+    .hero {
+      min-height: 100vh;
+      padding: 160px 0 80px;
+      position: relative;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 12px;
+      font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--tan); font-weight: 500;
+      margin-bottom: 36px;
+    }
+    .hero-eyebrow::before {
+      content: ""; display: inline-block;
+      width: 28px; height: 1px; background: var(--tan);
+    }
+    .hero-h1 {
+      font-family: 'Geist', sans-serif;
+      font-weight: 500;
+      font-size: clamp(58px, 11vw, 184px);
+      letter-spacing: -0.04em;
+      line-height: 0.92;
+      margin-bottom: 56px;
+    }
+    .hero-h1 em {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--tan);
+    }
+    .hero-meta {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 60px; align-items: end;
+      padding-top: 48px;
+      border-top: 1px solid var(--line);
+    }
+    @media (max-width: 768px) {
+      .hero-meta { grid-template-columns: 1fr; gap: 32px; }
+    }
+    .hero-meta-text {
+      font-size: 18px;
+      max-width: 480px;
+      color: var(--fg-mute);
+      line-height: 1.55;
+    }
+    .hero-meta-text strong { color: var(--fg); font-weight: 500; }
+    .hero-cta-group { display: flex; flex-direction: column; gap: 12px; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 12px;
+      padding: 18px 28px;
+      background: var(--fg); color: var(--bg);
+      border: none; border-radius: 999px;
+      font-family: inherit; font-size: 15px; font-weight: 600;
+      letter-spacing: -0.01em;
+      text-decoration: none;
+      transition: background 0.15s ease, transform 0.15s ease;
+      white-space: nowrap;
+    }
+    .btn-primary:hover { background: var(--tan); transform: translateY(-2px); }
+    .btn-arrow {
+      display: inline-block;
+      transition: transform 0.2s ease;
+    }
+    .btn-primary:hover .btn-arrow { transform: translateX(4px); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 0;
+      color: var(--fg-mute);
+      font-size: 13px; font-weight: 500;
+      letter-spacing: -0.01em;
+      text-decoration: none;
+      border-bottom: 1px solid var(--line);
+      transition: color 0.15s ease, border-color 0.15s ease;
+    }
+    .btn-secondary:hover { color: var(--fg); border-color: var(--tan); }
+
+    .hero-stat {
+      font-family: 'Instrument Serif', serif;
+      font-size: 56px;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      color: var(--tan);
+    }
+    .hero-stat-label {
+      font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--fg-mute); margin-top: 8px;
+    }
+
+    /* Decorative orb */
+    .hero-orb {
+      position: absolute; pointer-events: none;
+      width: 480px; height: 480px;
+      right: -120px; top: 80px;
+      background: radial-gradient(circle, rgba(232, 168, 124, 0.18), transparent 65%);
+      filter: blur(40px);
+      z-index: -1;
+    }
+
+    /* ════════════════════════════════════════════════════════════════════
+       MARQUEE — competitive context
+    ════════════════════════════════════════════════════════════════════ */
+    .marquee {
+      padding: 32px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .marquee-track {
+      display: inline-flex;
+      gap: 80px;
+      animation: marquee-scroll 38s linear infinite;
+      will-change: transform;
+    }
+    @keyframes marquee-scroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    .marquee-item {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-size: 28px;
+      letter-spacing: -0.01em;
+      color: var(--fg-mute);
+      display: inline-flex; align-items: center; gap: 80px;
+    }
+    .marquee-item::after {
+      content: "✦"; color: var(--tan);
+      font-style: normal;
+    }
+    .marquee-item:last-child::after { content: ""; }
+
+    /* ════════════════════════════════════════════════════════════════════
+       PITCH — why this exists
+    ════════════════════════════════════════════════════════════════════ */
+    .pitch {
+      padding: 180px 0 120px;
+    }
+    .pitch-eyebrow {
+      font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--tan); font-weight: 500;
+      margin-bottom: 24px;
+    }
+    .pitch-h2 {
+      font-family: 'Geist', sans-serif;
+      font-weight: 400;
+      font-size: clamp(40px, 6vw, 88px);
+      letter-spacing: -0.03em;
+      line-height: 1.02;
+      margin-bottom: 80px;
+      max-width: 1100px;
+    }
+    .pitch-h2 em {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      color: var(--tan);
+    }
+
+    .three-col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 48px;
+      padding-top: 48px;
+      border-top: 1px solid var(--line);
+    }
+    @media (max-width: 900px) { .three-col { grid-template-columns: 1fr; gap: 56px; } }
+    .col-num {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      color: var(--tan);
+      font-size: 22px;
+      margin-bottom: 24px;
+    }
+    .col-h {
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+    .col-p {
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--fg-mute);
+    }
+
+    /* ════════════════════════════════════════════════════════════════════
+       PRODUCT — big stage
+    ════════════════════════════════════════════════════════════════════ */
+    .product {
+      padding: 120px 0 160px;
+      position: relative;
+    }
+    .product-stage {
+      background: linear-gradient(180deg, var(--bg-2), var(--bg));
+      border-radius: 28px;
+      border: 1px solid var(--line);
+      padding: 80px;
+      position: relative; overflow: hidden;
+    }
+    @media (max-width: 768px) { .product-stage { padding: 40px 24px; border-radius: 16px; } }
+
+    .stage-h {
+      font-family: 'Geist', sans-serif;
+      font-weight: 400;
+      font-size: clamp(32px, 5vw, 64px);
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      max-width: 720px;
+      margin-bottom: 64px;
+    }
+    .stage-h em { font-family: 'Instrument Serif', serif; font-style: italic; color: var(--tan); }
+
+    .stage-flow {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      position: relative;
+    }
+    @media (max-width: 900px) { .stage-flow { grid-template-columns: 1fr; } }
+    .flow-step {
+      background: rgba(255, 245, 228, 0.02);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 32px;
+      transition: border-color 0.3s ease, background 0.3s ease, transform 0.3s ease;
+    }
+    .flow-step:hover {
+      border-color: var(--tan);
+      background: rgba(232, 168, 124, 0.04);
+      transform: translateY(-4px);
+    }
+    .flow-step .num {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-size: 56px;
+      color: var(--tan);
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .flow-step .h {
+      font-size: 18px; font-weight: 500;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+    .flow-step .p {
+      font-size: 14px; line-height: 1.6;
+      color: var(--fg-mute);
+    }
+
+    /* ════════════════════════════════════════════════════════════════════
+       COMPARISON — the brutal truth
+    ════════════════════════════════════════════════════════════════════ */
+    .compare { padding: 160px 0; }
+    .compare-h {
+      font-family: 'Geist', sans-serif;
+      font-weight: 400;
+      font-size: clamp(40px, 6.5vw, 96px);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .compare-h em { font-family: 'Instrument Serif', serif; font-style: italic; color: var(--tan); }
+    .compare-sub {
+      font-size: 16px; color: var(--fg-mute);
+      max-width: 580px; line-height: 1.6;
+      margin-bottom: 80px;
+    }
+
+    .comp-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px;
+    }
+    .comp-table th, .comp-table td {
+      text-align: left; padding: 22px 20px;
+      border-bottom: 1px solid var(--line);
+      font-weight: 400;
+    }
+    .comp-table th {
+      font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--fg-mute); font-weight: 500;
+      padding-bottom: 16px;
+    }
+    .comp-table .name {
+      font-family: 'Instrument Serif', serif;
+      font-size: 22px; letter-spacing: -0.01em;
+    }
+    .comp-table .row-chingu {
+      background: rgba(232, 168, 124, 0.06);
+    }
+    .comp-table .row-chingu .name {
+      color: var(--tan);
+      font-style: italic;
+    }
+    .comp-table .price-paid {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--red); font-size: 14px;
+    }
+    .comp-table .price-free {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--mint); font-size: 14px;
+    }
+    .comp-table .yes { color: var(--mint); font-size: 16px; }
+    .comp-table .no { color: var(--fg-mute); font-size: 16px; }
+    @media (max-width: 768px) {
+      .comp-table { font-size: 13px; }
+      .comp-table th, .comp-table td { padding: 14px 10px; }
+      .comp-table .name { font-size: 16px; }
+    }
+
+    /* ════════════════════════════════════════════════════════════════════
+       BIG STAT BAND
+    ════════════════════════════════════════════════════════════════════ */
+    .stat-band {
+      padding: 140px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    @media (max-width: 900px) { .stat-grid { grid-template-columns: repeat(2, 1fr); gap: 48px; } }
+    .stat-cell {
+      text-align: center;
+      padding: 24px;
+    }
+    .stat-num {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-size: clamp(64px, 10vw, 132px);
+      line-height: 1;
+      color: var(--tan);
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+    .stat-label {
+      font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--fg-mute); font-weight: 500;
+    }
+
+    /* ════════════════════════════════════════════════════════════════════
+       PRO / PRICING TEASER
+    ════════════════════════════════════════════════════════════════════ */
+    .pricing { padding: 180px 0 120px; }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 900px) { .pricing-grid { grid-template-columns: 1fr; } }
+    .price-card {
+      padding: 56px 48px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--bg-2);
+      position: relative; overflow: hidden;
+      transition: border-color 0.3s ease, transform 0.3s ease;
+    }
+    .price-card:hover { border-color: var(--tan); transform: translateY(-4px); }
+    .price-card.feature {
+      background: linear-gradient(160deg, rgba(232, 168, 124, 0.12), var(--bg-2));
+      border-color: rgba(232, 168, 124, 0.3);
+    }
+    .price-eyebrow {
+      font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--tan); font-weight: 500;
+      margin-bottom: 28px;
+    }
+    .price-num {
+      display: flex; align-items: baseline; gap: 12px;
+      margin-bottom: 6px;
+    }
+    .price-num .amt {
+      font-family: 'Instrument Serif', serif;
+      font-size: 96px; line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .price-num .period {
+      font-size: 14px; color: var(--fg-mute);
+    }
+    .price-tagline {
+      font-size: 15px; color: var(--fg-mute);
+      margin-bottom: 36px;
+    }
+    .price-list {
+      list-style: none; margin-bottom: 40px;
+    }
+    .price-list li {
+      padding: 12px 0;
+      font-size: 14px; color: var(--fg);
+      border-bottom: 1px solid var(--line);
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .price-list li:last-child { border-bottom: none; }
+    .price-list li::before {
+      content: "✦"; color: var(--tan); flex-shrink: 0;
+    }
+    .price-cta {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 16px 28px;
+      border-radius: 999px;
+      font-size: 14px; font-weight: 600;
+      letter-spacing: -0.01em;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .price-cta.primary {
+      background: var(--tan); color: var(--bg);
+    }
+    .price-cta.primary:hover {
+      background: var(--cream); transform: translateY(-2px);
+    }
+    .price-cta.ghost {
+      background: transparent; color: var(--fg);
+      border: 1px solid var(--line);
+    }
+    .price-cta.ghost:hover { border-color: var(--fg); }
+
+    /* ════════════════════════════════════════════════════════════════════
+       FINAL CTA
+    ════════════════════════════════════════════════════════════════════ */
+    .cta-final {
+      padding: 200px 0 200px;
+      text-align: center;
+      border-top: 1px solid var(--line);
+      position: relative;
+    }
+    .cta-final::after {
+      content: ""; position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(232, 168, 124, 0.1), transparent 60%);
+      filter: blur(80px);
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: -1;
+    }
+    .cta-h {
+      font-family: 'Geist', sans-serif;
+      font-weight: 400;
+      font-size: clamp(56px, 10vw, 152px);
+      letter-spacing: -0.04em;
+      line-height: 0.95;
+      margin-bottom: 48px;
+    }
+    .cta-h em { font-family: 'Instrument Serif', serif; font-style: italic; color: var(--tan); }
+
+    /* ════════════════════════════════════════════════════════════════════
+       FOOTER
+    ════════════════════════════════════════════════════════════════════ */
+    footer {
+      padding: 64px 0 48px;
+      border-top: 1px solid var(--line);
+      font-size: 13px;
+      color: var(--fg-mute);
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 64px;
+      padding-bottom: 80px;
+    }
+    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; } }
+    .footer-brand-h {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-size: 32px;
+      color: var(--fg);
+      margin-bottom: 16px;
+    }
+    .footer-col-h {
+      font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--fg-mute); font-weight: 500;
+      margin-bottom: 20px;
+    }
+    .footer-col a {
+      display: block; margin-bottom: 10px;
+      color: var(--fg); text-decoration: none;
+      font-size: 14px;
+      transition: color 0.15s ease;
+    }
+    .footer-col a:hover { color: var(--tan); }
+    .footer-bottom {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 32px;
+      border-top: 1px solid var(--line);
+      font-size: 12px; color: var(--fg-mute);
+    }
+
+    /* Selection */
+    ::selection { background: var(--tan); color: var(--bg); }
+
+    a, button, [data-cursor="hover"] { cursor: none; }
+
+    /* Reduced motion respect */
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
 </head>
 <body>
 
-<!-- ══ NAV ══ -->
-<nav id="nav">
-  <a class="nav-logo" href="#">
-    <div class="nav-logo-mark">
-      <svg width="28" height="28" viewBox="0 0 200 200">
-        <defs><radialGradient id="nbl" cx="40%" cy="30%" r="65%"><stop offset="0%" stop-color="#E8A87C"/><stop offset="100%" stop-color="#A67050"/></radialGradient></defs>
-        <ellipse cx="100" cy="112" rx="86" ry="76" fill="url(#nbl)"/>
-        <ellipse cx="38" cy="50" rx="14" ry="11" transform="rotate(-20 38 50)" fill="#A67050"/>
-        <ellipse cx="162" cy="50" rx="14" ry="11" transform="rotate(20 162 50)" fill="#A67050"/>
-        <ellipse cx="100" cy="136" rx="46" ry="29" fill="#E8B98E"/>
-        <circle cx="74" cy="90" r="11" fill="#1A0F0A"/><circle cx="126" cy="90" r="11" fill="#1A0F0A"/>
-        <circle cx="78" cy="85" r="4" fill="white"/><circle cx="130" cy="85" r="4" fill="white"/>
-        <ellipse cx="100" cy="127" rx="9" ry="5" fill="#1A0F0A"/>
-        <path d="M86 143 Q100 155 114 143" stroke="#1A0F0A" stroke-width="3" stroke-linecap="round" fill="none"/>
-      </svg>
-    </div>
-    <span class="nav-logo-name">chingu</span>
-    <span class="nav-logo-sub">친구</span>
-  </a>
-  <div class="nav-center">
-    <a class="nav-link" href="#preview">Preview</a>
-    <a class="nav-link" href="#how">How it works</a>
-    <a class="nav-link" href="#compare">Compare</a>
-    <a class="nav-link" href="#pricing">Pricing</a>
-    <a class="nav-link" href="#faq">FAQ</a>
-  </div>
-  <div class="nav-actions">
-    <a class="nav-link" href="https://github.com/21428122/chingu" target="_blank" rel="noopener">GitHub</a>
-    <a class="btn-nav btn-primary-nav" href="https://github.com/21428122/chingu" target="_blank" rel="noopener">Add to Chrome</a>
-  </div>
-</nav>
+  <!-- Custom cursor -->
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
 
-<!-- ══ HERO ══ -->
-<section class="hero">
-  <div class="hero-glow"></div>
-  <div class="hero-glow2"></div>
-
-  <div class="hero-badge">
-    <span class="rec-dot"></span>
-    Free forever · Open source · No account needed
-  </div>
-
-  <h1 class="hero-headline" id="heroHeadline" aria-label="SOPs that actually work.">
-    <span class="word-wrap"><span class="word" style="animation-delay:0.05s">SOPs</span></span>&nbsp;
-    <span class="word-wrap"><span class="word" style="animation-delay:0.18s"><span class="grad">that</span></span></span>&nbsp;
-    <span class="word-wrap"><span class="word" style="animation-delay:0.31s"><span class="grad">actually</span></span></span><br>
-    <span class="word-wrap"><span class="word" style="animation-delay:0.44s">work.</span></span>
-  </h1>
-
-  <p class="hero-sub">Click Record. Use your app. Get a finished step-by-step guide with annotated screenshots and a polished PDF, automatically.</p>
-
-  <div class="hero-metric">
-    <strong>~30 seconds</strong>
-    <span class="hero-metric-dot"></span>
-    <span>from recording stop to ready-to-share PDF</span>
-  </div>
-
-  <div class="hero-actions">
-    <a class="btn-hero-primary" href="https://github.com/21428122/chingu" target="_blank" rel="noopener">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg>
-      Add to Chrome, it's free
-    </a>
-    <a class="btn-hero-ghost" href="#preview">See it in action ↓</a>
-  </div>
-
-  <div class="hero-trust">
-    <span class="stars">★★★★★</span>
-    <span>Early access</span>
-    <span class="sep">·</span>
-    <span>100% open source (MIT)</span>
-    <span class="sep">·</span>
-    <span>Zero uploads, ever</span>
-    <span class="sep">·</span>
-    <span>No account required</span>
-  </div>
-
-  <div class="hero-cappy-wrap">
-    <div class="hero-cappy-glow"></div>
-    <svg class="hero-cappy" id="heroCappy" viewBox="0 0 200 200">
-      <defs>
-        <radialGradient id="hbody" cx="38%" cy="28%" r="70%"><stop offset="0%" stop-color="#E8A87C"/><stop offset="50%" stop-color="#C8956D"/><stop offset="100%" stop-color="#A06840"/></radialGradient>
-        <radialGradient id="hsnout" cx="42%" cy="32%" r="62%"><stop offset="0%" stop-color="#F2C99A"/><stop offset="100%" stop-color="#D4A070"/></radialGradient>
-        <radialGradient id="heye" cx="30%" cy="25%" r="75%"><stop offset="0%" stop-color="#FFFFFF"/><stop offset="100%" stop-color="#EEEEf8"/></radialGradient>
-        <filter id="cshadow"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#80501A" flood-opacity="0.28"/></filter>
-      </defs>
-      <g filter="url(#cshadow)">
-        <ellipse cx="100" cy="112" rx="88" ry="78" fill="url(#hbody)"/>
-        <ellipse cx="38" cy="50" rx="17" ry="13" transform="rotate(-22 38 50)" fill="#B87040"/>
-        <ellipse cx="162" cy="50" rx="17" ry="13" transform="rotate(22 162 50)" fill="#B87040"/>
-        <ellipse cx="38" cy="51" rx="8.5" ry="6" transform="rotate(-22 38 51)" fill="#FFD4A8"/>
-        <ellipse cx="162" cy="51" rx="8.5" ry="6" transform="rotate(22 162 51)" fill="#FFD4A8"/>
-        <ellipse cx="28" cy="118" rx="17" ry="11" fill="#FF8FA3" opacity="0.5"/>
-        <ellipse cx="172" cy="118" rx="17" ry="11" fill="#FF8FA3" opacity="0.5"/>
-        <ellipse cx="100" cy="138" rx="50" ry="32" fill="url(#hsnout)"/>
-        <ellipse cx="73" cy="89" rx="16" ry="17" fill="url(#heye)"/>
-        <ellipse cx="127" cy="89" rx="16" ry="17" fill="url(#heye)"/>
-        <g class="eye-l"><circle cx="75" cy="91" r="12" fill="#1A0A04"/><circle cx="79" cy="86" r="4.5" fill="white"/><circle cx="73" cy="94" r="1.8" fill="white" opacity="0.6"/></g>
-        <g class="eye-r"><circle cx="129" cy="91" r="12" fill="#1A0A04"/><circle cx="133" cy="86" r="4.5" fill="white"/><circle cx="127" cy="94" r="1.8" fill="white" opacity="0.6"/></g>
-        <ellipse cx="100" cy="128" rx="10" ry="5.5" fill="#1A0A04"/>
-        <path d="M84 144 Q100 158 116 144" stroke="#1A0A04" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-        <ellipse cx="86" cy="72" rx="34" ry="20" fill="white" opacity="0.11"/>
-      </g>
-    </svg>
-    <div class="rec-badge"><span class="rec-dot"></span>REC</div>
-  </div>
-</section>
-
-<!-- ══ PROOF BAR ══ -->
-<section class="proof-bar">
-  <div class="proof-items">
-    <div class="proof-item"><span class="stars">★★★★★</span><span>Loved by early users</span></div>
-    <div class="proof-sep"></div>
-    <div class="proof-item"><span class="ic">🔓</span><span>Open source · MIT</span></div>
-    <div class="proof-sep"></div>
-    <div class="proof-item"><span class="ic">🔒</span><span>Zero uploads</span></div>
-    <div class="proof-sep"></div>
-    <div class="proof-item"><span class="ic">⚡</span><span>Works on any website</span></div>
-    <div class="proof-sep"></div>
-    <div class="proof-item"><span class="ic">📦</span><span>~2MB extension</span></div>
-  </div>
-</section>
-
-<!-- ══ STATEMENT ══ -->
-<section class="statement">
-  <p class="statement-eyebrow" data-reveal>The problem</p>
-  <h2 class="statement-headline" data-reveal data-delay="1">
-    Your team forgets <em>everything</em><br>the moment someone leaves.
-  </h2>
-  <p class="statement-sub" data-reveal data-delay="2">
-    SOPs exist for this. But writing them is brutal. Screenshots, steps, formatting. Nobody has time. So nobody writes them.
-  </p>
-</section>
-
-<!-- ══ HOW IT WORKS ══ -->
-<section class="how" id="how">
-  <p class="section-label" data-reveal>How it works</p>
-  <h2 class="section-title" data-reveal data-delay="1">Three steps.<br>Seriously, just three.</h2>
-  <div class="steps-grid">
-
-    <div class="step-card" data-reveal data-delay="1">
-      <div class="step-number-big">01</div>
-      <div class="step-cappy-wrap">
-        <svg viewBox="0 0 200 200" width="110" height="110">
-          <defs><radialGradient id="sb1" cx="38%" cy="28%" r="70%"><stop offset="0%" stop-color="#E8A87C"/><stop offset="100%" stop-color="#A06840"/></radialGradient></defs>
-          <ellipse cx="100" cy="112" rx="85" ry="75" fill="url(#sb1)"/>
-          <ellipse cx="38" cy="50" rx="15" ry="12" transform="rotate(-22 38 50)" fill="#B87040"/>
-          <ellipse cx="162" cy="50" rx="15" ry="12" transform="rotate(22 162 50)" fill="#B87040"/>
-          <ellipse cx="38" cy="51" rx="7.5" ry="5.5" transform="rotate(-22 38 51)" fill="#FFD4A8"/>
-          <ellipse cx="162" cy="51" rx="7.5" ry="5.5" transform="rotate(22 162 51)" fill="#FFD4A8"/>
-          <ellipse cx="28" cy="116" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
-          <ellipse cx="172" cy="116" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
-          <ellipse cx="100" cy="136" rx="46" ry="29" fill="#E8B98E"/>
-          <path d="M64 90 Q74 100 84 90" stroke="#1A0A04" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-          <path d="M116 90 Q126 100 136 90" stroke="#1A0A04" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-          <ellipse cx="100" cy="126" rx="9" ry="5" fill="#1A0A04"/>
-          <path d="M90 143 Q100 150 110 143" stroke="#1A0A04" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-          <text x="142" y="62" font-family="Inter" font-weight="700" font-size="16" fill="#94A3B8" opacity="0.8">z</text>
-          <text x="153" y="50" font-family="Inter" font-weight="700" font-size="12" fill="#94A3B8" opacity="0.6">z</text>
+  <!-- ════ NAV ════ -->
+  <nav class="nav" id="nav">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 200 200">
+          <ellipse cx="100" cy="115" rx="92" ry="80" fill="#0A0A0A"/>
+          <ellipse cx="100" cy="140" rx="48" ry="30" fill="#1F1F1F"/>
+          <circle cx="75" cy="92" r="10" fill="#F5F1E8"/>
+          <circle cx="78" cy="88" r="3" fill="#E8A87C"/>
+          <circle cx="125" cy="92" r="10" fill="#F5F1E8"/>
+          <circle cx="128" cy="88" r="3" fill="#E8A87C"/>
+          <ellipse cx="100" cy="130" rx="9" ry="5" fill="#F5F1E8"/>
+          <path d="M85 144 Q100 156 115 144" stroke="#F5F1E8" stroke-width="3.5" stroke-linecap="round" fill="none"/>
         </svg>
       </div>
-      <h3>Click record.</h3>
-      <p>Hit the Chingu icon and press Start. A floating ● REC bar appears. No popups, no interruptions.</p>
+      <span class="brand-name">Chingu</span>
     </div>
 
-    <div class="step-card" data-reveal data-delay="2">
-      <div class="step-number-big">02</div>
-      <div class="step-cappy-wrap">
-        <svg viewBox="0 0 200 200" width="110" height="110">
-          <defs><radialGradient id="sb2" cx="38%" cy="28%" r="70%"><stop offset="0%" stop-color="#E8A87C"/><stop offset="100%" stop-color="#A06840"/></radialGradient></defs>
-          <ellipse cx="100" cy="112" rx="85" ry="75" fill="url(#sb2)"/>
-          <ellipse cx="38" cy="50" rx="15" ry="12" transform="rotate(-22 38 50)" fill="#B87040"/>
-          <ellipse cx="162" cy="50" rx="15" ry="12" transform="rotate(22 162 50)" fill="#B87040"/>
-          <ellipse cx="38" cy="51" rx="7.5" ry="5.5" transform="rotate(-22 38 51)" fill="#FFD4A8"/>
-          <ellipse cx="162" cy="51" rx="7.5" ry="5.5" transform="rotate(22 162 51)" fill="#FFD4A8"/>
-          <ellipse cx="28" cy="116" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
-          <ellipse cx="172" cy="116" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
-          <ellipse cx="100" cy="136" rx="46" ry="29" fill="#E8B98E"/>
-          <path d="M62 88 Q73 99 84 88" stroke="#1A0A04" stroke-width="6" stroke-linecap="round" fill="none"/>
-          <path d="M116 88 Q127 99 138 88" stroke="#1A0A04" stroke-width="6" stroke-linecap="round" fill="none"/>
-          <ellipse cx="100" cy="126" rx="9" ry="5" fill="#1A0A04"/>
-          <line x1="90" y1="144" x2="110" y2="144" stroke="#1A0A04" stroke-width="3" stroke-linecap="round"/>
-          <rect x="136" y="110" width="44" height="54" rx="5" fill="white" stroke="#E2E8F0" stroke-width="1.5"/>
-          <rect x="148" y="105" width="20" height="10" rx="3" fill="#94A3B8"/>
-          <line x1="143" y1="124" x2="173" y2="124" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round"/>
-          <line x1="143" y1="134" x2="168" y2="134" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round"/>
-          <line x1="143" y1="144" x2="173" y2="144" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round"/>
-          <line x1="143" y1="154" x2="162" y2="154" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <h3>Use your app normally.</h3>
-      <p>Every click, every screen, every navigation. Captured automatically.</p>
-    </div>
-
-    <div class="step-card" data-reveal data-delay="3">
-      <div class="step-number-big">03</div>
-      <div class="step-cappy-wrap">
-        <svg viewBox="0 0 200 200" width="110" height="110">
-          <defs><radialGradient id="sb3" cx="38%" cy="28%" r="70%"><stop offset="0%" stop-color="#E8A87C"/><stop offset="100%" stop-color="#A06840"/></radialGradient></defs>
-          <ellipse cx="100" cy="112" rx="85" ry="75" fill="url(#sb3)"/>
-          <ellipse cx="38" cy="50" rx="15" ry="12" transform="rotate(-22 38 50)" fill="#B87040"/>
-          <ellipse cx="162" cy="50" rx="15" ry="12" transform="rotate(22 162 50)" fill="#B87040"/>
-          <ellipse cx="38" cy="51" rx="7.5" ry="5.5" transform="rotate(-22 38 51)" fill="#FFD4A8"/>
-          <ellipse cx="162" cy="51" rx="7.5" ry="5.5" transform="rotate(22 162 51)" fill="#FFD4A8"/>
-          <ellipse cx="28" cy="116" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
-          <ellipse cx="172" cy="116" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
-          <ellipse cx="100" cy="136" rx="46" ry="29" fill="#E8B98E"/>
-          <path d="M61 94 Q74 76 87 94" stroke="#1A0A04" stroke-width="5" stroke-linecap="round" fill="none"/>
-          <path d="M113 94 Q126 76 139 94" stroke="#1A0A04" stroke-width="5" stroke-linecap="round" fill="none"/>
-          <ellipse cx="100" cy="126" rx="9" ry="5" fill="#1A0A04"/>
-          <path d="M82 143 Q100 161 118 143" stroke="#1A0A04" stroke-width="4" stroke-linecap="round" fill="none"/>
-          <text x="142" y="66" font-size="18">✨</text>
-        </svg>
-      </div>
-      <h3>Your guide is ready.</h3>
-      <p>Click Stop in the bar. A toast shows "✅ 5 steps captured → View Guide." Open, annotate, export. Done.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ══ PRODUCT SHOWCASE ══ -->
-<section class="showcase" id="preview">
-  <div class="showcase-glow"></div>
-  <p class="section-label" data-reveal>Product preview</p>
-  <h2 class="section-title" data-reveal data-delay="1">See what you're installing</h2>
-  <p class="section-sub" data-reveal data-delay="2">Three screens. That's the whole product.</p>
-
-  <div class="showcase-grid">
-    <!-- Extension popup mockup -->
-    <div class="mockup" data-reveal="left">
-      <div class="mockup-bar">
-        <div class="mockup-dot r"></div>
-        <div class="mockup-dot y"></div>
-        <div class="mockup-dot g"></div>
-        <span class="mockup-tab" style="margin-left:auto">CHINGU · POPUP</span>
-      </div>
-      <div class="mockup-body">
-        <div class="ext-header">
-          <div class="ext-mark">
-            <svg viewBox="0 0 200 200" width="20" height="20">
-              <ellipse cx="100" cy="112" rx="86" ry="76" fill="#E8A87C"/>
-              <ellipse cx="100" cy="136" rx="46" ry="29" fill="#E8B98E"/>
-              <circle cx="74" cy="90" r="11" fill="#1A0A04"/><circle cx="78" cy="85" r="4" fill="white"/>
-              <circle cx="126" cy="90" r="11" fill="#1A0A04"/><circle cx="130" cy="85" r="4" fill="white"/>
-              <ellipse cx="100" cy="127" rx="9" ry="5" fill="#1A0A04"/>
-              <path d="M86 143 Q100 155 114 143" stroke="#1A0A04" stroke-width="3" stroke-linecap="round" fill="none"/>
-            </svg>
-          </div>
-          <span class="ext-name">chingu</span>
-          <span class="ext-ver">v1.0</span>
-        </div>
-        <button class="ext-rec-btn">
-          <span class="rec-dot"></span>
-          Start Recording
-        </button>
-        <div class="ext-divider">
-          <div class="line"></div>
-          <span class="lbl">3 guides saved</span>
-          <div class="line"></div>
-        </div>
-        <div class="guide-row">
-          <div class="guide-thumb" style="background:linear-gradient(135deg,#E0E7FF,#C7D2FE)"></div>
-          <div class="guide-info">
-            <div class="guide-title">Reset password</div>
-            <div class="guide-meta">5 steps · 2 min ago</div>
-          </div>
-        </div>
-        <div class="guide-row">
-          <div class="guide-thumb" style="background:linear-gradient(135deg,#D1FAE5,#A7F3D0)"></div>
-          <div class="guide-info">
-            <div class="guide-title">Employee onboarding</div>
-            <div class="guide-meta">12 steps · yesterday</div>
-          </div>
-        </div>
-        <div class="guide-row">
-          <div class="guide-thumb" style="background:linear-gradient(135deg,#FEF3C7,#FDE68A)"></div>
-          <div class="guide-info">
-            <div class="guide-title">Export monthly report</div>
-            <div class="guide-meta">8 steps · 3 days ago</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Guide editor -->
-    <div class="mockup" data-reveal="scale">
-      <div class="mockup-bar">
-        <div class="mockup-dot r"></div>
-        <div class="mockup-dot y"></div>
-        <div class="mockup-dot g"></div>
-        <div class="mockup-search">Guide · Reset password · 5 steps</div>
-        <div class="mockup-action">Export PDF</div>
-      </div>
-      <div class="mockup-body">
-        <div class="step-block">
-          <div class="step-num n1">1</div>
-          <div>
-            <div class="step-text">Click the Settings icon in the top-right corner</div>
-            <div class="step-shot s1">
-              <div class="step-anno-line" style="bottom:8px; left:10px; right:10px;"></div>
-              <div class="step-anno-line" style="bottom:24px; left:10px; width:60%;"></div>
-              <div class="step-anno-box" style="top:10px; right:10px; width:34px; height:34px;"></div>
-              <div class="step-anno-circle" style="top:18px; right:22px;">1</div>
-            </div>
-          </div>
-          <div class="step-kept">✓ kept</div>
-        </div>
-
-        <div class="step-block">
-          <div class="step-num n2">2</div>
-          <div>
-            <div class="step-text">Navigate to Security → Change Password</div>
-            <div class="step-shot s2">
-              <div class="step-anno-line" style="top:12px; left:10px; width:35%; height:10px;"></div>
-              <div class="step-anno-box" style="top:10px; left:10px; width:35%; height:14px;"></div>
-              <div class="step-anno-line" style="bottom:8px; left:10px; right:10px;"></div>
-              <div class="step-anno-circle" style="top:6px; left:42%;">2</div>
-            </div>
-          </div>
-          <div class="step-kept">✓ kept</div>
-        </div>
-
-        <div class="step-block">
-          <div class="step-num n3">3</div>
-          <div>
-            <div class="step-text">Enter your new password and click Save</div>
-            <div class="step-shot s3">
-              <div class="step-anno-btn" style="top:10px; left:10px; right:10px; height:24px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1);"></div>
-              <div class="step-anno-btn" style="bottom:10px; right:10px; width:54px; height:20px; background:linear-gradient(135deg,#10B981,#059669);"></div>
-              <div class="step-anno-circle" style="bottom:6px; right:6px;">3</div>
-            </div>
-          </div>
-          <div class="step-kept">✓ kept</div>
-        </div>
-
-        <div class="anno-bar">
-          <span class="anno-lbl">Annotations:</span>
-          <div class="anno-tools">
-            <div class="anno-tool arrow">→</div>
-            <div class="anno-tool box">□</div>
-            <div class="anno-tool text">T</div>
-          </div>
-          <div class="anno-export">Export PDF ↗</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PDF mockup -->
-    <div class="pdf-card" data-reveal="right">
-      <div class="pdf-strip"></div>
-      <div class="pdf-content">
-        <div class="pdf-eyebrow">Standard Operating Procedure</div>
-        <div class="pdf-title-big">How to Reset<br>a Password</div>
-        <div class="pdf-meta-line">3 steps · Created with Chingu</div>
-
-        <div class="pdf-toc">
-          <div class="pdf-toc-lbl">Contents</div>
-          <div class="pdf-toc-item">
-            <div class="pdf-toc-num" style="background:linear-gradient(135deg,#FFB07A,#C8956D)">1</div>
-            <div class="pdf-toc-text">Click Settings icon</div>
-            <div class="pdf-toc-page">p.2</div>
-          </div>
-          <div class="pdf-toc-item">
-            <div class="pdf-toc-num" style="background:linear-gradient(135deg,#6366F1,#8B5CF6)">2</div>
-            <div class="pdf-toc-text">Navigate to Security</div>
-            <div class="pdf-toc-page">p.3</div>
-          </div>
-          <div class="pdf-toc-item">
-            <div class="pdf-toc-num" style="background:linear-gradient(135deg,#10B981,#059669)">3</div>
-            <div class="pdf-toc-text">Enter new password</div>
-            <div class="pdf-toc-page">p.4</div>
-          </div>
-        </div>
-
-        <div class="pdf-detail">
-          <div class="pdf-detail-row">
-            <div class="pdf-detail-num" style="background:linear-gradient(135deg,#FFB07A,#C8956D)">1</div>
-            <div class="pdf-detail-text">Click the <strong>Settings</strong> icon in the top-right corner.</div>
-          </div>
-          <div class="pdf-detail-shot">
-            <div class="pdf-detail-anno">1</div>
-          </div>
-        </div>
-
-        <div class="pdf-footer">
-          <span>chingu · open source</span>
-          <span>Page 1 of 4</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="rec-bar-demo" data-reveal data-delay="2">
-    <div>
-      <div class="rec-bar">
-        <div style="display:flex; align-items:center; gap:6px;">
-          <span class="rec-dot"></span>
-          <span class="rec-lbl">REC</span>
-        </div>
-        <div class="sep"></div>
-        <span class="step-count">Step <strong>7</strong> captured</span>
-        <div class="sep"></div>
-        <div class="stop-btn"></div>
-      </div>
-      <span class="rec-bar-note">↑ The floating REC bar. Visible on every tab while you record.</span>
-    </div>
-  </div>
-</section>
-
-<!-- ══ FEATURE 1: RECORD ══ -->
-<div class="feature-panel fp1">
-  <div class="feature-text">
-    <span class="feature-tag cool" data-reveal>✦ Capture</span>
-    <h2 class="feature-h2" data-reveal data-delay="1">Every click.<br>Every screen.<br>Automatically.</h2>
-    <p class="feature-p" data-reveal data-delay="2">Click Start and use your app like normal. A tiny floating ● REC bar shows your live step count. Click Stop from any tab without ever reopening the popup. Every click, navigation, and input captured with a screenshot. You never touch a camera.</p>
-  </div>
-  <div class="feature-visual">
-    <div class="fp1-visual-inner" data-reveal="scale">
-      <div class="fp1-glow"></div>
-      <svg viewBox="0 0 200 200" width="260" height="260" style="position:relative;z-index:2;filter:drop-shadow(0 24px 48px rgba(200,149,109,0.3));animation:float-slow 4s ease-in-out infinite">
-        <defs>
-          <radialGradient id="f1b" cx="38%" cy="28%" r="70%"><stop offset="0%" stop-color="#E8A87C"/><stop offset="100%" stop-color="#A06840"/></radialGradient>
-          <radialGradient id="f1s" cx="42%" cy="32%" r="62%"><stop offset="0%" stop-color="#F2C99A"/><stop offset="100%" stop-color="#D4A070"/></radialGradient>
-        </defs>
-        <ellipse cx="100" cy="112" rx="87" ry="77" fill="url(#f1b)"/>
-        <ellipse cx="38" cy="50" rx="16" ry="12" transform="rotate(-22 38 50)" fill="#B87040"/>
-        <ellipse cx="162" cy="50" rx="16" ry="12" transform="rotate(22 162 50)" fill="#B87040"/>
-        <ellipse cx="38" cy="51" rx="8" ry="6" transform="rotate(-22 38 51)" fill="#FFD4A8"/>
-        <ellipse cx="162" cy="51" rx="8" ry="6" transform="rotate(22 162 51)" fill="#FFD4A8"/>
-        <ellipse cx="28" cy="116" rx="16" ry="10" fill="#FF8FA3" opacity="0.48"/>
-        <ellipse cx="172" cy="116" rx="16" ry="10" fill="#FF8FA3" opacity="0.48"/>
-        <ellipse cx="100" cy="136" rx="48" ry="30" fill="url(#f1s)"/>
-        <path d="M62 88 Q73 99 84 88" stroke="#1A0A04" stroke-width="6" stroke-linecap="round" fill="none"/>
-        <path d="M116 88 Q127 99 138 88" stroke="#1A0A04" stroke-width="6" stroke-linecap="round" fill="none"/>
-        <ellipse cx="100" cy="126" rx="9.5" ry="5.5" fill="#1A0A04"/>
-        <line x1="89" y1="144" x2="111" y2="144" stroke="#1A0A04" stroke-width="3" stroke-linecap="round"/>
-        <ellipse cx="86" cy="72" rx="30" ry="17" fill="white" opacity="0.1"/>
-        <rect x="138" y="112" width="48" height="58" rx="6" fill="white" stroke="#E2E8F0" stroke-width="1.5" transform="rotate(8 138 112)"/>
-        <rect x="152" y="106" width="20" height="11" rx="3.5" fill="#94A3B8" transform="rotate(8 152 106)"/>
-        <line x1="146" y1="128" x2="178" y2="124" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round"/>
-        <line x1="146" y1="138" x2="174" y2="134" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round"/>
-        <line x1="146" y1="148" x2="178" y2="144" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round"/>
-        <rect x="56" y="18" width="60" height="22" rx="11" fill="white"/>
-        <circle cx="70" cy="29" r="5" fill="#EF4444" opacity="0.95"/>
-        <text x="79" y="33" font-family="Inter" font-weight="800" font-size="10" fill="#0F172A" letter-spacing="0.5">REC</text>
-      </svg>
-    </div>
-  </div>
-</div>
-
-<!-- ══ FEATURE 2: POLISH ══ -->
-<div class="feature-panel fp2">
-  <div class="feature-text">
-    <span class="feature-tag warm" data-reveal>✦ Auto-Polish</span>
-    <h2 class="feature-h2" data-reveal data-delay="1">Noise removed.<br>Signal kept.</h2>
-    <p class="feature-p" data-reveal data-delay="2">Chingu's auto-polish removes duplicate steps, accidental clicks, and error-state screenshots. What you get is a clean, tight guide. Not a raw recording with 40 meaningless steps.</p>
-  </div>
-  <div class="feature-visual">
-    <div class="step-pills" data-reveal="scale">
-      <div class="step-pill"><div class="pill-num">1</div><div class="pill-text">Click Settings</div><span class="pill-badge badge-kept">✓ kept</span></div>
-      <div class="step-pill"><div class="pill-num" style="opacity:0.35">2</div><div class="pill-text pill-crossed">Click Settings again</div><span class="pill-badge badge-removed">removed</span></div>
-      <div class="step-pill"><div class="pill-num">3</div><div class="pill-text">Click Security</div><span class="pill-badge badge-kept">✓ kept</span></div>
-      <div class="step-pill"><div class="pill-num" style="opacity:0.35">4</div><div class="pill-text pill-crossed">Error: page not loaded</div><span class="pill-badge badge-removed">removed</span></div>
-      <div class="step-pill"><div class="pill-num">5</div><div class="pill-text">Click Change Password</div><span class="pill-badge badge-kept">✓ kept</span></div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ FEATURE 3: SHARE ══ -->
-<div class="feature-panel fp3">
-  <div class="feature-text">
-    <span class="feature-tag mint" data-reveal>✦ Annotate & Export</span>
-    <h2 class="feature-h2" data-reveal data-delay="1">Annotate. Edit.<br>Export. Done.</h2>
-    <p class="feature-p" data-reveal data-delay="2">Draw arrows, boxes, and numbered badges on screenshots. All moveable after placing. Drag steps to reorder. Add section chapters. Export a professional PDF with cover page, table of contents, and branded header on every page.</p>
-  </div>
-  <div class="feature-visual">
-    <div class="pdf-mockup" data-reveal="scale">
-      <div class="pdf-top"></div>
-      <div class="pdf-title">How to Reset a Password</div>
-      <div class="pdf-step">
-        <div class="pdf-num">1</div>
-        <div>
-          <div class="pdf-line">Click the Settings icon in the top-right corner.</div>
-          <div class="pdf-img"><div class="pdf-img-inner"></div></div>
-        </div>
-      </div>
-      <div class="pdf-step">
-        <div class="pdf-num">2</div>
-        <div>
-          <div class="pdf-line">Navigate to Security → Change Password.</div>
-          <div class="pdf-img"><div class="pdf-img-inner" style="background:linear-gradient(135deg,#C7D2FE,#DDD6FE)"></div></div>
-        </div>
-      </div>
-      <div class="pdf-step">
-        <div class="pdf-num">3</div>
-        <div class="pdf-line">Enter your new password and click Save.</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ FEATURES GRID ══ -->
-<section class="features-grid-section" id="features">
-  <p class="section-label" data-reveal style="color:#6366F1">Everything included. Free.</p>
-  <h2 class="section-title" data-reveal data-delay="1" style="color:#0F172A;margin-bottom:56px">
-    No feature gating.<br>No "Pro" tier.
-  </h2>
-  <div style="max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px">
-    <div class="feat-card" data-reveal data-delay="1"><div class="feat-icon">📸</div><h3>Auto-screenshots</h3><p>Every click gets a screenshot, automatically.</p></div>
-    <div class="feat-card" data-reveal data-delay="1"><div class="feat-icon">🔴</div><h3>Floating REC bar</h3><p>Stop recording from any tab. No popup needed.</p></div>
-    <div class="feat-card" data-reveal data-delay="2"><div class="feat-icon">✏️</div><h3>Screenshot annotation</h3><p>Arrows, boxes, numbers, text labels. All moveable.</p></div>
-    <div class="feat-card" data-reveal data-delay="2"><div class="feat-icon">✨</div><h3>Auto-polish</h3><p>Removes duplicate clicks and noise automatically.</p></div>
-    <div class="feat-card" data-reveal data-delay="3"><div class="feat-icon">§</div><h3>Section chapters</h3><p>Organise steps into named sections like A, B, C.</p></div>
-    <div class="feat-card" data-reveal data-delay="3"><div class="feat-icon">ℹ️</div><h3>Step callouts</h3><p>Add info tips or warning notes to any step.</p></div>
-    <div class="feat-card" data-reveal data-delay="1"><div class="feat-icon">📄</div><h3>Professional PDF</h3><p>Cover page, TOC, section dividers, branded footer.</p></div>
-    <div class="feat-card" data-reveal data-delay="2"><div class="feat-icon">📚</div><h3>Guide library</h3><p>All your guides in one place. Search, open, delete.</p></div>
-    <div class="feat-card" data-reveal data-delay="3"><div class="feat-icon">🎨</div><h3>Brand color</h3><p>Set your accent color. PDF matches your brand.</p></div>
-  </div>
-</section>
-
-<!-- ══ WHO IT'S FOR ══ -->
-<section class="for-section">
-  <div class="for-glow"></div>
-  <p class="section-label" data-reveal>Who it's for</p>
-  <h2 class="section-title" data-reveal data-delay="1">Built for anyone<br>who writes SOPs.</h2>
-  <p class="section-sub" data-reveal data-delay="2">If you've ever said "let me show you how" to a coworker, this is for you.</p>
-
-  <div class="persona-grid">
-    <div class="persona-card" data-reveal data-delay="1">
-      <div class="persona-icon">⚙️</div>
-      <h3>Ops & Admin Teams</h3>
-      <p>Document processes before someone leaves. Train new hires in hours, not days.</p>
-    </div>
-    <div class="persona-card" data-reveal data-delay="2">
-      <div class="persona-icon">🎓</div>
-      <h3>Trainers & Educators</h3>
-      <p>Create step-by-step software guides for students and employees. No video editing needed.</p>
-    </div>
-    <div class="persona-card" data-reveal data-delay="3">
-      <div class="persona-icon">🚀</div>
-      <h3>Founders & Freelancers</h3>
-      <p>Document your processes to delegate or hand off work. Your future self will thank you.</p>
-    </div>
-    <div class="persona-card" data-reveal data-delay="4">
-      <div class="persona-icon">💬</div>
-      <h3>Support Teams</h3>
-      <p>Answer the same question once. Export a guide, link it forever. Zero repeat tickets.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ══ PRIVACY CALLOUT ══ -->
-<section class="privacy-section">
-  <div class="privacy-callout" data-reveal>
-    <div class="privacy-icon-big">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="11" width="18" height="11" rx="2"/>
-        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-      </svg>
-    </div>
-    <div class="privacy-text">
-      <h3>Your data never leaves your browser.</h3>
-      <p>No servers. No uploads. No accounts. Everything stays in your local Chrome storage. We literally can't see your guides, even if we wanted to.</p>
-    </div>
-    <a class="privacy-link" href="https://github.com/21428122/chingu" target="_blank" rel="noopener">
-      Verify in source ↗
-    </a>
-  </div>
-</section>
-
-<!-- ══ COMPARISON ══ -->
-<section class="compare-section" id="compare">
-  <p class="section-label" data-reveal>Comparison</p>
-  <h2 class="section-title" data-reveal data-delay="1">How Chingu compares</h2>
-  <p class="section-sub" data-reveal data-delay="2">The same core features. Without the account, the cloud, or the bill.</p>
-
-  <div class="compare-wrap" data-reveal>
-    <table class="compare-table">
-      <thead>
-        <tr>
-          <th>Feature</th>
-          <th class="highlight">Chingu</th>
-          <th>Scribe</th>
-          <th>Tango</th>
-          <th>Guidde</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="compare-feature-name">Price</td>
-          <td class="highlight"><span class="compare-yes">Free forever</span></td>
-          <td><span class="compare-paid">Paid plan</span></td>
-          <td><span class="compare-paid">Paid plan</span></td>
-          <td><span class="compare-paid">Paid plan</span></td>
-        </tr>
-        <tr>
-          <td class="compare-feature-name">Account required</td>
-          <td class="highlight"><span class="compare-yes">No</span></td>
-          <td><span class="compare-no">Yes</span></td>
-          <td><span class="compare-no">Yes</span></td>
-          <td><span class="compare-no">Yes</span></td>
-        </tr>
-        <tr>
-          <td class="compare-feature-name">Data stays on your device</td>
-          <td class="highlight"><span class="compare-yes">✓ Local only</span></td>
-          <td><span class="compare-no">Cloud</span></td>
-          <td><span class="compare-no">Cloud</span></td>
-          <td><span class="compare-no">Cloud</span></td>
-        </tr>
-        <tr>
-          <td class="compare-feature-name">Open source</td>
-          <td class="highlight"><span class="compare-yes">✓ MIT</span></td>
-          <td><span class="compare-no">—</span></td>
-          <td><span class="compare-no">—</span></td>
-          <td><span class="compare-no">—</span></td>
-        </tr>
-        <tr>
-          <td class="compare-feature-name">Auto-screenshots</td>
-          <td class="highlight"><span class="compare-yes">✓</span></td>
-          <td><span class="compare-yes">✓</span></td>
-          <td><span class="compare-yes">✓</span></td>
-          <td><span class="compare-yes">✓</span></td>
-        </tr>
-        <tr>
-          <td class="compare-feature-name">Annotation tools</td>
-          <td class="highlight"><span class="compare-yes">✓</span></td>
-          <td><span class="compare-yes">✓</span></td>
-          <td><span class="compare-yes">✓</span></td>
-          <td><span class="compare-yes">✓</span></td>
-        </tr>
-        <tr>
-          <td class="compare-feature-name">Step auto-polish</td>
-          <td class="highlight"><span class="compare-yes">✓</span></td>
-          <td><span class="compare-yes">✓</span></td>
-          <td><span class="compare-yes">✓</span></td>
-          <td><span class="compare-yes">✓</span></td>
-        </tr>
-        <tr>
-          <td class="compare-feature-name">Professional PDF export</td>
-          <td class="highlight"><span class="compare-yes">✓ Free</span></td>
-          <td><span class="compare-paid">Paid tier</span></td>
-          <td><span class="compare-paid">Paid tier</span></td>
-          <td><span class="compare-paid">Paid tier</span></td>
-        </tr>
-        <tr>
-          <td class="compare-feature-name">Branded export</td>
-          <td class="highlight"><span class="compare-yes">✓ Free</span></td>
-          <td><span class="compare-paid">Paid tier</span></td>
-          <td><span class="compare-paid">Paid tier</span></td>
-          <td><span class="compare-paid">Paid tier</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <p class="compare-note">Comparison reflects free-tier capabilities of competing products. Chingu has no paid tier. Every feature shown is free, forever.</p>
-</section>
-
-<!-- ══ TESTIMONIALS ══ -->
-<section class="testimonials">
-  <p class="section-label" data-reveal>Early feedback</p>
-  <h2 class="section-title" data-reveal data-delay="1">What early users say</h2>
-
-  <div class="testimonial-grid">
-    <div class="testimonial-card" data-reveal data-delay="1">
-      <div class="testimonial-stars">★★★★★</div>
-      <p class="testimonial-quote">"Finally, a free Scribe alternative that doesn't require setting up an account. Works exactly as advertised. The PDF export is surprisingly professional."</p>
-      <div class="testimonial-author">
-        <div class="author-avatar a1">PK</div>
-        <div>
-          <span class="author-name">Priya K.</span>
-          <span class="author-role">Operations Lead</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="testimonial-card" data-reveal data-delay="2">
-      <div class="testimonial-stars">★★★★★</div>
-      <p class="testimonial-quote">"I used Tango before switching. The annotation tools are better, the PDF is cleaner, and it's completely free. No-brainer for my team."</p>
-      <div class="testimonial-author">
-        <div class="author-avatar a2">MT</div>
-        <div>
-          <span class="author-name">Marcus T.</span>
-          <span class="author-role">Support Manager</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="testimonial-card" data-reveal data-delay="3">
-      <div class="testimonial-stars">★★★★★</div>
-      <p class="testimonial-quote">"Made our entire onboarding doc in 20 minutes. Auto-polish removed every accidental click. Sent the PDF straight to HR. Done."</p>
-      <div class="testimonial-author">
-        <div class="author-avatar a3">SL</div>
-        <div>
-          <span class="author-name">Sarah L.</span>
-          <span class="author-role">Startup Founder</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══ PRICING ══ -->
-<section class="pricing-section" id="pricing">
-  <p class="section-label" data-reveal>Pricing</p>
-  <h2 class="section-title" data-reveal data-delay="1">One tier.<br>Free forever.</h2>
-  <p class="section-sub" data-reveal data-delay="2">No trials. No credit cards. No "upgrade for this feature" prompts.</p>
-
-  <div class="pricing-card" data-reveal="scale">
-    <div class="pricing-badge">Free Forever</div>
-    <div class="pricing-price">$0<span> / month</span></div>
-    <p class="pricing-tagline">Everything, always free. Even the PDF export. Even the branding. Yes, really.</p>
-    <ul class="pricing-features">
-      <li>Unlimited guides</li>
-      <li>Auto-screenshots</li>
-      <li>Annotation tools</li>
-      <li>Professional PDF</li>
-      <li>Guide library</li>
-      <li>Auto-polish</li>
-      <li>Brand color</li>
-      <li>Section chapters</li>
-      <li>No account needed</li>
-      <li>Stays local</li>
-      <li>Open source (MIT)</li>
-      <li>Forever, not "for now"</li>
-    </ul>
-    <a class="btn-hero-primary pricing-cta" href="https://github.com/21428122/chingu" target="_blank" rel="noopener">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg>
-      Add to Chrome →
-    </a>
-  </div>
-</section>
-
-<!-- ══ FAQ ══ -->
-<section class="faq-section" id="faq">
-  <p class="section-label" data-reveal>FAQ</p>
-  <h2 class="section-title" data-reveal data-delay="1">Common questions</h2>
-
-  <div class="faq-list" data-reveal data-delay="2">
-    <div class="faq-item">
-      <button class="faq-q">Does Chingu upload my screenshots anywhere?<span class="chev">+</span></button>
-      <div class="faq-a"><div class="faq-a-inner">Never. Everything is stored locally in your browser using Chrome's local storage API. No server ever receives your screenshots or guide data. You can <a href="https://github.com/21428122/chingu" target="_blank" rel="noopener">verify this yourself in the open-source code</a>.</div></div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-q">What permissions does the extension need?<span class="chev">+</span></button>
-      <div class="faq-a"><div class="faq-a-inner">Chingu needs <strong>activeTab</strong> permission (to capture screenshots when you're recording) and <strong>tabs</strong> permission (so the floating REC bar persists when you switch tabs). It does <em>not</em> request access to cookies, passwords, browsing history, or background data.</div></div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-q">Does it work on every website?<span class="chev">+</span></button>
-      <div class="faq-a"><div class="faq-a-inner">Yes, any standard web page in Chrome. There are a few exceptions: Chrome's internal pages (chrome://), the Chrome Web Store itself, and other extension pages. Chrome blocks all extensions from injecting into those, not just Chingu.</div></div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-q">Is it really free? What's the catch?<span class="chev">+</span></button>
-      <div class="faq-a"><div class="faq-a-inner">No catch. Chingu is open source under the MIT license and built as a free tool. There is no paid tier, and none is planned. If that ever changes, the existing open-source code stays free forever. You can fork it and run your own version.</div></div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-q">How is this different from Scribe or Tango?<span class="chev">+</span></button>
-      <div class="faq-a"><div class="faq-a-inner">Three main differences: <strong>(1)</strong> completely free with no account required, <strong>(2)</strong> stores everything locally instead of in the cloud, <strong>(3)</strong> open source. Scribe and Tango both require accounts, store guides on their servers, and gate features like PDF export behind paid tiers. Chingu's PDF export is free.</div></div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-q">Can I edit the text on each step?<span class="chev">+</span></button>
-      <div class="faq-a"><div class="faq-a-inner">Yes. Every step's text is fully editable in the guide editor. You can also reorder steps by dragging, delete steps, group steps into named section chapters (A, B, C…), and add callout notes (info tips or warnings) to any step.</div></div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-q">Can I customize the PDF with my brand?<span class="chev">+</span></button>
-      <div class="faq-a"><div class="faq-a-inner">Yes. Set a brand accent color in settings. It's used across the PDF cover page, section dividers, step badges, and footer. No "Made with Chingu" watermarks unless you choose to keep them. (And yes, that's also free.)</div></div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-q">Is there a Firefox / Safari / Edge version?<span class="chev">+</span></button>
-      <div class="faq-a"><div class="faq-a-inner">Chrome and Edge are supported (both run on Chromium). Firefox and Safari aren't supported yet. They use different extension APIs and would need a separate build. It's on the roadmap; track it on GitHub.</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- ══ MEET CAPPY ══ -->
-<section class="meet-cappy">
-  <p class="meet-eyebrow" data-reveal>Your mascot</p>
-  <h2 class="meet-headline" data-reveal data-delay="1">Meet Cappy.</h2>
-  <p class="meet-sub" data-reveal data-delay="2">Capybaras are the internet's most famously chill animal. That's the product promise: Chingu absorbs the stressful part of your work without drama. Cappy never blames you. Cappy never panics. Cappy just gets it done.</p>
-
-  <div class="expressions-row" data-reveal data-delay="3">
-    <div class="expression-card">
-      <svg viewBox="0 0 200 200" width="80" height="80" style="animation:float 4s ease-in-out infinite">
-        <defs><radialGradient id="ec0" cx="38%" cy="28%" r="70%"><stop offset="0%" stop-color="#E8A87C"/><stop offset="100%" stop-color="#A06840"/></radialGradient></defs>
-        <ellipse cx="100" cy="112" rx="84" ry="74" fill="url(#ec0)"/>
-        <ellipse cx="38" cy="50" rx="14" ry="11" transform="rotate(-22 38 50)" fill="#B87040"/>
-        <ellipse cx="162" cy="50" rx="14" ry="11" transform="rotate(22 162 50)" fill="#B87040"/>
-        <ellipse cx="38" cy="51" rx="7" ry="5" transform="rotate(-22 38 51)" fill="#FFD4A8"/>
-        <ellipse cx="162" cy="51" rx="7" ry="5" transform="rotate(22 162 51)" fill="#FFD4A8"/>
-        <ellipse cx="28" cy="115" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
-        <ellipse cx="172" cy="115" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
-        <ellipse cx="100" cy="134" rx="46" ry="28" fill="#E8B98E"/>
-        <circle cx="74" cy="90" r="11" fill="#1A0A04"/><circle cx="78" cy="85" r="3.5" fill="white"/>
-        <circle cx="126" cy="90" r="11" fill="#1A0A04"/><circle cx="130" cy="85" r="3.5" fill="white"/>
-        <ellipse cx="100" cy="124" rx="9" ry="5" fill="#1A0A04"/>
-        <path d="M85 142 Q100 154 115 142" stroke="#1A0A04" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-      </svg>
-      <span>Chill</span>
-    </div>
-    <div class="expression-card">
-      <svg viewBox="0 0 200 200" width="80" height="80">
-        <defs><radialGradient id="ec1" cx="38%" cy="28%" r="70%"><stop offset="0%" stop-color="#E8A87C"/><stop offset="100%" stop-color="#A06840"/></radialGradient></defs>
-        <ellipse cx="100" cy="112" rx="84" ry="74" fill="url(#ec1)"/>
-        <ellipse cx="38" cy="50" rx="14" ry="11" transform="rotate(-22 38 50)" fill="#B87040"/>
-        <ellipse cx="162" cy="50" rx="14" ry="11" transform="rotate(22 162 50)" fill="#B87040"/>
-        <ellipse cx="38" cy="51" rx="7" ry="5" transform="rotate(-22 38 51)" fill="#FFD4A8"/>
-        <ellipse cx="162" cy="51" rx="7" ry="5" transform="rotate(22 162 51)" fill="#FFD4A8"/>
-        <ellipse cx="28" cy="115" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
-        <ellipse cx="172" cy="115" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
-        <ellipse cx="100" cy="134" rx="46" ry="28" fill="#E8B98E"/>
-        <path d="M62 88 Q73 99 84 88" stroke="#1A0A04" stroke-width="6" stroke-linecap="round" fill="none"/>
-        <path d="M116 88 Q127 99 138 88" stroke="#1A0A04" stroke-width="6" stroke-linecap="round" fill="none"/>
-        <ellipse cx="100" cy="124" rx="9" ry="5" fill="#1A0A04"/>
-        <line x1="89" y1="143" x2="111" y2="143" stroke="#1A0A04" stroke-width="3" stroke-linecap="round"/>
-      </svg>
-      <span>Working</span>
-    </div>
-    <div class="expression-card">
-      <svg viewBox="0 0 200 200" width="80" height="80">
-        <defs><radialGradient id="ec2" cx="38%" cy="28%" r="70%"><stop offset="0%" stop-color="#E8A87C"/><stop offset="100%" stop-color="#A06840"/></radialGradient></defs>
-        <ellipse cx="100" cy="112" rx="84" ry="74" fill="url(#ec2)"/>
-        <ellipse cx="38" cy="50" rx="14" ry="11" transform="rotate(-22 38 50)" fill="#B87040"/>
-        <ellipse cx="162" cy="50" rx="14" ry="11" transform="rotate(22 162 50)" fill="#B87040"/>
-        <ellipse cx="38" cy="51" rx="7" ry="5" transform="rotate(-22 38 51)" fill="#FFD4A8"/>
-        <ellipse cx="162" cy="51" rx="7" ry="5" transform="rotate(22 162 51)" fill="#FFD4A8"/>
-        <ellipse cx="28" cy="115" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
-        <ellipse cx="172" cy="115" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
-        <ellipse cx="100" cy="134" rx="46" ry="28" fill="#E8B98E"/>
-        <path d="M61 93 Q74 75 87 93" stroke="#1A0A04" stroke-width="5" stroke-linecap="round" fill="none"/>
-        <path d="M113 93 Q126 75 139 93" stroke="#1A0A04" stroke-width="5" stroke-linecap="round" fill="none"/>
-        <ellipse cx="100" cy="124" rx="9" ry="5" fill="#1A0A04"/>
-        <path d="M82 142 Q100 160 118 142" stroke="#1A0A04" stroke-width="4" stroke-linecap="round" fill="none"/>
-      </svg>
-      <span>Happy</span>
-    </div>
-    <div class="expression-card">
-      <svg viewBox="0 0 200 200" width="80" height="80">
-        <defs><radialGradient id="ec3" cx="38%" cy="28%" r="70%"><stop offset="0%" stop-color="#E8A87C"/><stop offset="100%" stop-color="#A06840"/></radialGradient></defs>
-        <ellipse cx="100" cy="112" rx="84" ry="74" fill="url(#ec3)"/>
-        <ellipse cx="38" cy="50" rx="14" ry="11" transform="rotate(-22 38 50)" fill="#B87040"/>
-        <ellipse cx="162" cy="50" rx="14" ry="11" transform="rotate(22 162 50)" fill="#B87040"/>
-        <ellipse cx="38" cy="51" rx="7" ry="5" transform="rotate(-22 38 51)" fill="#FFD4A8"/>
-        <ellipse cx="162" cy="51" rx="7" ry="5" transform="rotate(22 162 51)" fill="#FFD4A8"/>
-        <ellipse cx="28" cy="115" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
-        <ellipse cx="172" cy="115" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
-        <ellipse cx="100" cy="134" rx="46" ry="28" fill="#E8B98E"/>
-        <circle cx="74" cy="90" r="10" fill="#1A0A04"/><circle cx="78" cy="86" r="3" fill="white"/>
-        <circle cx="126" cy="90" r="12" fill="none" stroke="#1A0A04" stroke-width="3"/>
-        <ellipse cx="100" cy="124" rx="9" ry="5" fill="#1A0A04"/>
-        <ellipse cx="100" cy="146" rx="5" ry="6" fill="none" stroke="#1A0A04" stroke-width="3"/>
-      </svg>
-      <span>Confused</span>
-    </div>
-    <div class="expression-card">
-      <svg viewBox="0 0 200 200" width="80" height="80" style="animation:float 5s ease-in-out infinite">
-        <defs><radialGradient id="ec4" cx="38%" cy="28%" r="70%"><stop offset="0%" stop-color="#E8A87C"/><stop offset="100%" stop-color="#A06840"/></radialGradient></defs>
-        <ellipse cx="100" cy="112" rx="84" ry="74" fill="url(#ec4)"/>
-        <ellipse cx="38" cy="50" rx="14" ry="11" transform="rotate(-22 38 50)" fill="#B87040"/>
-        <ellipse cx="162" cy="50" rx="14" ry="11" transform="rotate(22 162 50)" fill="#B87040"/>
-        <ellipse cx="38" cy="51" rx="7" ry="5" transform="rotate(-22 38 51)" fill="#FFD4A8"/>
-        <ellipse cx="162" cy="51" rx="7" ry="5" transform="rotate(22 162 51)" fill="#FFD4A8"/>
-        <ellipse cx="28" cy="115" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
-        <ellipse cx="172" cy="115" rx="15" ry="9" fill="#FF8FA3" opacity="0.45"/>
-        <ellipse cx="100" cy="134" rx="46" ry="28" fill="#E8B98E"/>
-        <path d="M64 91 Q74 100 84 91" stroke="#1A0A04" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-        <path d="M116 91 Q126 100 136 91" stroke="#1A0A04" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-        <ellipse cx="100" cy="124" rx="9" ry="5" fill="#1A0A04"/>
-        <path d="M90 142 Q100 149 110 142" stroke="#1A0A04" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-        <text x="130" y="68" font-family="Inter" font-weight="700" font-size="20" fill="#94A3B8" opacity="0.8">z</text>
-        <text x="143" y="55" font-family="Inter" font-weight="700" font-size="14" fill="#94A3B8" opacity="0.6">z</text>
-      </svg>
-      <span>Sleepy</span>
-    </div>
-  </div>
-  <p style="font-size:14px;color:var(--grey);font-style:italic;letter-spacing:0.01em">"Cappy never blames you. Cappy never panics. Cappy just gets it done."</p>
-</section>
-
-<!-- ══ CTA ══ -->
-<section class="cta-section" id="cta">
-  <div class="cta-bg-glow"></div>
-  <svg class="cta-cappy-bg" viewBox="0 0 200 200">
-    <defs><radialGradient id="ctab" cx="38%" cy="28%" r="70%"><stop offset="0%" stop-color="#E8A87C"/><stop offset="100%" stop-color="#A06840"/></radialGradient></defs>
-    <ellipse cx="100" cy="112" rx="88" ry="78" fill="url(#ctab)"/>
-    <ellipse cx="38" cy="50" rx="17" ry="13" transform="rotate(-22 38 50)" fill="#B87040"/>
-    <ellipse cx="162" cy="50" rx="17" ry="13" transform="rotate(22 162 50)" fill="#B87040"/>
-    <ellipse cx="100" cy="138" rx="50" ry="32" fill="#E8B98E"/>
-    <path d="M61 93 Q74 75 87 93" stroke="#1A0A04" stroke-width="5" stroke-linecap="round" fill="none"/>
-    <path d="M113 93 Q126 75 139 93" stroke="#1A0A04" stroke-width="5" stroke-linecap="round" fill="none"/>
-    <ellipse cx="100" cy="128" rx="9" ry="5" fill="#1A0A04"/>
-    <path d="M82 143 Q100 161 118 143" stroke="#1A0A04" stroke-width="4" stroke-linecap="round" fill="none"/>
-  </svg>
-
-  <div class="cta-content">
-    <div class="confetti-host" id="confettiHost"></div>
-    <h2 class="cta-headline" data-reveal>
-      Your chillest<br>coworker is <span class="grad">waiting.</span>
-    </h2>
-    <p class="cta-sub" data-reveal data-delay="1">Free forever. Open source. Remove anytime.</p>
-    <a class="btn-cta" id="ctaBtn" href="https://github.com/21428122/chingu" target="_blank" rel="noopener" data-reveal data-delay="2">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 8v8M8 12l4 4 4-4" stroke-width="2"/></svg>
-      Add Chingu to Chrome
-    </a>
-    <p class="cta-note" data-reveal data-delay="3"><span>No account needed.</span> Just install and click Record.</p>
-  </div>
-</section>
-
-<!-- ══ FOOTER ══ -->
-<footer>
-  <div class="footer-inner">
-    <div>
-      <a class="footer-brand nav-logo" href="#">
-        <div class="nav-logo-mark" style="width:32px;height:32px">
-          <svg width="24" height="24" viewBox="0 0 200 200">
-            <defs><radialGradient id="fb" cx="38%" cy="28%" r="70%"><stop offset="0%" stop-color="#E8A87C"/><stop offset="100%" stop-color="#A06840"/></radialGradient></defs>
-            <ellipse cx="100" cy="112" rx="85" ry="75" fill="url(#fb)"/>
-            <ellipse cx="100" cy="134" rx="46" ry="28" fill="#E8B98E"/>
-            <circle cx="74" cy="90" r="11" fill="#1A0A04"/><circle cx="78" cy="85" r="3.5" fill="white"/>
-            <circle cx="126" cy="90" r="11" fill="#1A0A04"/><circle cx="130" cy="85" r="3.5" fill="white"/>
-            <ellipse cx="100" cy="124" rx="9" ry="5" fill="#1A0A04"/>
-            <path d="M85 142 Q100 154 115 142" stroke="#1A0A04" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-          </svg>
-        </div>
-        <span class="nav-logo-name">chingu</span>
-      </a>
-      <p class="footer-tagline">SOPs that actually work. Click record, get a finished guide. Free forever, open source, made with ☕.</p>
-    </div>
-    <div class="footer-col">
-      <h4>Product</h4>
-      <a href="#preview">Preview</a>
+    <div class="nav-links">
       <a href="#how">How it works</a>
-      <a href="#features">Features</a>
-      <a href="#pricing">Pricing</a>
-    </div>
-    <div class="footer-col">
-      <h4>Compare</h4>
       <a href="#compare">vs Scribe</a>
-      <a href="#compare">vs Tango</a>
-      <a href="#compare">vs Guidde</a>
-      <a href="#compare">vs Loom</a>
+      <a href="#pricing">Pricing</a>
+      <a href="https://github.com/21428122/chingu" target="_blank">GitHub</a>
     </div>
-    <div class="footer-col">
-      <h4>Project</h4>
-      <a href="https://github.com/21428122/chingu" target="_blank" rel="noopener">GitHub</a>
-      <a href="https://github.com/21428122/chingu" target="_blank" rel="noopener">Chrome Store</a>
-      <a href="#faq">FAQ</a>
-      <a href="https://github.com/21428122/chingu/issues" target="_blank" rel="noopener">Report a bug</a>
+
+    <a class="nav-cta" href="https://chromewebstore.google.com/detail/chingu/gghkhknjjhaicjbpnpiemkecicklghlc" target="_blank">Add to Chrome</a>
+  </nav>
+
+
+  <!-- ════ HERO ════ -->
+  <section class="hero">
+    <div class="hero-orb"></div>
+    <div class="container">
+      <div class="hero-eyebrow" data-reveal>The open source SOP tool</div>
+
+      <h1 class="hero-h1 split" data-split>
+        SOPs that<br>
+        make<br>
+        <em>themselves.</em>
+      </h1>
+
+      <div class="hero-meta">
+        <p class="hero-meta-text" data-reveal data-d="3">
+          Click <strong>record</strong>. Use any website. Click <strong>stop</strong>. Get a step-by-step guide with screenshots in <strong>30 seconds</strong>. Free, open source, MIT licensed. The Scribe alternative that doesn't charge $23 per seat.
+        </p>
+
+        <div class="hero-cta-group" data-reveal data-d="4">
+          <a class="btn-primary" href="https://chromewebstore.google.com/detail/chingu/gghkhknjjhaicjbpnpiemkecicklghlc" target="_blank">
+            Add to Chrome — Free
+            <span class="btn-arrow">→</span>
+          </a>
+          <a class="btn-secondary" href="https://github.com/21428122/chingu" target="_blank">
+            View source on GitHub
+          </a>
+        </div>
+
+        <div data-reveal data-d="5">
+          <div class="hero-stat">$0</div>
+          <div class="hero-stat-label">Forever</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════ MARQUEE ════ -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span class="marquee-item">free forever</span>
+      <span class="marquee-item">vs scribe $23/seat</span>
+      <span class="marquee-item">no paywall</span>
+      <span class="marquee-item">open source · MIT</span>
+      <span class="marquee-item">vs tango $8/seat</span>
+      <span class="marquee-item">no seat minimum</span>
+      <span class="marquee-item">vs magichow $40</span>
+      <span class="marquee-item">no signup</span>
+      <span class="marquee-item">stays local</span>
+      <!-- duplicate for seamless loop -->
+      <span class="marquee-item">free forever</span>
+      <span class="marquee-item">vs scribe $23/seat</span>
+      <span class="marquee-item">no paywall</span>
+      <span class="marquee-item">open source · MIT</span>
+      <span class="marquee-item">vs tango $8/seat</span>
+      <span class="marquee-item">no seat minimum</span>
+      <span class="marquee-item">vs magichow $40</span>
+      <span class="marquee-item">no signup</span>
+      <span class="marquee-item">stays local</span>
     </div>
   </div>
-  <div class="footer-bottom">
-    <p>© 2026 Chingu · <a href="https://github.com/21428122/chingu" target="_blank" rel="noopener">Open source · MIT</a></p>
-    <p style="color:rgba(255,255,255,0.3)">No tracking. No analytics. No accounts. Promise.</p>
-  </div>
-</footer>
 
-<script>
-  // Nav scroll state
-  window.addEventListener('scroll', () => {
-    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 20);
-  }, { passive: true });
 
-  // Headline word animation
-  window.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-      document.querySelectorAll('.hero-headline .word').forEach(w => w.classList.add('animate'));
-    }, 100);
-  });
+  <!-- ════ PITCH ════ -->
+  <section class="pitch">
+    <div class="container">
+      <div class="pitch-eyebrow" data-reveal>Why this exists</div>
 
-  // Scroll reveal
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        revealObserver.unobserve(entry.target);
+      <h2 class="pitch-h2" data-reveal data-d="1">
+        Every SOP tool today either breaks the screenshots, paywalls the basics, or charges <em>$23 a seat</em> for what should be free.
+      </h2>
+
+      <div class="three-col">
+        <div data-reveal data-d="1">
+          <div class="col-num">01</div>
+          <h3 class="col-h">Free isn't freemium</h3>
+          <p class="col-p">No premium tier hiding behind a fake free plan. PDF export, branding, unlimited guides — all free, all the time.</p>
+        </div>
+
+        <div data-reveal data-d="2">
+          <div class="col-num">02</div>
+          <h3 class="col-h">Open source, MIT licensed</h3>
+          <p class="col-p">The only active OSS SOP tool. Read the code, fork it, self-host it. Trust isn't a feature, it's the foundation.</p>
+        </div>
+
+        <div data-reveal data-d="3">
+          <div class="col-num">03</div>
+          <h3 class="col-h">Stays on your device</h3>
+          <p class="col-p">No login. No signup. No cloud upload. Your sensitive workflows never leave your browser. Privacy by architecture.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════ PRODUCT FLOW ════ -->
+  <section class="product" id="how">
+    <div class="container">
+      <div class="product-stage">
+        <h2 class="stage-h" data-reveal>
+          Three <em>clicks</em>. One guide. Zero friction.
+        </h2>
+
+        <div class="stage-flow">
+          <div class="flow-step" data-reveal data-d="1">
+            <div class="num">01</div>
+            <div class="h">Click Record</div>
+            <p class="p">A floating overlay appears. Use any website normally. Chingu captures every click and screenshot.</p>
+          </div>
+
+          <div class="flow-step" data-reveal data-d="2">
+            <div class="num">02</div>
+            <div class="h">Click Stop</div>
+            <p class="p">Auto-polish runs. Duplicate clicks removed. Smart titles generated. Step descriptions cleaned.</p>
+          </div>
+
+          <div class="flow-step" data-reveal data-d="3">
+            <div class="num">03</div>
+            <div class="h">Edit, annotate, export</div>
+            <p class="p">Annotate screenshots, blur sensitive info, drag steps to reorder. Export as PDF or Markdown.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════ COMPARISON TABLE ════ -->
+  <section class="compare" id="compare">
+    <div class="container">
+      <h2 class="compare-h" data-reveal>
+        The <em>brutal</em> comparison
+      </h2>
+      <p class="compare-sub" data-reveal data-d="1">
+        We checked. Then we built what's missing. Here's what actually costs what.
+      </p>
+
+      <table class="comp-table" data-reveal data-d="2">
+        <thead>
+          <tr>
+            <th>Tool</th>
+            <th>Price (per user/mo)</th>
+            <th>Free PDF export</th>
+            <th>No seat minimum</th>
+            <th>Open source</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row-chingu">
+            <td class="name">Chingu</td>
+            <td class="price-free">$0 forever</td>
+            <td class="yes">✓</td>
+            <td class="yes">✓</td>
+            <td class="yes">✓ MIT</td>
+          </tr>
+          <tr>
+            <td class="name">Scribe</td>
+            <td class="price-paid">$23 — $29</td>
+            <td class="yes">✓</td>
+            <td class="no">5-seat min on Team</td>
+            <td class="no">—</td>
+          </tr>
+          <tr>
+            <td class="name">Tango</td>
+            <td class="price-paid">$8 — $24</td>
+            <td class="yes">✓</td>
+            <td class="no">15 workflow cap</td>
+            <td class="no">—</td>
+          </tr>
+          <tr>
+            <td class="name">MagicHow</td>
+            <td class="price-paid">$10 — $40</td>
+            <td class="yes">✓</td>
+            <td class="yes">✓</td>
+            <td class="no">—</td>
+          </tr>
+          <tr>
+            <td class="name">Guidemaker</td>
+            <td class="price-paid">paid AI tier</td>
+            <td class="no">—</td>
+            <td class="yes">✓</td>
+            <td class="no">—</td>
+          </tr>
+          <tr>
+            <td class="name">what-to-click</td>
+            <td class="price-free">$0</td>
+            <td class="no">—</td>
+            <td class="yes">✓</td>
+            <td class="no">GPL-3 / abandoned</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+
+  <!-- ════ BIG STAT BAND ════ -->
+  <section class="stat-band">
+    <div class="container">
+      <div class="stat-grid">
+        <div class="stat-cell" data-reveal data-d="1">
+          <div class="stat-num">∞</div>
+          <div class="stat-label">Guides per month</div>
+        </div>
+        <div class="stat-cell" data-reveal data-d="2">
+          <div class="stat-num">$0</div>
+          <div class="stat-label">Per seat, ever</div>
+        </div>
+        <div class="stat-cell" data-reveal data-d="3">
+          <div class="stat-num">100%</div>
+          <div class="stat-label">Local storage</div>
+        </div>
+        <div class="stat-cell" data-reveal data-d="4">
+          <div class="stat-num">MIT</div>
+          <div class="stat-label">Open source license</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════ PRICING ════ -->
+  <section class="pricing" id="pricing">
+    <div class="container">
+      <div class="pitch-eyebrow" data-reveal>Pricing</div>
+      <h2 class="pitch-h2" data-reveal data-d="1" style="margin-bottom: 56px">
+        Free is the product. <em>Pro</em> is how you support it.
+      </h2>
+
+      <div class="pricing-grid">
+        <div class="price-card" data-reveal data-d="1">
+          <div class="price-eyebrow">Forever Free</div>
+          <div class="price-num">
+            <span class="amt">$0</span>
+            <span class="period">/ no card / no signup</span>
+          </div>
+          <p class="price-tagline">Everything you need to ship great SOPs. Forever.</p>
+          <ul class="price-list">
+            <li>Unlimited recordings</li>
+            <li>Auto-polish & smart titles</li>
+            <li>Autopilot mode (English → executes)</li>
+            <li>Annotations + blur tool</li>
+            <li>PDF & Markdown export</li>
+            <li>Custom branding</li>
+            <li>Local storage, full privacy</li>
+          </ul>
+          <a class="price-cta ghost" href="https://chromewebstore.google.com/detail/chingu/gghkhknjjhaicjbpnpiemkecicklghlc" target="_blank">
+            Add to Chrome →
+          </a>
+        </div>
+
+        <div class="price-card feature" data-reveal data-d="2">
+          <div class="price-eyebrow" style="color: var(--tan)">⭐ Founders Pricing</div>
+          <div class="price-num">
+            <span class="amt">$29</span>
+            <span class="period">one-time, lifetime</span>
+          </div>
+          <p class="price-tagline">Lock in every paid feature ever. No subscription. Pay once.</p>
+          <ul class="price-list">
+            <li>Everything in Free, plus:</li>
+            <li>Cloud sync across devices (Q2)</li>
+            <li>Public shareable links (Q2)</li>
+            <li>AI-generated descriptions (Q3)</li>
+            <li>Team workspace (Q3)</li>
+            <li>Priority support</li>
+            <li>Your name in CONTRIBUTORS.md</li>
+          </ul>
+          <a class="price-cta primary" href="pro.html">
+            Get Lifetime Access →
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════ FINAL CTA ════ -->
+  <section class="cta-final">
+    <div class="container">
+      <h2 class="cta-h" data-reveal>
+        Stop paying<br>
+        for what should be <em>free.</em>
+      </h2>
+      <a class="btn-primary" href="https://chromewebstore.google.com/detail/chingu/gghkhknjjhaicjbpnpiemkecicklghlc" target="_blank" data-reveal data-d="2">
+        Add Chingu to Chrome
+        <span class="btn-arrow">→</span>
+      </a>
+    </div>
+  </section>
+
+
+  <!-- ════ FOOTER ════ -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand-h">Chingu</div>
+          <p style="color: var(--fg-mute); font-size: 14px; line-height: 1.6; max-width: 320px;">
+            The open source Chrome extension for SOPs that actually work. Built in public by one person.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <div class="footer-col-h">Product</div>
+          <a href="#how">How it works</a>
+          <a href="#compare">vs Scribe</a>
+          <a href="#pricing">Pricing</a>
+          <a href="pro.html">Get Pro</a>
+        </div>
+
+        <div class="footer-col">
+          <div class="footer-col-h">Open Source</div>
+          <a href="https://github.com/21428122/chingu" target="_blank">GitHub</a>
+          <a href="https://github.com/21428122/chingu/issues" target="_blank">Issues</a>
+          <a href="https://github.com/sponsors/21428122" target="_blank">Sponsor</a>
+          <a href="https://buymeacoffee.com/chingu" target="_blank">Tip</a>
+        </div>
+
+        <div class="footer-col">
+          <div class="footer-col-h">Legal</div>
+          <a href="privacy.html">Privacy</a>
+          <a href="https://github.com/21428122/chingu/blob/master/LICENSE" target="_blank">License (MIT)</a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© 2026 Chingu. Made with care, no VCs.</span>
+        <span style="font-family: 'Instrument Serif', serif; font-style: italic; font-size: 16px;">친구</span>
+      </div>
+    </div>
+  </footer>
+
+
+  <script>
+    /* ──────────────────────────────────────────────────────────────────
+       Custom cursor
+    ────────────────────────────────────────────────────────────────── */
+    (function() {
+      const dot = document.getElementById('cursorDot');
+      const ring = document.getElementById('cursorRing');
+      if (!dot || !ring) return;
+
+      let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+      let rx = mx, ry = my;
+
+      window.addEventListener('mousemove', e => {
+        mx = e.clientX; my = e.clientY;
+        dot.style.left = mx + 'px';
+        dot.style.top  = my + 'px';
+      });
+
+      // Lerp ring for smooth follow
+      function tick() {
+        rx += (mx - rx) * 0.18;
+        ry += (my - ry) * 0.18;
+        ring.style.left = rx + 'px';
+        ring.style.top  = ry + 'px';
+        requestAnimationFrame(tick);
       }
-    });
-  }, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
-  document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+      tick();
 
-  // FAQ accordion
-  document.querySelectorAll('.faq-q').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const item = btn.parentElement;
-      const isOpen = item.classList.contains('open');
-      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-      if (!isOpen) item.classList.add('open');
-    });
-  });
+      // Hover state on interactive elements
+      document.querySelectorAll('a, button, [data-cursor]').forEach(el => {
+        el.addEventListener('mouseenter', () => ring.classList.add('hover'));
+        el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
+      });
+    })();
 
-  // Confetti on CTA hover
-  const ctaBtn = document.getElementById('ctaBtn');
-  const confettiHost = document.getElementById('confettiHost');
-  const colors = ['#FFB07A', '#6366F1', '#10B981', '#A78BFA', '#C8956D', '#F59E0B', '#EF4444'];
-  let confettiFired = false;
+    /* ──────────────────────────────────────────────────────────────────
+       Reveal on scroll
+    ────────────────────────────────────────────────────────────────── */
+    (function() {
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+            obs.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -80px 0px' });
 
-  ctaBtn.addEventListener('mouseenter', () => {
-    if (confettiFired) return;
-    confettiFired = true;
-    for (let i = 0; i < 22; i++) {
-      const c = document.createElement('div');
-      c.className = 'confetti';
-      c.style.cssText = `
-        background:${colors[i % colors.length]};
-        width:${6 + Math.random() * 6}px;
-        height:${3 + Math.random() * 4}px;
-        left:${30 + Math.random() * 40}%;
-        top:40%;
-        transform:rotate(${Math.random()*360}deg);
-        animation:confetti-fall ${700 + Math.random() * 600}ms ${i * 40}ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
-        border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
-      `;
-      confettiHost.appendChild(c);
-      setTimeout(() => c.remove(), 1600);
-    }
-    setTimeout(() => { confettiFired = false; }, 2000);
-  });
-</script>
+      document.querySelectorAll('[data-reveal]').forEach(el => obs.observe(el));
+    })();
+
+    /* ──────────────────────────────────────────────────────────────────
+       Word-by-word splitter for headlines
+    ────────────────────────────────────────────────────────────────── */
+    (function() {
+      document.querySelectorAll('[data-split]').forEach(el => {
+        // Wrap each visible word in <span class="word"><span>...</span></span>
+        // Preserve <em> and <br> elements
+        const html = el.innerHTML;
+        // Tokenize while keeping <br> and <em>...</em>
+        const tokens = html.split(/(<br\s*\/?>|<em>[\s\S]*?<\/em>)/gi);
+        let out = '';
+        tokens.forEach(tok => {
+          if (!tok) return;
+          if (/^<br/i.test(tok)) { out += tok; return; }
+          if (/^<em/i.test(tok)) {
+            // Wrap the em itself in word/inner spans
+            out += `<span class="word">${tok.replace('<em>', '<em><span>').replace('</em>', '</span></em>')}</span>`;
+            // Note: inner span is inside <em>, so we wrap the em in a word, then add an inner span.
+            return;
+          }
+          // Plain text — split by whitespace
+          tok.split(/(\s+)/).forEach(part => {
+            if (!part) return;
+            if (/^\s+$/.test(part)) { out += part; return; }
+            out += `<span class="word"><span>${part}</span></span>`;
+          });
+        });
+        el.innerHTML = out;
+      });
+
+      // Trigger animation when in view
+      const splitObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+            splitObs.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.4 });
+
+      document.querySelectorAll('[data-split]').forEach(el => {
+        el.classList.add('split');
+        splitObs.observe(el);
+      });
+    })();
+
+    /* ──────────────────────────────────────────────────────────────────
+       Nav scroll state
+    ────────────────────────────────────────────────────────────────── */
+    (function() {
+      const nav = document.getElementById('nav');
+      if (!nav) return;
+      const onScroll = () => {
+        if (window.scrollY > 24) nav.classList.add('scrolled');
+        else nav.classList.remove('scrolled');
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    })();
+
+    /* ──────────────────────────────────────────────────────────────────
+       Subtle hero parallax on mouse
+    ────────────────────────────────────────────────────────────────── */
+    (function() {
+      const orb = document.querySelector('.hero-orb');
+      if (!orb) return;
+      window.addEventListener('mousemove', e => {
+        const x = (e.clientX / window.innerWidth - 0.5) * 30;
+        const y = (e.clientY / window.innerHeight - 0.5) * 30;
+        orb.style.transform = `translate(${x}px, ${y}px)`;
+      });
+    })();
+  </script>
 </body>
 </html>
