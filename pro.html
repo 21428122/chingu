@@ -9,29 +9,23 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
 
     :root {
-      --bg:        #0A0A0A;
-      --bg-2:      #141414;
-      --fg:        #F5F1E8;
-      --fg-mute:   #8A857A;
-      --line:      #1F1F1F;
-      --tan:       #E8A87C;
-      --cocoa:     #C8956D;
-      --cream:     #FFF5E4;
-      --mint:      #10B981;
+      --bg: #0E0E0F; --bg-2: #161618; --bg-3: #1F1F22;
+      --fg: #F5F1E8; --fg-mute: #8A857A;
+      --line: #232325;
+      --tan: #E8A87C; --peach: #FFB07A; --cream: #FFF5E4;
+      --mint: #10B981; --violet: #A78BFA; --pink: #FF8FA3;
     }
 
     body {
-      font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
-      font-weight: 400;
-      background: var(--bg);
-      color: var(--fg);
+      font-family: 'Inter Tight', sans-serif;
+      background: var(--bg); color: var(--fg);
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
       cursor: none;
@@ -39,19 +33,15 @@
     body::before {
       content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 1;
       background-image: radial-gradient(rgba(255,255,255,0.012) 1px, transparent 1px);
-      background-size: 3px 3px;
-      opacity: 0.4;
+      background-size: 3px 3px; opacity: 0.5;
     }
 
     .cursor-dot, .cursor-ring {
       position: fixed; top: 0; left: 0; pointer-events: none;
       z-index: 9999; border-radius: 50%;
-      transform: translate(-50%, -50%);
-      will-change: transform;
+      transform: translate(-50%, -50%); will-change: transform;
     }
-    .cursor-dot {
-      width: 6px; height: 6px; background: var(--fg);
-    }
+    .cursor-dot { width: 6px; height: 6px; background: var(--fg); }
     .cursor-ring {
       width: 36px; height: 36px;
       border: 1px solid rgba(245, 241, 232, 0.4);
@@ -59,13 +49,11 @@
     }
     .cursor-ring.hover {
       width: 64px; height: 64px;
-      background: rgba(232, 168, 124, 0.15);
-      border-color: var(--tan);
-      mix-blend-mode: difference;
+      background: rgba(255, 176, 122, 0.18);
+      border-color: var(--peach);
     }
     @media (max-width: 768px), (pointer: coarse) {
-      body { cursor: auto; }
-      .cursor-dot, .cursor-ring { display: none; }
+      body { cursor: auto; } .cursor-dot, .cursor-ring { display: none; }
     }
     a, button { cursor: none; }
 
@@ -78,105 +66,134 @@
     [data-reveal][data-d="1"] { transition-delay: 0.08s; }
     [data-reveal][data-d="2"] { transition-delay: 0.16s; }
     [data-reveal][data-d="3"] { transition-delay: 0.24s; }
-    [data-reveal][data-d="4"] { transition-delay: 0.32s; }
+
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+    @keyframes blink-eye { 0%, 92%, 100% { transform: scaleY(1); } 95%, 98% { transform: scaleY(0.08); } }
 
     .container { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
 
     /* Nav */
     .nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-      padding: 22px 32px;
+      padding: 18px 32px;
       display: flex; align-items: center; justify-content: space-between;
       backdrop-filter: blur(16px);
-      background: rgba(10, 10, 10, 0.6);
+      background: rgba(14, 14, 15, 0.75);
       border-bottom: 1px solid var(--line);
     }
-    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .brand { display: flex; align-items: center; gap: 11px; text-decoration: none; }
     .brand-mark {
-      width: 32px; height: 32px; border-radius: 10px;
-      background: var(--tan);
+      width: 36px; height: 36px; border-radius: 12px;
+      background: var(--peach);
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
+      box-shadow: 0 4px 20px rgba(255, 176, 122, 0.25);
     }
-    .brand-mark svg { width: 22px; height: 22px; }
+    .brand-mark svg { width: 26px; height: 26px; }
     .brand-name {
-      font-family: 'Instrument Serif', serif; font-style: italic;
-      font-size: 26px; letter-spacing: -0.02em;
-      color: var(--fg);
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700; font-size: 22px;
+      letter-spacing: -0.03em;
     }
     .nav-back {
       font-size: 14px; color: var(--fg-mute); text-decoration: none;
       letter-spacing: -0.01em;
       transition: color 0.15s ease;
     }
-    .nav-back:hover { color: var(--fg); }
+    .nav-back:hover { color: var(--peach); }
 
     /* Hero */
     .hero {
-      padding: 180px 0 80px;
+      padding: 160px 0 80px;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 60px; align-items: center;
       position: relative;
     }
-    .hero-eyebrow {
-      display: inline-flex; align-items: center; gap: 14px;
-      font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase;
-      color: var(--tan); font-weight: 500;
-      margin-bottom: 36px;
-    }
-    .hero-eyebrow::before {
-      content: ""; display: inline-block;
-      width: 28px; height: 1px; background: var(--tan);
-    }
-    .hero-h1 {
-      font-family: 'Geist', sans-serif;
-      font-weight: 400;
-      font-size: clamp(48px, 8vw, 120px);
-      letter-spacing: -0.04em;
-      line-height: 0.95;
-      margin-bottom: 32px;
-    }
-    .hero-h1 em {
-      font-family: 'Instrument Serif', serif;
-      font-style: italic; color: var(--tan);
-    }
-    .hero-sub {
-      font-size: 18px; line-height: 1.55;
-      color: var(--fg-mute);
-      max-width: 560px;
-    }
+    @media (max-width: 900px) { .hero { grid-template-columns: 1fr; } }
+
     .hero-orb {
       position: absolute; pointer-events: none;
       width: 480px; height: 480px;
       right: -120px; top: 100px;
-      background: radial-gradient(circle, rgba(232, 168, 124, 0.18), transparent 65%);
+      background: radial-gradient(circle, rgba(255, 176, 122, 0.18), transparent 65%);
       filter: blur(40px);
       z-index: -1;
     }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--peach); font-weight: 500;
+      margin-bottom: 28px;
+    }
+    .hero-eyebrow::before {
+      content: ""; width: 28px; height: 1px; background: var(--peach);
+    }
+    .hero-h1 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700;
+      font-size: clamp(48px, 8vw, 116px);
+      letter-spacing: -0.045em; line-height: 0.92;
+      margin-bottom: 28px;
+    }
+    .hero-h1 .accent { color: var(--peach); }
+    .hero-sub {
+      font-size: 17px; line-height: 1.55;
+      color: var(--fg-mute);
+    }
+    .hero-sub strong { color: var(--fg); font-weight: 600; }
+
+    /* Cappy holding a star */
+    .pro-cappy-stage {
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      min-height: 360px;
+    }
+    .pro-cappy-svg {
+      width: 100%; max-width: 320px;
+      animation: float 4.6s ease-in-out infinite;
+      filter: drop-shadow(0 20px 60px rgba(255, 176, 122, 0.2));
+    }
+    .pro-cappy-svg .pro-eye-l, .pro-cappy-svg .pro-eye-r {
+      transform-origin: center;
+      animation: blink-eye 4.2s ease-in-out infinite;
+    }
+    .floating-star {
+      position: absolute;
+      font-size: 28px;
+      animation: float 5s ease-in-out infinite;
+      filter: drop-shadow(0 4px 16px rgba(255,176,122,0.4));
+    }
+    .star-1 { top: 12%; left: 5%; color: var(--peach); animation-delay: 0s; }
+    .star-2 { top: 22%; right: 8%; color: var(--violet); animation-delay: 1s; font-size: 22px; }
+    .star-3 { bottom: 18%; left: 8%; color: var(--mint); animation-delay: 2s; font-size: 20px; }
 
     /* Pricing card */
-    .price-section {
-      padding: 80px 0 120px;
-    }
+    .price-section { padding: 60px 0 100px; }
     .price-card {
-      background: linear-gradient(160deg, rgba(232, 168, 124, 0.08), var(--bg-2));
-      border: 1px solid rgba(232, 168, 124, 0.3);
+      background: linear-gradient(160deg, rgba(255, 176, 122, 0.08), var(--bg-2));
+      border: 1px solid rgba(255, 176, 122, 0.3);
       border-radius: 28px;
       padding: 64px 56px;
       box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4),
-                  0 0 100px rgba(232, 168, 124, 0.05);
+                  0 0 100px rgba(255, 176, 122, 0.05);
       position: relative; overflow: hidden;
     }
     @media (max-width: 768px) { .price-card { padding: 36px 28px; border-radius: 18px; } }
 
     .badge {
       position: absolute; top: 28px; right: 32px;
+      font-family: 'JetBrains Mono', monospace;
       font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--tan); font-weight: 600;
-      background: rgba(232, 168, 124, 0.12);
-      padding: 6px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(232, 168, 124, 0.3);
+      color: var(--peach); font-weight: 600;
+      background: rgba(255, 176, 122, 0.12);
+      padding: 6px 12px; border-radius: 999px;
+      border: 1px solid rgba(255, 176, 122, 0.3);
     }
-    @media (max-width: 600px) { .badge { position: static; margin-bottom: 24px; display: inline-block; } }
+    @media (max-width: 600px) {
+      .badge { position: static; margin-bottom: 24px; display: inline-block; }
+    }
 
     .price-row {
       display: flex; align-items: baseline; gap: 16px;
@@ -188,23 +205,24 @@
       text-decoration: line-through;
     }
     .price-now {
-      font-family: 'Instrument Serif', serif;
-      font-size: clamp(80px, 12vw, 144px); line-height: 1;
-      color: var(--tan);
-      letter-spacing: -0.03em;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: clamp(80px, 12vw, 132px); line-height: 1;
+      color: var(--peach);
+      letter-spacing: -0.04em;
     }
     .price-period {
       font-size: 16px; color: var(--fg-mute); font-weight: 500;
     }
     .price-tag {
-      font-size: 13px; color: var(--tan); font-weight: 500;
-      letter-spacing: 0.08em; text-transform: uppercase;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; color: var(--peach); font-weight: 500;
+      letter-spacing: 0.16em; text-transform: uppercase;
       margin-bottom: 40px;
     }
 
     .features {
-      list-style: none;
-      margin-bottom: 48px;
+      list-style: none; margin-bottom: 48px;
     }
     .features li {
       display: flex; align-items: flex-start; gap: 16px;
@@ -216,45 +234,42 @@
       color: var(--mint); font-weight: 700;
       flex-shrink: 0; margin-top: 2px;
       font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
     }
     .features .head {
-      font-size: 15px; font-weight: 500;
+      font-size: 15px; font-weight: 600;
       letter-spacing: -0.01em;
       margin-bottom: 4px;
     }
     .features .sub {
       font-size: 13px; color: var(--fg-mute);
-      font-style: italic;
-      font-family: 'Instrument Serif', serif;
     }
 
     .cta-btn {
       display: flex; align-items: center; justify-content: center; gap: 12px;
       width: 100%;
       padding: 22px;
-      background: var(--tan);
-      color: var(--bg);
+      background: var(--peach);
+      color: #1A0A04;
       border: none; border-radius: 14px;
       font-family: inherit;
-      font-size: 16px; font-weight: 600;
+      font-size: 16px; font-weight: 700;
       letter-spacing: -0.01em;
       text-decoration: none;
       transition: background 0.2s ease, transform 0.2s ease;
+      box-shadow: 0 8px 30px rgba(255, 176, 122, 0.25);
     }
     .cta-btn:hover {
       background: var(--cream);
       transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(255, 176, 122, 0.4);
     }
-    .cta-arrow {
-      display: inline-block;
-      transition: transform 0.2s ease;
-    }
+    .cta-arrow { transition: transform 0.2s ease; }
     .cta-btn:hover .cta-arrow { transform: translateX(4px); }
 
     .guarantee {
       text-align: center;
-      font-size: 13px;
-      color: var(--fg-mute);
+      font-size: 13px; color: var(--fg-mute);
       margin-top: 18px;
     }
 
@@ -264,22 +279,22 @@
       border-top: 1px solid var(--line);
     }
     .why-eyebrow {
-      font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase;
-      color: var(--tan); font-weight: 500;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--peach); font-weight: 500;
       margin-bottom: 24px;
     }
     .why-h {
-      font-family: 'Geist', sans-serif;
-      font-weight: 400;
-      font-size: clamp(32px, 5vw, 64px);
-      letter-spacing: -0.03em;
-      line-height: 1.1;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700;
+      font-size: clamp(32px, 5vw, 60px);
+      letter-spacing: -0.04em;
+      line-height: 1.05;
       margin-bottom: 40px;
     }
-    .why-h em { font-family: 'Instrument Serif', serif; font-style: italic; color: var(--tan); }
+    .why-h .accent { color: var(--peach); }
     .why-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      display: grid; grid-template-columns: 1fr 1fr;
       gap: 48px;
     }
     @media (max-width: 768px) { .why-grid { grid-template-columns: 1fr; gap: 28px; } }
@@ -287,7 +302,7 @@
       font-size: 16px; line-height: 1.7;
       color: var(--fg-mute);
     }
-    .why-grid p strong { color: var(--fg); font-weight: 500; }
+    .why-grid p strong { color: var(--fg); font-weight: 600; }
 
     /* Alt */
     .alt-bar {
@@ -295,25 +310,26 @@
       text-align: center;
     }
     .alt-bar-h {
-      font-family: 'Instrument Serif', serif;
-      font-style: italic;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 600;
       font-size: 22px;
       color: var(--fg-mute);
-      margin-bottom: 16px;
+      margin-bottom: 18px;
+      letter-spacing: -0.02em;
     }
     .alt-bar-links {
-      display: flex; justify-content: center; gap: 32px;
+      display: flex; justify-content: center; gap: 28px;
       flex-wrap: wrap;
     }
     .alt-bar a {
-      color: var(--tan);
+      color: var(--peach);
       text-decoration: none;
-      font-size: 15px;
+      font-size: 15px; font-weight: 500;
       border-bottom: 1px solid transparent;
       padding-bottom: 4px;
       transition: border-color 0.15s ease;
     }
-    .alt-bar a:hover { border-color: var(--tan); }
+    .alt-bar a:hover { border-color: var(--peach); }
 
     /* Footer */
     footer {
@@ -324,12 +340,11 @@
       text-align: center;
     }
     footer a { color: var(--fg); text-decoration: none; }
-    footer a:hover { color: var(--tan); }
+    footer a:hover { color: var(--peach); }
 
-    ::selection { background: var(--tan); color: var(--bg); }
-
+    ::selection { background: var(--peach); color: #1A0A04; }
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+      *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; }
     }
   </style>
 </head>
@@ -342,14 +357,14 @@
     <a href="index.html" class="brand">
       <div class="brand-mark">
         <svg viewBox="0 0 200 200">
-          <ellipse cx="100" cy="115" rx="92" ry="80" fill="#0A0A0A"/>
-          <ellipse cx="100" cy="140" rx="48" ry="30" fill="#1F1F1F"/>
-          <circle cx="75" cy="92" r="10" fill="#F5F1E8"/>
-          <circle cx="78" cy="88" r="3" fill="#E8A87C"/>
-          <circle cx="125" cy="92" r="10" fill="#F5F1E8"/>
-          <circle cx="128" cy="88" r="3" fill="#E8A87C"/>
-          <ellipse cx="100" cy="130" rx="9" ry="5" fill="#F5F1E8"/>
-          <path d="M85 144 Q100 156 115 144" stroke="#F5F1E8" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+          <ellipse cx="100" cy="115" rx="92" ry="80" fill="#1A0A04"/>
+          <ellipse cx="100" cy="140" rx="48" ry="30" fill="#3A1F12"/>
+          <circle cx="75" cy="92" r="10" fill="#FFF5E4"/>
+          <circle cx="78" cy="88" r="3" fill="#1A0A04"/>
+          <circle cx="125" cy="92" r="10" fill="#FFF5E4"/>
+          <circle cx="128" cy="88" r="3" fill="#1A0A04"/>
+          <ellipse cx="100" cy="130" rx="9" ry="5" fill="#1A0A04"/>
+          <path d="M85 144 Q100 156 115 144" stroke="#1A0A04" stroke-width="3.5" stroke-linecap="round" fill="none"/>
         </svg>
       </div>
       <span class="brand-name">Chingu</span>
@@ -359,15 +374,73 @@
 
   <section class="hero">
     <div class="hero-orb"></div>
-    <div class="container">
-      <div class="hero-eyebrow" data-reveal>⭐ Founders Pricing — First 100 only</div>
-      <h1 class="hero-h1" data-reveal data-d="1">
-        Pay once.<br>
-        Lifetime, <em>forever.</em>
-      </h1>
-      <p class="hero-sub" data-reveal data-d="2">
-        Chingu is and always will be free. <strong style="color: var(--fg);">Pro</strong> is a one-time payment that locks in lifetime access to every paid feature shipped from now on, and helps fund a solo developer building this in public.
-      </p>
+    <div class="container" style="display: contents">
+      <div>
+        <div class="hero-eyebrow" data-reveal>⭐ Founders Pricing — first 100 only</div>
+        <h1 class="hero-h1" data-reveal data-d="1">
+          Pay once.<br>
+          Lifetime, <span class="accent">forever.</span>
+        </h1>
+        <p class="hero-sub" data-reveal data-d="2">
+          Chingu is and always will be free. <strong>Pro</strong> is a one-time payment that locks in lifetime access to every paid feature shipped from now on, and helps fund a solo developer building this in public.
+        </p>
+      </div>
+
+      <!-- Cappy with star -->
+      <div class="pro-cappy-stage" data-reveal data-d="2">
+        <span class="floating-star star-1">★</span>
+        <span class="floating-star star-2">✦</span>
+        <span class="floating-star star-3">✧</span>
+
+        <svg class="pro-cappy-svg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="proGlow" cx="50%" cy="55%" r="55%">
+              <stop offset="0%" stop-color="#FFB07A" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#FFB07A" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="proBody" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#E8B98E"/>
+              <stop offset="100%" stop-color="#C8956D"/>
+            </linearGradient>
+          </defs>
+
+          <circle cx="200" cy="220" r="180" fill="url(#proGlow)"/>
+
+          <!-- Body -->
+          <ellipse cx="200" cy="230" rx="140" ry="120" fill="url(#proBody)"/>
+
+          <!-- Ears -->
+          <ellipse cx="115" cy="125" rx="22" ry="18" transform="rotate(-22 115 125)" fill="#A6754F"/>
+          <ellipse cx="285" cy="125" rx="22" ry="18" transform="rotate(22 285 125)" fill="#A6754F"/>
+          <ellipse cx="116" cy="128" rx="10" ry="7" transform="rotate(-22 116 128)" fill="#FFD4A8"/>
+          <ellipse cx="284" cy="128" rx="10" ry="7" transform="rotate(22 284 128)" fill="#FFD4A8"/>
+
+          <!-- Cheeks -->
+          <ellipse cx="98" cy="240" rx="20" ry="11" fill="#FF8FA3" opacity="0.45"/>
+          <ellipse cx="302" cy="240" rx="20" ry="11" fill="#FF8FA3" opacity="0.45"/>
+
+          <!-- Snout -->
+          <ellipse cx="200" cy="270" rx="68" ry="42" fill="#E8B98E"/>
+
+          <!-- Eyes (closed/happy for Pro celebration) -->
+          <path d="M 138 195 Q 155 175 172 195" stroke="#1A0A04" stroke-width="6" stroke-linecap="round" fill="none"/>
+          <path d="M 228 195 Q 245 175 262 195" stroke="#1A0A04" stroke-width="6" stroke-linecap="round" fill="none"/>
+
+          <!-- Nose -->
+          <ellipse cx="200" cy="255" rx="13" ry="7" fill="#1A0A04"/>
+
+          <!-- Big smile -->
+          <path d="M170 280 Q200 305 230 280" stroke="#1A0A04" stroke-width="5" stroke-linecap="round" fill="none"/>
+
+          <!-- Star paw (raised, holding a star) -->
+          <g transform="translate(70, 130)">
+            <ellipse cx="0" cy="0" rx="22" ry="28" transform="rotate(-15 0 0)" fill="#C8956D"/>
+            <ellipse cx="-4" cy="-14" rx="14" ry="16" transform="rotate(-15 -4 -14)" fill="#E8B98E"/>
+            <!-- Star in paw -->
+            <text x="-4" y="-8" text-anchor="middle" font-size="32" fill="#FFB07A">★</text>
+          </g>
+        </svg>
+      </div>
     </div>
   </section>
 
@@ -380,60 +453,60 @@
           <span class="price-old">$99</span>
           <span class="price-now">$29</span>
         </div>
-        <div class="price-tag">One-time payment</div>
+        <div class="price-tag">One-time payment · founders pricing</div>
 
         <ul class="features">
           <li>
-            <span class="check">✓</span>
+            <span class="check">[✓]</span>
             <div>
               <div class="head">Lifetime access — every Pro feature, forever</div>
               <div class="sub">Pay once. Yours forever.</div>
             </div>
           </li>
           <li>
-            <span class="check">✓</span>
+            <span class="check">[✓]</span>
             <div>
               <div class="head">Cloud sync across devices</div>
               <div class="sub">Coming Q2 — your guides synced everywhere</div>
             </div>
           </li>
           <li>
-            <span class="check">✓</span>
+            <span class="check">[✓]</span>
             <div>
               <div class="head">Public shareable links</div>
               <div class="sub">Coming Q2 — send to anyone, no install required</div>
             </div>
           </li>
           <li>
-            <span class="check">✓</span>
+            <span class="check">[✓]</span>
             <div>
               <div class="head">AI-generated step descriptions</div>
               <div class="sub">Coming Q3 — smarter than rule-based polish</div>
             </div>
           </li>
           <li>
-            <span class="check">✓</span>
+            <span class="check">[✓]</span>
             <div>
               <div class="head">Team workspace</div>
               <div class="sub">Coming Q3 — shared library for your whole team</div>
             </div>
           </li>
           <li>
-            <span class="check">✓</span>
+            <span class="check">[✓]</span>
             <div>
               <div class="head">Priority support</div>
               <div class="sub">Direct line to the developer (me!)</div>
             </div>
           </li>
           <li>
-            <span class="check">✓</span>
+            <span class="check">[✓]</span>
             <div>
               <div class="head">Your name in CONTRIBUTORS.md</div>
               <div class="sub">Recognized as a founding supporter</div>
             </div>
           </li>
           <li>
-            <span class="check">✓</span>
+            <span class="check">[✓]</span>
             <div>
               <div class="head">Early access to every beta</div>
               <div class="sub">Before public release</div>
@@ -456,7 +529,8 @@
     <div class="container">
       <div class="why-eyebrow" data-reveal>Why this exists</div>
       <h2 class="why-h" data-reveal data-d="1">
-        VC-backed tools chase Fortune 500. <em>Chingu</em> is built for the rest of us.
+        VC-backed tools chase Fortune 500.<br>
+        <span class="accent">Chingu</span> is built for the rest of us.
       </h2>
       <div class="why-grid">
         <p data-reveal data-d="1">
@@ -473,9 +547,9 @@
     <div class="container">
       <div class="alt-bar-h">Not ready to commit?</div>
       <div class="alt-bar-links">
-        <a href="https://buymeacoffee.com/chingu" target="_blank">Tip the dev →</a>
-        <a href="https://github.com/sponsors/21428122" target="_blank">Sponsor on GitHub →</a>
-        <a href="https://github.com/21428122/chingu" target="_blank">Star the repo →</a>
+        <a href="https://buymeacoffee.com/chingu" target="_blank">☕ Tip the dev →</a>
+        <a href="https://github.com/sponsors/21428122" target="_blank">💝 Sponsor on GitHub →</a>
+        <a href="https://github.com/21428122/chingu" target="_blank">⭐ Star the repo →</a>
       </div>
     </div>
   </section>
@@ -507,11 +581,13 @@
 
     (function() {
       const orb = document.querySelector('.hero-orb');
-      if (!orb) return;
+      const cappy = document.querySelector('.pro-cappy-svg');
+      if (!orb && !cappy) return;
       addEventListener('mousemove', e => {
         const x = (e.clientX / innerWidth - 0.5) * 30;
         const y = (e.clientY / innerHeight - 0.5) * 30;
-        orb.style.transform = `translate(${x}px, ${y}px)`;
+        if (orb) orb.style.transform = `translate(${x}px, ${y}px)`;
+        if (cappy) cappy.style.transform = `translate(${x*0.3}px, ${y*0.3}px)`;
       });
     })();
   </script>

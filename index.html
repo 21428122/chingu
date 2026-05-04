@@ -9,37 +9,40 @@
   <meta property="og:description" content="Free open source SOP tool. The Scribe alternative that doesn't charge $23 per seat.">
   <link rel="icon" href="icons/favicon.svg">
 
-  <!-- Awwwards-tier typography stack -->
+  <!-- Distinctive type stack: Bricolage (variable, expressive) + Inter Tight + JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <style>
     /* ─────────────────────────────────────────────────────────────────────
-       AWWWARDS-TIER DESIGN SYSTEM
-       Editorial typography · Custom cursor · Scroll-driven motion
-       Cream on near-black with warm tan accents (Cappy brand)
+       CHINGU — playful editorial · Cappy character + product mockups
+       Bricolage Grotesque (variable display) + Inter Tight (body)
     ───────────────────────────────────────────────────────────────────── */
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
 
     :root {
-      --bg:        #0A0A0A;
-      --bg-2:      #141414;
+      --bg:        #0E0E0F;
+      --bg-2:      #161618;
+      --bg-3:      #1F1F22;
       --fg:        #F5F1E8;
       --fg-mute:   #8A857A;
-      --line:      #1F1F1F;
+      --line:      #232325;
       --tan:       #E8A87C;
       --cocoa:     #C8956D;
+      --peach:     #FFB07A;
       --cream:     #FFF5E4;
       --mint:      #10B981;
+      --violet:    #A78BFA;
+      --indigo:    #6366F1;
+      --pink:      #FF8FA3;
       --red:       #EF4444;
     }
 
     body {
-      font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
-      font-weight: 400;
+      font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
       color: var(--fg);
       -webkit-font-smoothing: antialiased;
@@ -48,14 +51,12 @@
       cursor: none;
     }
 
-    /* Subtle film grain — gives it texture, not flat */
+    /* Subtle grain */
     body::before {
       content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 1;
-      background-image:
-        radial-gradient(rgba(255,255,255,0.012) 1px, transparent 1px);
+      background-image: radial-gradient(rgba(255,255,255,0.012) 1px, transparent 1px);
       background-size: 3px 3px;
-      mix-blend-mode: overlay;
-      opacity: 0.4;
+      opacity: 0.5;
     }
 
     /* ── Custom cursor ── */
@@ -63,107 +64,86 @@
       position: fixed; top: 0; left: 0; pointer-events: none;
       z-index: 9999; border-radius: 50%;
       transform: translate(-50%, -50%);
-      transition: transform 0.18s cubic-bezier(0.22, 0.61, 0.36, 1),
-                  width 0.18s cubic-bezier(0.22, 0.61, 0.36, 1),
-                  height 0.18s cubic-bezier(0.22, 0.61, 0.36, 1),
-                  background 0.18s ease;
       will-change: transform;
     }
-    .cursor-dot {
-      width: 6px; height: 6px;
-      background: var(--fg);
-    }
+    .cursor-dot { width: 6px; height: 6px; background: var(--fg); }
     .cursor-ring {
       width: 36px; height: 36px;
       border: 1px solid rgba(245, 241, 232, 0.4);
-      transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
-                  width 0.3s ease, height 0.3s ease,
-                  border-color 0.3s ease, background 0.3s ease;
+      transition: width 0.3s ease, height 0.3s ease, background 0.3s ease, border-color 0.3s ease;
     }
     .cursor-ring.hover {
       width: 64px; height: 64px;
-      background: rgba(232, 168, 124, 0.15);
+      background: rgba(232, 168, 124, 0.18);
       border-color: var(--tan);
-      mix-blend-mode: difference;
     }
     @media (max-width: 768px), (pointer: coarse) {
       body { cursor: auto; }
       .cursor-dot, .cursor-ring { display: none; }
     }
+    a, button, [data-cursor] { cursor: none; }
 
-    /* ── Reveal animations ── */
+    /* ── Reveal ── */
     [data-reveal] {
-      opacity: 0;
-      transform: translateY(40px);
-      transition: opacity 1.2s cubic-bezier(0.22, 0.61, 0.36, 1),
-                  transform 1.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+      opacity: 0; transform: translateY(40px);
+      transition: opacity 1.1s cubic-bezier(0.22, 0.61, 0.36, 1),
+                  transform 1.1s cubic-bezier(0.22, 0.61, 0.36, 1);
     }
-    [data-reveal].in {
-      opacity: 1; transform: none;
-    }
+    [data-reveal].in { opacity: 1; transform: none; }
     [data-reveal][data-d="1"] { transition-delay: 0.08s; }
     [data-reveal][data-d="2"] { transition-delay: 0.16s; }
     [data-reveal][data-d="3"] { transition-delay: 0.24s; }
     [data-reveal][data-d="4"] { transition-delay: 0.32s; }
-    [data-reveal][data-d="5"] { transition-delay: 0.4s; }
+    [data-reveal][data-d="5"] { transition-delay: 0.40s; }
 
-    /* ── Word-by-word headline reveal ── */
-    .split { display: inline-flex; flex-wrap: wrap; gap: 0.18em; }
-    .split .word {
-      display: inline-block; overflow: hidden; line-height: 1;
-      padding-bottom: 0.06em;
+    /* ── Cappy animations ── */
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+    @keyframes blink-eye { 0%, 92%, 100% { transform: scaleY(1); } 95%, 98% { transform: scaleY(0.08); } }
+    @keyframes wiggle-tail { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(8deg); } }
+    @keyframes slow-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes pulse-dot {
+      0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
+      50% { transform: scale(0.75); opacity: 0.6; box-shadow: 0 0 0 10px rgba(239,68,68,0); }
     }
-    .split .word > span {
-      display: inline-block;
-      transform: translateY(110%) skewY(6deg);
-      transition: transform 1.1s cubic-bezier(0.22, 0.61, 0.36, 1);
-    }
-    .split.in .word > span { transform: translateY(0) skewY(0); }
-    .split.in .word:nth-child(1) > span { transition-delay: 0.05s; }
-    .split.in .word:nth-child(2) > span { transition-delay: 0.12s; }
-    .split.in .word:nth-child(3) > span { transition-delay: 0.19s; }
-    .split.in .word:nth-child(4) > span { transition-delay: 0.26s; }
-    .split.in .word:nth-child(5) > span { transition-delay: 0.33s; }
-    .split.in .word:nth-child(6) > span { transition-delay: 0.40s; }
+    @keyframes marquee-roll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @keyframes badge-tick { 0% { transform: rotate(0); } 25% { transform: rotate(2deg); } 75% { transform: rotate(-2deg); } 100% { transform: rotate(0); } }
 
     /* ── Layout ── */
-    .container {
-      max-width: 1320px; margin: 0 auto;
-      padding: 0 32px;
-    }
+    .container { max-width: 1320px; margin: 0 auto; padding: 0 32px; }
     section { position: relative; }
 
     /* ── Nav ── */
     .nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-      padding: 22px 32px;
+      padding: 18px 32px;
       display: flex; align-items: center; justify-content: space-between;
-      transition: backdrop-filter 0.3s ease, background 0.3s ease;
+      transition: backdrop-filter 0.3s, background 0.3s;
     }
     .nav.scrolled {
       backdrop-filter: blur(16px);
-      background: rgba(10, 10, 10, 0.7);
+      background: rgba(14, 14, 15, 0.78);
       border-bottom: 1px solid var(--line);
     }
-    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand { display: flex; align-items: center; gap: 11px; text-decoration: none; }
     .brand-mark {
-      width: 32px; height: 32px;
-      background: var(--tan);
-      border-radius: 10px;
+      width: 36px; height: 36px;
+      background: var(--peach);
+      border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
+      box-shadow: 0 4px 20px rgba(255, 176, 122, 0.25);
     }
-    .brand-mark svg { width: 22px; height: 22px; }
+    .brand-mark svg { width: 26px; height: 26px; }
     .brand-name {
-      font-family: 'Instrument Serif', serif;
-      font-style: italic;
-      font-size: 26px;
-      letter-spacing: -0.02em;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      letter-spacing: -0.03em;
       color: var(--fg);
     }
     .nav-links {
       display: flex; gap: 32px;
-      font-size: 14px;
+      font-size: 14px; font-weight: 500;
       letter-spacing: -0.01em;
     }
     .nav-links a {
@@ -172,293 +152,397 @@
     }
     .nav-links a:hover { color: var(--fg); }
     .nav-cta {
-      padding: 10px 18px;
-      background: var(--fg);
-      color: var(--bg);
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 11px 20px;
+      background: var(--peach);
+      color: #1A0A04;
       border-radius: 999px;
-      font-size: 13px; font-weight: 600;
+      font-size: 14px; font-weight: 700;
       text-decoration: none;
       letter-spacing: -0.01em;
-      transition: background 0.15s ease;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 20px rgba(255, 176, 122, 0.2);
     }
-    .nav-cta:hover { background: var(--tan); }
-    @media (max-width: 720px) {
-      .nav-links { display: none; }
+    .nav-cta:hover {
+      background: var(--cream);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(255, 176, 122, 0.3);
     }
+    @media (max-width: 720px) { .nav-links { display: none; } }
 
     /* ════════════════════════════════════════════════════════════════════
-       HERO
+       HERO — Cappy character + bold display
     ════════════════════════════════════════════════════════════════════ */
     .hero {
       min-height: 100vh;
-      padding: 160px 0 80px;
+      padding: 140px 0 80px;
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 80px;
+      align-items: center;
       position: relative;
-      display: flex; flex-direction: column; justify-content: center;
+    }
+    @media (max-width: 980px) {
+      .hero { grid-template-columns: 1fr; gap: 40px; padding: 120px 0 60px; }
+    }
+    .hero-orb {
+      position: absolute; pointer-events: none;
+      width: 600px; height: 600px;
+      right: -180px; top: 60px;
+      background: radial-gradient(circle, rgba(255, 176, 122, 0.18), transparent 65%);
+      filter: blur(50px);
+      z-index: -1;
     }
     .hero-eyebrow {
       display: inline-flex; align-items: center; gap: 12px;
-      font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase;
-      color: var(--tan); font-weight: 500;
-      margin-bottom: 36px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--peach); font-weight: 500;
+      margin-bottom: 28px;
     }
     .hero-eyebrow::before {
-      content: ""; display: inline-block;
-      width: 28px; height: 1px; background: var(--tan);
+      content: ""; width: 28px; height: 1px; background: var(--peach);
     }
     .hero-h1 {
-      font-family: 'Geist', sans-serif;
-      font-weight: 500;
-      font-size: clamp(58px, 11vw, 184px);
-      letter-spacing: -0.04em;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700;
+      font-size: clamp(54px, 9vw, 144px);
+      letter-spacing: -0.045em;
       line-height: 0.92;
-      margin-bottom: 56px;
+      margin-bottom: 32px;
     }
-    .hero-h1 em {
-      font-family: 'Instrument Serif', serif;
-      font-style: italic;
-      font-weight: 400;
-      color: var(--tan);
-    }
-    .hero-meta {
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      gap: 60px; align-items: end;
-      padding-top: 48px;
-      border-top: 1px solid var(--line);
-    }
-    @media (max-width: 768px) {
-      .hero-meta { grid-template-columns: 1fr; gap: 32px; }
-    }
-    .hero-meta-text {
-      font-size: 18px;
-      max-width: 480px;
+    .hero-h1 .accent { color: var(--peach); }
+    .hero-h1 .strike {
+      position: relative; display: inline-block;
       color: var(--fg-mute);
-      line-height: 1.55;
     }
-    .hero-meta-text strong { color: var(--fg); font-weight: 500; }
-    .hero-cta-group { display: flex; flex-direction: column; gap: 12px; }
-    .btn-primary {
-      display: inline-flex; align-items: center; gap: 12px;
-      padding: 18px 28px;
-      background: var(--fg); color: var(--bg);
+    .hero-h1 .strike::after {
+      content: ""; position: absolute; left: -2%; right: -2%; top: 52%;
+      height: 8px; background: var(--peach);
+      transform: rotate(-3deg);
+    }
+    .hero-sub {
+      font-size: 19px; line-height: 1.55;
+      color: var(--fg-mute);
+      max-width: 540px;
+      margin-bottom: 40px;
+    }
+    .hero-sub strong { color: var(--fg); font-weight: 600; }
+    .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+    .btn-pri {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 17px 28px;
+      background: var(--peach); color: #1A0A04;
       border: none; border-radius: 999px;
-      font-family: inherit; font-size: 15px; font-weight: 600;
+      font-family: inherit; font-size: 16px; font-weight: 700;
       letter-spacing: -0.01em;
       text-decoration: none;
-      transition: background 0.15s ease, transform 0.15s ease;
-      white-space: nowrap;
+      transition: all 0.2s ease;
+      box-shadow: 0 8px 30px rgba(255, 176, 122, 0.25);
     }
-    .btn-primary:hover { background: var(--tan); transform: translateY(-2px); }
-    .btn-arrow {
-      display: inline-block;
-      transition: transform 0.2s ease;
+    .btn-pri:hover {
+      background: var(--cream); transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(255, 176, 122, 0.4);
     }
-    .btn-primary:hover .btn-arrow { transform: translateX(4px); }
-    .btn-secondary {
+    .btn-pri .ar { transition: transform 0.2s ease; }
+    .btn-pri:hover .ar { transform: translateX(4px); }
+    .btn-sec {
       display: inline-flex; align-items: center; gap: 8px;
-      padding: 14px 0;
-      color: var(--fg-mute);
-      font-size: 13px; font-weight: 500;
-      letter-spacing: -0.01em;
+      padding: 17px 24px;
+      color: var(--fg);
+      border: 1.5px solid var(--line);
+      border-radius: 999px;
+      font-size: 14px; font-weight: 600;
       text-decoration: none;
-      border-bottom: 1px solid var(--line);
-      transition: color 0.15s ease, border-color 0.15s ease;
+      transition: all 0.2s ease;
     }
-    .btn-secondary:hover { color: var(--fg); border-color: var(--tan); }
+    .btn-sec:hover { border-color: var(--peach); color: var(--peach); }
 
-    .hero-stat {
-      font-family: 'Instrument Serif', serif;
-      font-size: 56px;
-      letter-spacing: -0.02em;
-      line-height: 1;
-      color: var(--tan);
+    /* ── Cappy hero illustration ── */
+    .cappy-stage {
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 460px;
     }
-    .hero-stat-label {
-      font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
-      color: var(--fg-mute); margin-top: 8px;
+    .cappy-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, rgba(232, 168, 124, 0.08) 0%, transparent 70%);
     }
+    .cappy-svg {
+      width: 100%;
+      max-width: 460px;
+      height: auto;
+      animation: float 4.6s ease-in-out infinite;
+      filter: drop-shadow(0 20px 60px rgba(232, 168, 124, 0.15));
+    }
+    .cappy-eye-l, .cappy-eye-r { transform-origin: center; animation: blink-eye 4.2s ease-in-out infinite; }
+    .cappy-tail { transform-origin: 50% 100%; animation: wiggle-tail 2.4s ease-in-out infinite; }
 
-    /* Decorative orb */
-    .hero-orb {
-      position: absolute; pointer-events: none;
-      width: 480px; height: 480px;
-      right: -120px; top: 80px;
-      background: radial-gradient(circle, rgba(232, 168, 124, 0.18), transparent 65%);
-      filter: blur(40px);
-      z-index: -1;
+    /* Floating tags around Cappy */
+    .floating-tag {
+      position: absolute;
+      padding: 8px 14px;
+      background: var(--bg-2);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      letter-spacing: -0.01em;
+      backdrop-filter: blur(8px);
+      animation: float 5s ease-in-out infinite;
     }
+    .tag-1 { top: 20%; left: -8%; color: var(--peach); border-color: rgba(255, 176, 122, 0.3); animation-delay: 0s; }
+    .tag-2 { top: 12%; right: -2%; color: var(--mint); border-color: rgba(16, 185, 129, 0.3); animation-delay: 1s; }
+    .tag-3 { bottom: 18%; left: -12%; color: var(--violet); border-color: rgba(167, 139, 250, 0.3); animation-delay: 2s; }
+    .tag-4 { bottom: 8%; right: -4%; color: var(--fg); border-color: var(--line); animation-delay: 1.5s; }
 
     /* ════════════════════════════════════════════════════════════════════
-       MARQUEE — competitive context
+       MARQUEE
     ════════════════════════════════════════════════════════════════════ */
     .marquee {
-      padding: 32px 0;
+      padding: 28px 0;
       border-top: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
       overflow: hidden;
       white-space: nowrap;
+      background: var(--bg-2);
     }
     .marquee-track {
       display: inline-flex;
-      gap: 80px;
-      animation: marquee-scroll 38s linear infinite;
-      will-change: transform;
-    }
-    @keyframes marquee-scroll {
-      from { transform: translateX(0); }
-      to { transform: translateX(-50%); }
+      gap: 60px;
+      animation: marquee-roll 32s linear infinite;
     }
     .marquee-item {
-      font-family: 'Instrument Serif', serif;
-      font-style: italic;
-      font-size: 28px;
-      letter-spacing: -0.01em;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 600;
+      font-size: 26px;
+      letter-spacing: -0.02em;
       color: var(--fg-mute);
-      display: inline-flex; align-items: center; gap: 80px;
+      display: inline-flex; align-items: center; gap: 60px;
     }
     .marquee-item::after {
-      content: "✦"; color: var(--tan);
-      font-style: normal;
-    }
-    .marquee-item:last-child::after { content: ""; }
-
-    /* ════════════════════════════════════════════════════════════════════
-       PITCH — why this exists
-    ════════════════════════════════════════════════════════════════════ */
-    .pitch {
-      padding: 180px 0 120px;
-    }
-    .pitch-eyebrow {
-      font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase;
-      color: var(--tan); font-weight: 500;
-      margin-bottom: 24px;
-    }
-    .pitch-h2 {
-      font-family: 'Geist', sans-serif;
-      font-weight: 400;
-      font-size: clamp(40px, 6vw, 88px);
-      letter-spacing: -0.03em;
-      line-height: 1.02;
-      margin-bottom: 80px;
-      max-width: 1100px;
-    }
-    .pitch-h2 em {
-      font-family: 'Instrument Serif', serif;
-      font-style: italic;
-      color: var(--tan);
-    }
-
-    .three-col {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 48px;
-      padding-top: 48px;
-      border-top: 1px solid var(--line);
-    }
-    @media (max-width: 900px) { .three-col { grid-template-columns: 1fr; gap: 56px; } }
-    .col-num {
-      font-family: 'Instrument Serif', serif;
-      font-style: italic;
-      color: var(--tan);
-      font-size: 22px;
-      margin-bottom: 24px;
-    }
-    .col-h {
-      font-size: 22px;
-      font-weight: 500;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-      margin-bottom: 14px;
-    }
-    .col-p {
-      font-size: 15px;
-      line-height: 1.65;
-      color: var(--fg-mute);
+      content: "✦"; color: var(--peach);
     }
 
     /* ════════════════════════════════════════════════════════════════════
-       PRODUCT — big stage
+       PRODUCT — live mockup of the extension in action
     ════════════════════════════════════════════════════════════════════ */
     .product {
-      padding: 120px 0 160px;
+      padding: 140px 0;
       position: relative;
     }
+    .section-eyebrow {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--peach); font-weight: 500;
+      margin-bottom: 24px;
+    }
+    .section-eyebrow::before {
+      content: ""; width: 28px; height: 1px; background: var(--peach);
+    }
+    .section-h {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700;
+      font-size: clamp(40px, 6vw, 88px);
+      letter-spacing: -0.04em;
+      line-height: 1.0;
+      margin-bottom: 32px;
+      max-width: 1100px;
+    }
+    .section-h .accent { color: var(--peach); }
+    .section-sub {
+      font-size: 18px; line-height: 1.6;
+      color: var(--fg-mute);
+      max-width: 580px;
+      margin-bottom: 80px;
+    }
+
     .product-stage {
+      position: relative;
       background: linear-gradient(180deg, var(--bg-2), var(--bg));
-      border-radius: 28px;
       border: 1px solid var(--line);
-      padding: 80px;
-      position: relative; overflow: hidden;
+      border-radius: 28px;
+      padding: 60px;
+      overflow: hidden;
+      min-height: 540px;
     }
-    @media (max-width: 768px) { .product-stage { padding: 40px 24px; border-radius: 16px; } }
+    @media (max-width: 768px) { .product-stage { padding: 32px 20px; border-radius: 18px; } }
 
-    .stage-h {
-      font-family: 'Geist', sans-serif;
-      font-weight: 400;
-      font-size: clamp(32px, 5vw, 64px);
-      letter-spacing: -0.03em;
-      line-height: 1.05;
-      max-width: 720px;
-      margin-bottom: 64px;
+    .product-stage::before {
+      content: ""; position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(255, 176, 122, 0.06), transparent 60%);
+      top: -200px; right: -200px; pointer-events: none;
     }
-    .stage-h em { font-family: 'Instrument Serif', serif; font-style: italic; color: var(--tan); }
 
-    .stage-flow {
+    /* Browser frame mockup */
+    .browser-mock {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+      max-width: 880px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .browser-bar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 14px;
+      background: var(--bg-3);
+      border-bottom: 1px solid var(--line);
+    }
+    .browser-dot { width: 11px; height: 11px; border-radius: 50%; }
+    .browser-dot.r { background: #FF5F57; }
+    .browser-dot.y { background: #FFBD2E; }
+    .browser-dot.g { background: #28CA42; }
+    .browser-url {
+      flex: 1; margin-left: 16px;
+      padding: 6px 14px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--fg-mute);
+    }
+
+    .browser-page {
+      padding: 24px;
+      min-height: 380px;
+      background:
+        linear-gradient(180deg, transparent 0%, rgba(255, 176, 122, 0.02) 100%),
+        var(--bg);
+      position: relative;
+    }
+    /* Fake content lines on the page */
+    .fake-line {
+      height: 8px;
+      background: linear-gradient(90deg, var(--bg-3), var(--bg-2));
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+    .fake-line.short { width: 35%; }
+    .fake-line.med { width: 60%; }
+    .fake-line.long { width: 85%; }
+    .fake-block {
+      width: 100%; height: 120px;
+      background: linear-gradient(135deg, var(--bg-3), var(--bg-2));
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+    .fake-btn {
+      display: inline-block;
+      padding: 10px 18px;
+      background: var(--violet);
+      border-radius: 8px;
+      color: white;
+      font-size: 13px; font-weight: 600;
+      margin-top: 8px;
+    }
+
+    /* Recording overlay (just like the real one in content.js) */
+    .rec-overlay {
+      position: absolute;
+      bottom: 18px; right: 18px;
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px 10px 16px;
+      background: rgba(10, 10, 15, 0.92);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 999px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      font-family: 'Inter Tight', sans-serif;
+      font-size: 13px; font-weight: 600; color: white;
+    }
+    .rec-dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: var(--red);
+      animation: pulse-dot 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    .rec-label { color: var(--red); letter-spacing: 0.06em; font-size: 11px; }
+    .rec-count { color: rgba(255,255,255,0.55); font-weight: 500; }
+    .rec-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.15); }
+    .rec-stop {
+      background: var(--red); color: white;
+      border: none; border-radius: 999px;
+      padding: 6px 16px;
+      font-size: 12px; font-weight: 700;
+      font-family: inherit;
+    }
+
+    /* Click ripple highlight */
+    .click-ripple {
+      position: absolute;
+      width: 80px; height: 80px;
+      border: 2px solid var(--peach);
+      border-radius: 50%;
+      animation: ripple 1.6s ease-out infinite;
+      pointer-events: none;
+    }
+    @keyframes ripple {
+      0% { transform: scale(0.4); opacity: 1; }
+      100% { transform: scale(1); opacity: 0; }
+    }
+
+    /* ════════════════════════════════════════════════════════════════════
+       FEATURE GRID with illustrations
+    ════════════════════════════════════════════════════════════════════ */
+    .features { padding: 140px 0; }
+    .feat-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-      position: relative;
+      gap: 20px;
+      margin-top: 60px;
     }
-    @media (max-width: 900px) { .stage-flow { grid-template-columns: 1fr; } }
-    .flow-step {
-      background: rgba(255, 245, 228, 0.02);
+    @media (max-width: 980px) { .feat-grid { grid-template-columns: 1fr; } }
+    .feat-card {
+      background: var(--bg-2);
       border: 1px solid var(--line);
-      border-radius: 16px;
+      border-radius: 24px;
       padding: 32px;
-      transition: border-color 0.3s ease, background 0.3s ease, transform 0.3s ease;
+      transition: all 0.3s ease;
+      overflow: hidden;
     }
-    .flow-step:hover {
-      border-color: var(--tan);
-      background: rgba(232, 168, 124, 0.04);
+    .feat-card:hover {
+      border-color: var(--peach);
+      background: linear-gradient(160deg, rgba(255,176,122,0.06), var(--bg-2));
       transform: translateY(-4px);
     }
-    .flow-step .num {
-      font-family: 'Instrument Serif', serif;
-      font-style: italic;
-      font-size: 56px;
-      color: var(--tan);
-      line-height: 1;
-      margin-bottom: 16px;
+    .feat-illust {
+      width: 100%; height: 200px;
+      border-radius: 16px;
+      margin-bottom: 24px;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
     }
-    .flow-step .h {
-      font-size: 18px; font-weight: 500;
-      margin-bottom: 8px;
-      letter-spacing: -0.01em;
+    .feat-illust svg, .feat-illust img {
+      width: 100%; height: 100%; object-fit: contain;
     }
-    .flow-step .p {
-      font-size: 14px; line-height: 1.6;
+    .feat-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--peach);
+      letter-spacing: 0.18em;
+      margin-bottom: 12px;
+    }
+    .feat-h {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700;
+      font-size: 24px;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+      line-height: 1.2;
+    }
+    .feat-p {
+      font-size: 15px; line-height: 1.6;
       color: var(--fg-mute);
     }
 
     /* ════════════════════════════════════════════════════════════════════
-       COMPARISON — the brutal truth
+       COMPARISON
     ════════════════════════════════════════════════════════════════════ */
-    .compare { padding: 160px 0; }
-    .compare-h {
-      font-family: 'Geist', sans-serif;
-      font-weight: 400;
-      font-size: clamp(40px, 6.5vw, 96px);
-      letter-spacing: -0.03em;
-      line-height: 1;
-      margin-bottom: 16px;
-    }
-    .compare-h em { font-family: 'Instrument Serif', serif; font-style: italic; color: var(--tan); }
-    .compare-sub {
-      font-size: 16px; color: var(--fg-mute);
-      max-width: 580px; line-height: 1.6;
-      margin-bottom: 80px;
-    }
-
+    .compare { padding: 140px 0; }
     .comp-table {
       width: 100%;
       border-collapse: collapse;
@@ -470,21 +554,21 @@
       font-weight: 400;
     }
     .comp-table th {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
       color: var(--fg-mute); font-weight: 500;
       padding-bottom: 16px;
     }
     .comp-table .name {
-      font-family: 'Instrument Serif', serif;
-      font-size: 22px; letter-spacing: -0.01em;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      letter-spacing: -0.02em;
     }
     .comp-table .row-chingu {
-      background: rgba(232, 168, 124, 0.06);
+      background: linear-gradient(90deg, rgba(255, 176, 122, 0.08), transparent);
     }
-    .comp-table .row-chingu .name {
-      color: var(--tan);
-      font-style: italic;
-    }
+    .comp-table .row-chingu .name { color: var(--peach); }
     .comp-table .price-paid {
       font-family: 'JetBrains Mono', monospace;
       color: var(--red); font-size: 14px;
@@ -492,9 +576,10 @@
     .comp-table .price-free {
       font-family: 'JetBrains Mono', monospace;
       color: var(--mint); font-size: 14px;
+      font-weight: 500;
     }
-    .comp-table .yes { color: var(--mint); font-size: 16px; }
-    .comp-table .no { color: var(--fg-mute); font-size: 16px; }
+    .comp-table .yes { color: var(--mint); font-size: 18px; }
+    .comp-table .no { color: var(--fg-mute); font-size: 18px; }
     @media (max-width: 768px) {
       .comp-table { font-size: 13px; }
       .comp-table th, .comp-table td { padding: 14px 10px; }
@@ -505,42 +590,44 @@
        BIG STAT BAND
     ════════════════════════════════════════════════════════════════════ */
     .stat-band {
-      padding: 140px 0;
+      padding: 120px 0;
       border-top: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
+      background: var(--bg-2);
     }
     .stat-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+      gap: 24px;
     }
     @media (max-width: 900px) { .stat-grid { grid-template-columns: repeat(2, 1fr); gap: 48px; } }
-    .stat-cell {
-      text-align: center;
-      padding: 24px;
-    }
+    .stat-cell { text-align: center; }
     .stat-num {
-      font-family: 'Instrument Serif', serif;
-      font-style: italic;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700;
       font-size: clamp(64px, 10vw, 132px);
       line-height: 1;
-      color: var(--tan);
-      letter-spacing: -0.02em;
+      letter-spacing: -0.04em;
       margin-bottom: 16px;
     }
+    .stat-num.tan { color: var(--peach); }
+    .stat-num.mint { color: var(--mint); }
+    .stat-num.violet { color: var(--violet); }
     .stat-label {
-      font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
       color: var(--fg-mute); font-weight: 500;
     }
 
     /* ════════════════════════════════════════════════════════════════════
-       PRO / PRICING TEASER
+       PRICING
     ════════════════════════════════════════════════════════════════════ */
-    .pricing { padding: 180px 0 120px; }
+    .pricing { padding: 140px 0; }
     .pricing-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 24px;
+      margin-top: 60px;
     }
     @media (max-width: 900px) { .pricing-grid { grid-template-columns: 1fr; } }
     .price-card {
@@ -549,37 +636,52 @@
       border-radius: 24px;
       background: var(--bg-2);
       position: relative; overflow: hidden;
-      transition: border-color 0.3s ease, transform 0.3s ease;
+      transition: all 0.3s ease;
     }
-    .price-card:hover { border-color: var(--tan); transform: translateY(-4px); }
+    .price-card:hover { border-color: var(--peach); transform: translateY(-4px); }
     .price-card.feature {
-      background: linear-gradient(160deg, rgba(232, 168, 124, 0.12), var(--bg-2));
-      border-color: rgba(232, 168, 124, 0.3);
+      background: linear-gradient(160deg, rgba(255, 176, 122, 0.1), var(--bg-2));
+      border-color: rgba(255, 176, 122, 0.3);
+    }
+    .price-card.feature::before {
+      content: "★ FOUNDERS";
+      position: absolute; top: 24px; right: 28px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; letter-spacing: 0.2em;
+      color: var(--peach);
+      background: rgba(255, 176, 122, 0.12);
+      padding: 5px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 176, 122, 0.3);
     }
     .price-eyebrow {
-      font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase;
-      color: var(--tan); font-weight: 500;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--fg-mute); font-weight: 500;
       margin-bottom: 28px;
     }
     .price-num {
       display: flex; align-items: baseline; gap: 12px;
       margin-bottom: 6px;
     }
-    .price-num .amt {
-      font-family: 'Instrument Serif', serif;
-      font-size: 96px; line-height: 1;
-      letter-spacing: -0.02em;
+    .price-old {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 16px; color: var(--fg-mute);
+      text-decoration: line-through;
     }
-    .price-num .period {
-      font-size: 14px; color: var(--fg-mute);
+    .price-amt {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700;
+      font-size: 88px; line-height: 1;
+      letter-spacing: -0.04em;
     }
+    .price-amt.tan { color: var(--peach); }
+    .price-period { font-size: 14px; color: var(--fg-mute); }
     .price-tagline {
       font-size: 15px; color: var(--fg-mute);
       margin-bottom: 36px;
     }
-    .price-list {
-      list-style: none; margin-bottom: 40px;
-    }
+    .price-list { list-style: none; margin-bottom: 40px; }
     .price-list li {
       padding: 12px 0;
       font-size: 14px; color: var(--fg);
@@ -588,62 +690,68 @@
     }
     .price-list li:last-child { border-bottom: none; }
     .price-list li::before {
-      content: "✦"; color: var(--tan); flex-shrink: 0;
+      content: "✦"; color: var(--peach); flex-shrink: 0;
     }
     .price-cta {
       display: inline-flex; align-items: center; gap: 10px;
       padding: 16px 28px;
       border-radius: 999px;
-      font-size: 14px; font-weight: 600;
+      font-size: 14px; font-weight: 700;
       letter-spacing: -0.01em;
       text-decoration: none;
       transition: all 0.2s ease;
     }
     .price-cta.primary {
-      background: var(--tan); color: var(--bg);
+      background: var(--peach); color: #1A0A04;
+      box-shadow: 0 4px 24px rgba(255, 176, 122, 0.25);
     }
     .price-cta.primary:hover {
       background: var(--cream); transform: translateY(-2px);
     }
     .price-cta.ghost {
       background: transparent; color: var(--fg);
-      border: 1px solid var(--line);
+      border: 1.5px solid var(--line);
     }
-    .price-cta.ghost:hover { border-color: var(--fg); }
+    .price-cta.ghost:hover { border-color: var(--peach); color: var(--peach); }
 
     /* ════════════════════════════════════════════════════════════════════
-       FINAL CTA
+       FINAL CTA with Cappy
     ════════════════════════════════════════════════════════════════════ */
     .cta-final {
-      padding: 200px 0 200px;
+      padding: 160px 0 200px;
       text-align: center;
       border-top: 1px solid var(--line);
       position: relative;
     }
     .cta-final::after {
       content: ""; position: absolute;
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(232, 168, 124, 0.1), transparent 60%);
+      width: 800px; height: 800px;
+      background: radial-gradient(circle, rgba(255, 176, 122, 0.1), transparent 60%);
       filter: blur(80px);
       left: 50%; top: 50%;
       transform: translate(-50%, -50%);
       z-index: -1;
     }
-    .cta-h {
-      font-family: 'Geist', sans-serif;
-      font-weight: 400;
-      font-size: clamp(56px, 10vw, 152px);
-      letter-spacing: -0.04em;
-      line-height: 0.95;
-      margin-bottom: 48px;
+    .cta-cappy {
+      width: 140px; height: 140px;
+      margin: 0 auto 32px;
+      animation: float 4s ease-in-out infinite;
     }
-    .cta-h em { font-family: 'Instrument Serif', serif; font-style: italic; color: var(--tan); }
+    .cta-h {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700;
+      font-size: clamp(48px, 8vw, 120px);
+      letter-spacing: -0.045em;
+      line-height: 0.95;
+      margin-bottom: 40px;
+    }
+    .cta-h .accent { color: var(--peach); }
 
     /* ════════════════════════════════════════════════════════════════════
        FOOTER
     ════════════════════════════════════════════════════════════════════ */
     footer {
-      padding: 64px 0 48px;
+      padding: 64px 0 40px;
       border-top: 1px solid var(--line);
       font-size: 13px;
       color: var(--fg-mute);
@@ -652,17 +760,19 @@
       display: grid;
       grid-template-columns: 2fr 1fr 1fr 1fr;
       gap: 64px;
-      padding-bottom: 80px;
+      padding-bottom: 64px;
     }
     @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; } }
     .footer-brand-h {
-      font-family: 'Instrument Serif', serif;
-      font-style: italic;
-      font-size: 32px;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700;
+      font-size: 28px;
+      letter-spacing: -0.03em;
       color: var(--fg);
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
     .footer-col-h {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
       color: var(--fg-mute); font-weight: 500;
       margin-bottom: 20px;
@@ -673,51 +783,47 @@
       font-size: 14px;
       transition: color 0.15s ease;
     }
-    .footer-col a:hover { color: var(--tan); }
+    .footer-col a:hover { color: var(--peach); }
     .footer-bottom {
       display: flex; justify-content: space-between; align-items: center;
-      padding-top: 32px;
+      padding-top: 28px;
       border-top: 1px solid var(--line);
       font-size: 12px; color: var(--fg-mute);
     }
+    .korean-tag {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 18px; color: var(--peach);
+    }
 
-    /* Selection */
-    ::selection { background: var(--tan); color: var(--bg); }
+    ::selection { background: var(--peach); color: #1A0A04; }
 
-    a, button, [data-cursor="hover"] { cursor: none; }
-
-    /* Reduced motion respect */
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-      }
+      *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Custom cursor -->
   <div class="cursor-dot" id="cursorDot"></div>
   <div class="cursor-ring" id="cursorRing"></div>
 
   <!-- ════ NAV ════ -->
   <nav class="nav" id="nav">
-    <div class="brand">
+    <a href="#" class="brand">
       <div class="brand-mark">
         <svg viewBox="0 0 200 200">
-          <ellipse cx="100" cy="115" rx="92" ry="80" fill="#0A0A0A"/>
-          <ellipse cx="100" cy="140" rx="48" ry="30" fill="#1F1F1F"/>
-          <circle cx="75" cy="92" r="10" fill="#F5F1E8"/>
-          <circle cx="78" cy="88" r="3" fill="#E8A87C"/>
-          <circle cx="125" cy="92" r="10" fill="#F5F1E8"/>
-          <circle cx="128" cy="88" r="3" fill="#E8A87C"/>
-          <ellipse cx="100" cy="130" rx="9" ry="5" fill="#F5F1E8"/>
-          <path d="M85 144 Q100 156 115 144" stroke="#F5F1E8" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+          <ellipse cx="100" cy="115" rx="92" ry="80" fill="#1A0A04"/>
+          <ellipse cx="100" cy="140" rx="48" ry="30" fill="#3A1F12"/>
+          <circle cx="75" cy="92" r="10" fill="#FFF5E4"/>
+          <circle cx="78" cy="88" r="3" fill="#1A0A04"/>
+          <circle cx="125" cy="92" r="10" fill="#FFF5E4"/>
+          <circle cx="128" cy="88" r="3" fill="#1A0A04"/>
+          <ellipse cx="100" cy="130" rx="9" ry="5" fill="#1A0A04"/>
+          <path d="M85 144 Q100 156 115 144" stroke="#1A0A04" stroke-width="3.5" stroke-linecap="round" fill="none"/>
         </svg>
       </div>
       <span class="brand-name">Chingu</span>
-    </div>
+    </a>
 
     <div class="nav-links">
       <a href="#how">How it works</a>
@@ -726,41 +832,101 @@
       <a href="https://github.com/21428122/chingu" target="_blank">GitHub</a>
     </div>
 
-    <a class="nav-cta" href="https://chromewebstore.google.com/detail/chingu/gghkhknjjhaicjbpnpiemkecicklghlc" target="_blank">Add to Chrome</a>
+    <a class="nav-cta" href="https://chromewebstore.google.com/detail/chingu/gghkhknjjhaicjbpnpiemkecicklghlc" target="_blank">
+      Add to Chrome
+      <span>→</span>
+    </a>
   </nav>
 
 
   <!-- ════ HERO ════ -->
   <section class="hero">
     <div class="hero-orb"></div>
-    <div class="container">
-      <div class="hero-eyebrow" data-reveal>The open source SOP tool</div>
-
-      <h1 class="hero-h1 split" data-split>
-        SOPs that<br>
-        make<br>
-        <em>themselves.</em>
-      </h1>
-
-      <div class="hero-meta">
-        <p class="hero-meta-text" data-reveal data-d="3">
-          Click <strong>record</strong>. Use any website. Click <strong>stop</strong>. Get a step-by-step guide with screenshots in <strong>30 seconds</strong>. Free, open source, MIT licensed. The Scribe alternative that doesn't charge $23 per seat.
+    <div class="container" style="display: contents">
+      <div>
+        <div class="hero-eyebrow" data-reveal>The open source SOP tool</div>
+        <h1 class="hero-h1" data-reveal data-d="1">
+          SOPs that<br>
+          make<br>
+          <span class="accent">themselves.</span>
+        </h1>
+        <p class="hero-sub" data-reveal data-d="2">
+          Click <strong>record</strong>. Use any website. Click <strong>stop</strong>. Get a step-by-step guide with screenshots in <strong>30 seconds</strong>. Free, open source, MIT. The Scribe alternative that doesn't charge $23 per seat.
         </p>
-
-        <div class="hero-cta-group" data-reveal data-d="4">
-          <a class="btn-primary" href="https://chromewebstore.google.com/detail/chingu/gghkhknjjhaicjbpnpiemkecicklghlc" target="_blank">
+        <div class="hero-ctas" data-reveal data-d="3">
+          <a class="btn-pri" href="https://chromewebstore.google.com/detail/chingu/gghkhknjjhaicjbpnpiemkecicklghlc" target="_blank">
             Add to Chrome — Free
-            <span class="btn-arrow">→</span>
+            <span class="ar">→</span>
           </a>
-          <a class="btn-secondary" href="https://github.com/21428122/chingu" target="_blank">
-            View source on GitHub
+          <a class="btn-sec" href="https://github.com/21428122/chingu" target="_blank">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.4 3-.405 1.02.005 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            View source
           </a>
         </div>
+      </div>
 
-        <div data-reveal data-d="5">
-          <div class="hero-stat">$0</div>
-          <div class="hero-stat-label">Forever</div>
-        </div>
+      <!-- Cappy character with floating tags -->
+      <div class="cappy-stage" data-reveal data-d="2">
+        <div class="cappy-bg"></div>
+        <span class="floating-tag tag-1">$0/forever</span>
+        <span class="floating-tag tag-2">✓ open source</span>
+        <span class="floating-tag tag-3">no signup</span>
+        <span class="floating-tag tag-4">MIT licensed</span>
+
+        <svg class="cappy-svg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="cappyGlow" cx="50%" cy="55%" r="55%">
+              <stop offset="0%" stop-color="#FFB07A" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#FFB07A" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#E8B98E"/>
+              <stop offset="100%" stop-color="#C8956D"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Background glow -->
+          <circle cx="200" cy="220" r="180" fill="url(#cappyGlow)"/>
+
+          <!-- Tail (animated) -->
+          <g class="cappy-tail">
+            <ellipse cx="80" cy="290" rx="22" ry="10" transform="rotate(-25 80 290)" fill="#A6754F"/>
+          </g>
+
+          <!-- Body -->
+          <ellipse cx="200" cy="230" rx="140" ry="120" fill="url(#bodyGrad)"/>
+
+          <!-- Ears -->
+          <ellipse cx="115" cy="125" rx="22" ry="18" transform="rotate(-22 115 125)" fill="#A6754F"/>
+          <ellipse cx="285" cy="125" rx="22" ry="18" transform="rotate(22 285 125)" fill="#A6754F"/>
+          <ellipse cx="116" cy="128" rx="10" ry="7" transform="rotate(-22 116 128)" fill="#FFD4A8"/>
+          <ellipse cx="284" cy="128" rx="10" ry="7" transform="rotate(22 284 128)" fill="#FFD4A8"/>
+
+          <!-- Cheeks (rosy) -->
+          <ellipse cx="98" cy="240" rx="20" ry="11" fill="#FF8FA3" opacity="0.45"/>
+          <ellipse cx="302" cy="240" rx="20" ry="11" fill="#FF8FA3" opacity="0.45"/>
+
+          <!-- Snout area -->
+          <ellipse cx="200" cy="270" rx="68" ry="42" fill="#E8B98E"/>
+
+          <!-- Eyes -->
+          <g class="cappy-eye-l">
+            <circle cx="155" cy="195" r="14" fill="#1A0A04"/>
+            <circle cx="159" cy="190" r="4.5" fill="#FFFFFF"/>
+            <circle cx="151" cy="200" r="2" fill="#FFFFFF" opacity="0.6"/>
+          </g>
+          <g class="cappy-eye-r">
+            <circle cx="245" cy="195" r="14" fill="#1A0A04"/>
+            <circle cx="249" cy="190" r="4.5" fill="#FFFFFF"/>
+            <circle cx="241" cy="200" r="2" fill="#FFFFFF" opacity="0.6"/>
+          </g>
+
+          <!-- Nose -->
+          <ellipse cx="200" cy="255" rx="13" ry="7" fill="#1A0A04"/>
+
+          <!-- Smile -->
+          <path d="M180 280 Q200 296 220 280" stroke="#1A0A04" stroke-width="5" stroke-linecap="round" fill="none"/>
+        </svg>
       </div>
     </div>
   </section>
@@ -778,7 +944,6 @@
       <span class="marquee-item">vs magichow $40</span>
       <span class="marquee-item">no signup</span>
       <span class="marquee-item">stays local</span>
-      <!-- duplicate for seamless loop -->
       <span class="marquee-item">free forever</span>
       <span class="marquee-item">vs scribe $23/seat</span>
       <span class="marquee-item">no paywall</span>
@@ -792,64 +957,89 @@
   </div>
 
 
-  <!-- ════ PITCH ════ -->
-  <section class="pitch">
+  <!-- ════ PRODUCT MOCKUP ════ -->
+  <section class="product" id="how">
     <div class="container">
-      <div class="pitch-eyebrow" data-reveal>Why this exists</div>
-
-      <h2 class="pitch-h2" data-reveal data-d="1">
-        Every SOP tool today either breaks the screenshots, paywalls the basics, or charges <em>$23 a seat</em> for what should be free.
+      <div class="section-eyebrow" data-reveal>How it works</div>
+      <h2 class="section-h" data-reveal data-d="1">
+        Click record. Get a guide. <span class="accent">That's it.</span>
       </h2>
+      <p class="section-sub" data-reveal data-d="2">
+        Watch the recording overlay below. Every click captures a screenshot. Auto-polish removes duplicate clicks and writes step descriptions. No setup. No account.
+      </p>
 
-      <div class="three-col">
-        <div data-reveal data-d="1">
-          <div class="col-num">01</div>
-          <h3 class="col-h">Free isn't freemium</h3>
-          <p class="col-p">No premium tier hiding behind a fake free plan. PDF export, branding, unlimited guides — all free, all the time.</p>
-        </div>
+      <div class="product-stage" data-reveal data-d="3">
+        <div class="browser-mock">
+          <div class="browser-bar">
+            <div class="browser-dot r"></div>
+            <div class="browser-dot y"></div>
+            <div class="browser-dot g"></div>
+            <div class="browser-url">app.acme.com/settings/billing</div>
+          </div>
+          <div class="browser-page">
+            <div class="fake-line short"></div>
+            <div class="fake-line long"></div>
+            <div class="fake-line med"></div>
+            <div class="fake-block"></div>
+            <div class="fake-line long"></div>
+            <div class="fake-line med"></div>
+            <span class="fake-btn">Save changes</span>
 
-        <div data-reveal data-d="2">
-          <div class="col-num">02</div>
-          <h3 class="col-h">Open source, MIT licensed</h3>
-          <p class="col-p">The only active OSS SOP tool. Read the code, fork it, self-host it. Trust isn't a feature, it's the foundation.</p>
-        </div>
+            <!-- Click ripple to show recording -->
+            <div class="click-ripple" style="bottom: 36px; left: 36px;"></div>
 
-        <div data-reveal data-d="3">
-          <div class="col-num">03</div>
-          <h3 class="col-h">Stays on your device</h3>
-          <p class="col-p">No login. No signup. No cloud upload. Your sensitive workflows never leave your browser. Privacy by architecture.</p>
+            <!-- Recording overlay (matches the real one) -->
+            <div class="rec-overlay">
+              <span class="rec-dot"></span>
+              <span class="rec-label">REC</span>
+              <span class="rec-count">7 steps</span>
+              <div class="rec-divider"></div>
+              <button class="rec-stop">■ Stop</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
 
-  <!-- ════ PRODUCT FLOW ════ -->
-  <section class="product" id="how">
+  <!-- ════ FEATURES with illustrations ════ -->
+  <section class="features">
     <div class="container">
-      <div class="product-stage">
-        <h2 class="stage-h" data-reveal>
-          Three <em>clicks</em>. One guide. Zero friction.
-        </h2>
+      <div class="section-eyebrow" data-reveal>Why this exists</div>
+      <h2 class="section-h" data-reveal data-d="1">
+        Free isn't freemium. Open source isn't <span class="accent">a marketing line.</span>
+      </h2>
+      <p class="section-sub" data-reveal data-d="2">
+        Every other SOP tool either breaks the screenshots, paywalls the basics, or charges per seat. Chingu doesn't.
+      </p>
 
-        <div class="stage-flow">
-          <div class="flow-step" data-reveal data-d="1">
-            <div class="num">01</div>
-            <div class="h">Click Record</div>
-            <p class="p">A floating overlay appears. Use any website normally. Chingu captures every click and screenshot.</p>
+      <div class="feat-grid">
+        <div class="feat-card" data-reveal data-d="1">
+          <div class="feat-illust">
+            <img src="illustrations/onboarding-wave.svg" alt="Cappy says hi">
           </div>
+          <div class="feat-num">01 — START FREE</div>
+          <h3 class="feat-h">Truly free, forever</h3>
+          <p class="feat-p">No premium tier hiding behind a fake free plan. PDF export, branding, unlimited guides — all free. All the time.</p>
+        </div>
 
-          <div class="flow-step" data-reveal data-d="2">
-            <div class="num">02</div>
-            <div class="h">Click Stop</div>
-            <p class="p">Auto-polish runs. Duplicate clicks removed. Smart titles generated. Step descriptions cleaned.</p>
+        <div class="feat-card" data-reveal data-d="2">
+          <div class="feat-illust">
+            <img src="illustrations/recording-active.svg" alt="Recording in progress">
           </div>
+          <div class="feat-num">02 — RECORD ANYTHING</div>
+          <h3 class="feat-h">Auto-polish + Autopilot</h3>
+          <p class="feat-p">Click record, get a polished guide. Or type instructions in plain English and let Autopilot execute them automatically.</p>
+        </div>
 
-          <div class="flow-step" data-reveal data-d="3">
-            <div class="num">03</div>
-            <div class="h">Edit, annotate, export</div>
-            <p class="p">Annotate screenshots, blur sensitive info, drag steps to reorder. Export as PDF or Markdown.</p>
+        <div class="feat-card" data-reveal data-d="3">
+          <div class="feat-illust">
+            <img src="illustrations/success-export.svg" alt="Export success">
           </div>
+          <div class="feat-num">03 — EXPORT EVERYWHERE</div>
+          <h3 class="feat-h">PDF, Markdown, anything</h3>
+          <p class="feat-p">One-click PDF export with your branding. Markdown for Notion. Coming Q2: shareable links with no install required.</p>
         </div>
       </div>
     </div>
@@ -859,12 +1049,10 @@
   <!-- ════ COMPARISON TABLE ════ -->
   <section class="compare" id="compare">
     <div class="container">
-      <h2 class="compare-h" data-reveal>
-        The <em>brutal</em> comparison
+      <div class="section-eyebrow" data-reveal>The brutal comparison</div>
+      <h2 class="section-h" data-reveal data-d="1">
+        We checked. Then we built <span class="accent">what's missing.</span>
       </h2>
-      <p class="compare-sub" data-reveal data-d="1">
-        We checked. Then we built what's missing. Here's what actually costs what.
-      </p>
 
       <table class="comp-table" data-reveal data-d="2">
         <thead>
@@ -925,24 +1113,24 @@
   </section>
 
 
-  <!-- ════ BIG STAT BAND ════ -->
+  <!-- ════ STATS BAND ════ -->
   <section class="stat-band">
     <div class="container">
       <div class="stat-grid">
         <div class="stat-cell" data-reveal data-d="1">
-          <div class="stat-num">∞</div>
+          <div class="stat-num tan">∞</div>
           <div class="stat-label">Guides per month</div>
         </div>
         <div class="stat-cell" data-reveal data-d="2">
-          <div class="stat-num">$0</div>
+          <div class="stat-num mint">$0</div>
           <div class="stat-label">Per seat, ever</div>
         </div>
         <div class="stat-cell" data-reveal data-d="3">
-          <div class="stat-num">100%</div>
+          <div class="stat-num violet">100%</div>
           <div class="stat-label">Local storage</div>
         </div>
         <div class="stat-cell" data-reveal data-d="4">
-          <div class="stat-num">MIT</div>
+          <div class="stat-num tan">MIT</div>
           <div class="stat-label">Open source license</div>
         </div>
       </div>
@@ -953,19 +1141,19 @@
   <!-- ════ PRICING ════ -->
   <section class="pricing" id="pricing">
     <div class="container">
-      <div class="pitch-eyebrow" data-reveal>Pricing</div>
-      <h2 class="pitch-h2" data-reveal data-d="1" style="margin-bottom: 56px">
-        Free is the product. <em>Pro</em> is how you support it.
+      <div class="section-eyebrow" data-reveal>Pricing</div>
+      <h2 class="section-h" data-reveal data-d="1">
+        Free is the product. <span class="accent">Pro</span> is how you support it.
       </h2>
 
       <div class="pricing-grid">
         <div class="price-card" data-reveal data-d="1">
           <div class="price-eyebrow">Forever Free</div>
           <div class="price-num">
-            <span class="amt">$0</span>
-            <span class="period">/ no card / no signup</span>
+            <span class="price-amt">$0</span>
+            <span class="price-period">/ no card / no signup</span>
           </div>
-          <p class="price-tagline">Everything you need to ship great SOPs. Forever.</p>
+          <p class="price-tagline">Everything you need to ship great SOPs.</p>
           <ul class="price-list">
             <li>Unlimited recordings</li>
             <li>Auto-polish & smart titles</li>
@@ -981,12 +1169,13 @@
         </div>
 
         <div class="price-card feature" data-reveal data-d="2">
-          <div class="price-eyebrow" style="color: var(--tan)">⭐ Founders Pricing</div>
+          <div class="price-eyebrow" style="color: var(--peach)">⭐ Lifetime Pro</div>
           <div class="price-num">
-            <span class="amt">$29</span>
-            <span class="period">one-time, lifetime</span>
+            <span class="price-old">$99</span>
+            <span class="price-amt tan">$29</span>
+            <span class="price-period">one-time, lifetime</span>
           </div>
-          <p class="price-tagline">Lock in every paid feature ever. No subscription. Pay once.</p>
+          <p class="price-tagline">Lock in every paid feature ever. Pay once.</p>
           <ul class="price-list">
             <li>Everything in Free, plus:</li>
             <li>Cloud sync across devices (Q2)</li>
@@ -1008,13 +1197,28 @@
   <!-- ════ FINAL CTA ════ -->
   <section class="cta-final">
     <div class="container">
+      <!-- Cappy waving -->
+      <svg class="cta-cappy" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="200" cy="230" rx="140" ry="120" fill="#C8956D"/>
+        <ellipse cx="115" cy="125" rx="22" ry="18" transform="rotate(-22 115 125)" fill="#A6754F"/>
+        <ellipse cx="285" cy="125" rx="22" ry="18" transform="rotate(22 285 125)" fill="#A6754F"/>
+        <ellipse cx="98" cy="240" rx="20" ry="11" fill="#FF8FA3" opacity="0.45"/>
+        <ellipse cx="302" cy="240" rx="20" ry="11" fill="#FF8FA3" opacity="0.45"/>
+        <ellipse cx="200" cy="270" rx="68" ry="42" fill="#E8B98E"/>
+        <!-- Closed/happy eyes -->
+        <path d="M 138 195 Q 155 175 172 195" stroke="#1A0A04" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <path d="M 228 195 Q 245 175 262 195" stroke="#1A0A04" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <ellipse cx="200" cy="255" rx="13" ry="7" fill="#1A0A04"/>
+        <path d="M170 280 Q200 305 230 280" stroke="#1A0A04" stroke-width="5" stroke-linecap="round" fill="none"/>
+      </svg>
+
       <h2 class="cta-h" data-reveal>
         Stop paying<br>
-        for what should be <em>free.</em>
+        for what should be <span class="accent">free.</span>
       </h2>
-      <a class="btn-primary" href="https://chromewebstore.google.com/detail/chingu/gghkhknjjhaicjbpnpiemkecicklghlc" target="_blank" data-reveal data-d="2">
+      <a class="btn-pri" href="https://chromewebstore.google.com/detail/chingu/gghkhknjjhaicjbpnpiemkecicklghlc" target="_blank" data-reveal data-d="2" style="font-size: 17px; padding: 20px 32px;">
         Add Chingu to Chrome
-        <span class="btn-arrow">→</span>
+        <span class="ar">→</span>
       </a>
     </div>
   </section>
@@ -1050,139 +1254,80 @@
         <div class="footer-col">
           <div class="footer-col-h">Legal</div>
           <a href="privacy.html">Privacy</a>
-          <a href="https://github.com/21428122/chingu/blob/master/LICENSE" target="_blank">License (MIT)</a>
+          <a href="https://github.com/21428122/chingu/blob/master/LICENSE" target="_blank">MIT License</a>
         </div>
       </div>
 
       <div class="footer-bottom">
         <span>© 2026 Chingu. Made with care, no VCs.</span>
-        <span style="font-family: 'Instrument Serif', serif; font-style: italic; font-size: 16px;">친구</span>
+        <span class="korean-tag">친구 — friend</span>
       </div>
     </div>
   </footer>
 
 
   <script>
-    /* ──────────────────────────────────────────────────────────────────
-       Custom cursor
-    ────────────────────────────────────────────────────────────────── */
+    /* Cursor */
     (function() {
       const dot = document.getElementById('cursorDot');
       const ring = document.getElementById('cursorRing');
       if (!dot || !ring) return;
-
-      let mx = window.innerWidth / 2, my = window.innerHeight / 2;
-      let rx = mx, ry = my;
-
-      window.addEventListener('mousemove', e => {
-        mx = e.clientX; my = e.clientY;
-        dot.style.left = mx + 'px';
-        dot.style.top  = my + 'px';
-      });
-
-      // Lerp ring for smooth follow
-      function tick() {
-        rx += (mx - rx) * 0.18;
-        ry += (my - ry) * 0.18;
-        ring.style.left = rx + 'px';
-        ring.style.top  = ry + 'px';
-        requestAnimationFrame(tick);
-      }
-      tick();
-
-      // Hover state on interactive elements
-      document.querySelectorAll('a, button, [data-cursor]').forEach(el => {
+      let mx = innerWidth/2, my = innerHeight/2, rx = mx, ry = my;
+      addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; dot.style.left=mx+'px'; dot.style.top=my+'px'; });
+      (function tick(){ rx+=(mx-rx)*0.18; ry+=(my-ry)*0.18; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(tick); })();
+      document.querySelectorAll('a, button').forEach(el => {
         el.addEventListener('mouseenter', () => ring.classList.add('hover'));
         el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
       });
     })();
 
-    /* ──────────────────────────────────────────────────────────────────
-       Reveal on scroll
-    ────────────────────────────────────────────────────────────────── */
+    /* Reveal */
     (function() {
-      const obs = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) {
-            e.target.classList.add('in');
-            obs.unobserve(e.target);
-          }
-        });
-      }, { threshold: 0.12, rootMargin: '0px 0px -80px 0px' });
-
+      const obs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } }), { threshold: 0.12, rootMargin: '0px 0px -80px 0px' });
       document.querySelectorAll('[data-reveal]').forEach(el => obs.observe(el));
     })();
 
-    /* ──────────────────────────────────────────────────────────────────
-       Word-by-word splitter for headlines
-    ────────────────────────────────────────────────────────────────── */
-    (function() {
-      document.querySelectorAll('[data-split]').forEach(el => {
-        // Wrap each visible word in <span class="word"><span>...</span></span>
-        // Preserve <em> and <br> elements
-        const html = el.innerHTML;
-        // Tokenize while keeping <br> and <em>...</em>
-        const tokens = html.split(/(<br\s*\/?>|<em>[\s\S]*?<\/em>)/gi);
-        let out = '';
-        tokens.forEach(tok => {
-          if (!tok) return;
-          if (/^<br/i.test(tok)) { out += tok; return; }
-          if (/^<em/i.test(tok)) {
-            // Wrap the em itself in word/inner spans
-            out += `<span class="word">${tok.replace('<em>', '<em><span>').replace('</em>', '</span></em>')}</span>`;
-            // Note: inner span is inside <em>, so we wrap the em in a word, then add an inner span.
-            return;
-          }
-          // Plain text — split by whitespace
-          tok.split(/(\s+)/).forEach(part => {
-            if (!part) return;
-            if (/^\s+$/.test(part)) { out += part; return; }
-            out += `<span class="word"><span>${part}</span></span>`;
-          });
-        });
-        el.innerHTML = out;
-      });
-
-      // Trigger animation when in view
-      const splitObs = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) {
-            e.target.classList.add('in');
-            splitObs.unobserve(e.target);
-          }
-        });
-      }, { threshold: 0.4 });
-
-      document.querySelectorAll('[data-split]').forEach(el => {
-        el.classList.add('split');
-        splitObs.observe(el);
-      });
-    })();
-
-    /* ──────────────────────────────────────────────────────────────────
-       Nav scroll state
-    ────────────────────────────────────────────────────────────────── */
+    /* Nav scroll */
     (function() {
       const nav = document.getElementById('nav');
       if (!nav) return;
-      const onScroll = () => {
-        if (window.scrollY > 24) nav.classList.add('scrolled');
-        else nav.classList.remove('scrolled');
-      };
-      window.addEventListener('scroll', onScroll, { passive: true });
+      const onScroll = () => { window.scrollY > 24 ? nav.classList.add('scrolled') : nav.classList.remove('scrolled'); };
+      addEventListener('scroll', onScroll, { passive: true });
       onScroll();
     })();
 
-    /* ──────────────────────────────────────────────────────────────────
-       Subtle hero parallax on mouse
-    ────────────────────────────────────────────────────────────────── */
+    /* Hero orb parallax */
     (function() {
       const orb = document.querySelector('.hero-orb');
-      if (!orb) return;
-      window.addEventListener('mousemove', e => {
-        const x = (e.clientX / window.innerWidth - 0.5) * 30;
-        const y = (e.clientY / window.innerHeight - 0.5) * 30;
-        orb.style.transform = `translate(${x}px, ${y}px)`;
+      const cappy = document.querySelector('.cappy-svg');
+      if (!orb && !cappy) return;
+      addEventListener('mousemove', e => {
+        const x = (e.clientX / innerWidth - 0.5) * 30;
+        const y = (e.clientY / innerHeight - 0.5) * 30;
+        if (orb) orb.style.transform = `translate(${x}px, ${y}px)`;
+        if (cappy) cappy.style.transform = `translate(${x*0.3}px, ${y*0.3}px)`;
+      });
+    })();
+
+    /* Cappy follows mouse with eyes */
+    (function() {
+      const eyeL = document.querySelector('.cappy-eye-l');
+      const eyeR = document.querySelector('.cappy-eye-r');
+      if (!eyeL || !eyeR) return;
+
+      addEventListener('mousemove', e => {
+        const cappy = document.querySelector('.cappy-svg');
+        if (!cappy) return;
+        const r = cappy.getBoundingClientRect();
+        const cx = r.left + r.width/2;
+        const cy = r.top + r.height/2;
+        const dx = (e.clientX - cx) / 60;
+        const dy = (e.clientY - cy) / 60;
+        const limit = 4;
+        const tx = Math.max(-limit, Math.min(limit, dx));
+        const ty = Math.max(-limit, Math.min(limit, dy));
+        eyeL.style.transform = `translate(${tx}px, ${ty}px)`;
+        eyeR.style.transform = `translate(${tx}px, ${ty}px)`;
       });
     })();
   </script>
