@@ -372,8 +372,82 @@ const settingsMenu = document.getElementById('settingsMenu');
 document.getElementById('btnSettingsToggle').addEventListener('click', e => {
   e.stopPropagation();
   settingsMenu.classList.toggle('open');
+  document.getElementById('exportMenu')?.classList.remove('open');
 });
-document.addEventListener('click', () => settingsMenu.classList.remove('open'));
+document.addEventListener('click', () => {
+  settingsMenu.classList.remove('open');
+  document.getElementById('exportMenu')?.classList.remove('open');
+});
+
+// ── Export dropdown ────────────────────────────────────────────────────────
+
+const exportMenu = document.getElementById('exportMenu');
+document.getElementById('btnExportToggle').addEventListener('click', e => {
+  e.stopPropagation();
+  exportMenu.classList.toggle('open');
+  settingsMenu.classList.remove('open');
+});
+
+// ── Markdown export ────────────────────────────────────────────────────────
+
+document.getElementById('btnMarkdown').addEventListener('click', () => {
+  syncAll();
+  exportMenu.classList.remove('open');
+
+  const title  = currentTitle || 'Untitled Guide';
+  const meta   = guideMetadata || {};
+  const realSteps = currentSteps.filter(s => !s._type);
+
+  let md = `# ${title}\n\n`;
+  if (meta.subtitle) md += `_${meta.subtitle}_\n\n`;
+
+  const metaParts = [];
+  if (meta.version) metaParts.push(`**Version:** ${meta.version}`);
+  if (meta.date)    metaParts.push(`**Date:** ${meta.date}`);
+  if (meta.author)  metaParts.push(`**Author:** ${meta.author}`);
+  if (meta.company) metaParts.push(`**Company:** ${meta.company}`);
+  if (metaParts.length) md += metaParts.join(' · ') + '\n\n';
+
+  md += `> **${realSteps.length} steps** · Generated with [Chingu](https://github.com/21428122/chingu)\n\n`;
+  md += `---\n\n`;
+
+  let stepNum = 0;
+  let sectionLetterIdx = 0;
+  const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+  for (const item of currentSteps) {
+    if (item._type === 'section') {
+      md += `\n## ${LETTERS[sectionLetterIdx % 26]}. ${item.title || 'Section'}\n\n`;
+      sectionLetterIdx++;
+      continue;
+    }
+    stepNum++;
+    md += `### Step ${stepNum} — ${item.description || 'Untitled step'}\n\n`;
+    if (item.url) md += `_URL: ${item.url}_\n\n`;
+    if (item.note && item.note.text) {
+      const icon = item.note.type === 'warning' ? '⚠️' : 'ℹ️';
+      md += `> ${icon} **Note:** ${item.note.text}\n\n`;
+    }
+    if (item.screenshot) {
+      // Embed as base64 data URI — works in any markdown renderer that supports data URIs
+      md += `![Step ${stepNum}](${item.screenshot})\n\n`;
+    }
+  }
+
+  md += `\n---\n\nMade with [Chingu](https://github.com/21428122/chingu) — free, open source SOPs.\n`;
+
+  // Trigger download
+  const filename = title.replace(/[^a-zA-Z0-9 _-]/g, '').trim().replace(/\s+/g, '-') || 'guide';
+  const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `${filename}.md`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
 
 // ── Initial load ───────────────────────────────────────────────────────────
 
@@ -526,8 +600,8 @@ chrome.storage.local.get('brandLogo', data => {
 });
 
 // ══════════════════════════════════════════════════════════════════════════
-// PDF EXPORT — InBody-quality landscape 16:9 format
-// Page: 254×143mm (= 720×405 pts, matching InBody's exact proportions)
+// PDF EXPORT — Professional-quality landscape 16:9 format
+// Page: 254×143mm (= 720×405 pts, landscape 16:9 proportions)
 // ══════════════════════════════════════════════════════════════════════════
 
 document.getElementById('btnPdf').addEventListener('click', async () => {
@@ -539,7 +613,7 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
 
   try {
     const { jsPDF } = window.jspdf;
-    // Landscape 16:9 — matches InBody's 720×405 pt format exactly
+    // Landscape 16:9 — 254×143mm page format
     const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [254, 143] });
     const W   = 254;   // page width mm
     const H   = 143;   // page height mm
@@ -567,7 +641,7 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
     const ACD = darken(AC, 0.72);                        // dark accent (stripe, footer)
     const ACL = lighten(AC, 0.88);                       // light accent (cream header bg)
 
-    // InBody layout constants (all in mm for 254×143 page)
+    // Layout constants (all in mm for 254×143 page)
     const HDR_H  = 7.5;   // header bar height
     const FTR_H  = 10;    // footer bar height
     const FTR_Y  = H - FTR_H;  // footer starts at y=133
@@ -588,7 +662,7 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
 
     // ── SHARED HELPERS ────────────────────────────────────────────────────
 
-    // Thin cream header bar on every page (InBody style)
+    // Thin cream header bar on every page (clean style)
     function drawHeader() {
       // Cream background strip
       doc.setFillColor(...ACL);
@@ -626,7 +700,7 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
     doc.setFillColor(...AC);
     doc.rect(0, 0, W, H, 'F');
 
-    // Top cream band (top 19.5% of page = 28mm) — matching InBody's layout
+    // Top cream band (top 19.5% of page = 28mm) — matching this layout
     const COVER_CREAM_H = 28;
     doc.setFillColor(...ACL);
     doc.rect(0, 0, W, COVER_CREAM_H, 'F');
@@ -716,7 +790,7 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
       sectionList.push({ letter: '—', title: title });
     }
 
-    // 2-column layout (like InBody: A-D left, E-H right)
+    // 2-column layout ((A-D left, E-H right)
     const half = Math.ceil(sectionList.length / 2);
     const colW  = (CW - 10) / 2;
     const tocStartY = 30;
@@ -753,7 +827,7 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
       const item = items[i];
 
       if (item._type === 'section') {
-        // ── SECTION DIVIDER PAGE (InBody style) ──────────────────────────
+        // ── SECTION DIVIDER PAGE (clean style) ──────────────────────────
         doc.addPage();
         const letter   = sectionLetter(currentSecLetterIdx++);
         const secTitle = item.title || 'Section';
@@ -765,7 +839,7 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
         // Thin header
         drawHeader();
 
-        // Left accent stripe (like InBody's left color bar)
+        // Left accent stripe (left color bar)
         doc.setFillColor(...AC);
         doc.rect(0, HDR_H, 8, FTR_Y - HDR_H, 'F');
 
@@ -852,7 +926,7 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
           noteH += 1.5;
         }
 
-        // ── Screenshot fills remaining space (InBody style — dominates page) ──
+        // ── Screenshot fills remaining space (clean style — dominates page) ──
         const SHOT_Y    = SHOT_TOP + noteH;
         const BADGE_Y   = FTR_Y - BADGE_H - 1;  // badge sits above footer
         const MAX_IMG_H = BADGE_Y - SHOT_Y - 1;
@@ -871,14 +945,14 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
 
           const imgX = ML + (MAX_IMG_W - imgW) / 2;
 
-          // Dark accent border (matching InBody's screenshot border)
+          // Dark accent border (screenshot border)
           doc.setFillColor(...ACD);
           doc.roundedRect(imgX - 1, SHOT_Y - 1, imgW + 2, imgH + 2, 2, 2, 'F');
 
           doc.addImage(step.screenshot, 'PNG', imgX, SHOT_Y, imgW, imgH);
         }
 
-        // ── Step number badge (bottom-left corner, InBody style) ──────────
+        // ── Step number badge (bottom-left corner, clean style) ──────────
         doc.setFillColor(...ACD);
         doc.rect(ML, BADGE_Y, 14, BADGE_H, 'F');
         doc.setFont('helvetica', 'bold');
@@ -1040,6 +1114,39 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
         const pa=ctx.globalAlpha; ctx.globalAlpha=(ghost?0.22:0.38);
         ctx.fillRect(ann.x1,ann.y1,ann.x2-ann.x1,ann.y2-ann.y1); ctx.globalAlpha=pa; break;
       }
+      case 'blur': {
+        // Pixelate the region. Pixelation > blur for redaction (can't be reversed by AI).
+        const x = Math.min(ann.x1, ann.x2);
+        const y = Math.min(ann.y1, ann.y2);
+        const w = Math.abs(ann.x2 - ann.x1);
+        const h = Math.abs(ann.y2 - ann.y1);
+        if (w < 4 || h < 4 || !baseImg) break;
+        // Map canvas-coords back to source-image coords
+        const sx_src = (x / canvas.width) * baseImg.naturalWidth;
+        const sy_src = (y / canvas.height) * baseImg.naturalHeight;
+        const sw_src = (w / canvas.width) * baseImg.naturalWidth;
+        const sh_src = (h / canvas.height) * baseImg.naturalHeight;
+        // Pixel cell size scales with region — bigger region = bigger cells
+        const cellsW = Math.max(2, Math.floor(w / 14));
+        const cellsH = Math.max(2, Math.floor(h / 14));
+        const tempC = document.createElement('canvas');
+        tempC.width = cellsW; tempC.height = cellsH;
+        const tctx = tempC.getContext('2d');
+        tctx.drawImage(baseImg, sx_src, sy_src, sw_src, sh_src, 0, 0, cellsW, cellsH);
+        const wasSmoothing = ctx.imageSmoothingEnabled;
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(tempC, x, y, w, h);
+        ctx.imageSmoothingEnabled = wasSmoothing;
+        // Subtle border so user knows where the redaction is
+        if (ghost) {
+          ctx.strokeStyle = ann.color || '#EF4444';
+          ctx.lineWidth = 1;
+          ctx.setLineDash([4,3]);
+          ctx.strokeRect(x, y, w, h);
+          ctx.setLineDash([]);
+        }
+        break;
+      }
       case 'pen':
         if (ann.points?.length > 1) {
           ctx.beginPath(); ctx.moveTo(ann.points[0].x, ann.points[0].y);
@@ -1102,7 +1209,7 @@ document.getElementById('btnPdf').addEventListener('click', async () => {
 
   function bbox(ann) {
     switch(ann.type) {
-      case 'arrow': case 'rect': case 'ellipse': case 'highlight': case 'labelbox':
+      case 'arrow': case 'rect': case 'ellipse': case 'highlight': case 'labelbox': case 'blur':
         return { x:Math.min(ann.x1,ann.x2), y:Math.min(ann.y1,ann.y2),
                  w:Math.abs(ann.x2-ann.x1), h:Math.abs(ann.y2-ann.y1) };
       case 'text': {

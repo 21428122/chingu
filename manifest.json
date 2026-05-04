@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Chingu",
-  "version": "0.3.0",
-  "description": "The open source Chrome extension for SOPs that actually work. Free forever.",
+  "name": "Chingu — Free SOP Generator & Step-by-Step Guides",
+  "version": "0.3.1",
+  "description": "Free open source SOP tool. Record any workflow, get step-by-step guides with screenshots & PDF. No paywall. No seat min.",
   "permissions": [
     "activeTab",
     "scripting",
