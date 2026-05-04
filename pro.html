@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chingu Pro — Lifetime Access (Founders Pricing)</title>
+  <meta name="description" content="Support development of the only active open source SOP tool. One-time $29 lifetime payment unlocks all future Pro features.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0F172A;
+      color: #F1F5F9;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container { max-width: 720px; margin: 0 auto; padding: 60px 24px; }
+    .hero { text-align: center; margin-bottom: 56px; }
+    .pill {
+      display: inline-block;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(251, 146, 60, 0.15));
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #F59E0B;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-size: 48px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #F1F5F9, #94A3B8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .subhead {
+      font-size: 18px;
+      color: #94A3B8;
+      max-width: 520px;
+      margin: 0 auto 32px;
+    }
+    .price-card {
+      background: linear-gradient(135deg, #1E293B, #0F172A);
+      border: 1.5px solid rgba(245, 158, 11, 0.4);
+      border-radius: 24px;
+      padding: 40px 36px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 80px rgba(245, 158, 11, 0.1);
+      margin-bottom: 48px;
+    }
+    .price-row { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+    .price-old {
+      font-size: 18px;
+      color: #64748B;
+      text-decoration: line-through;
+    }
+    .price-now {
+      font-size: 56px;
+      font-weight: 800;
+      color: #F59E0B;
+      letter-spacing: -0.03em;
+    }
+    .price-period {
+      font-size: 16px;
+      color: #94A3B8;
+      font-weight: 500;
+    }
+    .price-tag {
+      font-size: 13px;
+      color: #FCD34D;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+    .features { list-style: none; margin-bottom: 32px; }
+    .features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 0;
+      color: #CBD5E1;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .features li:last-child { border-bottom: none; }
+    .check { color: #10B981; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+    .feature-coming { color: #64748B; font-size: 13px; font-style: italic; margin-left: 8px; }
+    .cta-btn {
+      display: block;
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, #F59E0B, #FB923C);
+      color: #0F172A;
+      border: none;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      letter-spacing: -0.01em;
+      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      font-family: inherit;
+    }
+    .cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(245, 158, 11, 0.4);
+    }
+    .guarantee {
+      text-align: center;
+      font-size: 13px;
+      color: #64748B;
+      margin-top: 16px;
+    }
+    .guarantee strong { color: #94A3B8; }
+    .why {
+      background: rgba(99, 102, 241, 0.05);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin-bottom: 32px;
+    }
+    .why h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #A5B4FC;
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+    .why p {
+      color: #CBD5E1;
+      font-size: 15px;
+    }
+    .alt-box {
+      text-align: center;
+      padding: 24px;
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      color: #64748B;
+      font-size: 14px;
+    }
+    .alt-box a { color: #FB923C; font-weight: 600; text-decoration: none; }
+    .alt-box a:hover { text-decoration: underline; }
+    .footer { text-align: center; padding: 40px 24px; color: #475569; font-size: 13px; }
+    .footer a { color: #6366F1; text-decoration: none; }
+    @media (max-width: 600px) {
+      h1 { font-size: 36px; }
+      .price-now { font-size: 44px; }
+      .price-card { padding: 28px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <span class="pill">⭐ Founders Pricing — Limited Spots</span>
+      <h1>Support the only active open source SOP tool</h1>
+      <p class="subhead">
+        Chingu is and always will be free. Chingu Pro is a one-time payment that locks in lifetime access to every paid feature shipped from now on, and helps fund a solo developer building this in public.
+      </p>
+    </div>
+
+    <div class="price-card">
+      <div class="price-row">
+        <span class="price-old">$99</span>
+        <span class="price-now">$29</span>
+        <span class="price-period">one-time, lifetime</span>
+      </div>
+      <div class="price-tag">First 100 customers — Founders Pricing</div>
+
+      <ul class="features">
+        <li><span class="check">✓</span> <div><strong>Lifetime access to all current and future Pro features</strong><div class="feature-coming">No subscription. Pay once. Yours forever.</div></div></li>
+        <li><span class="check">✓</span> <div><strong>Cloud sync</strong><div class="feature-coming">Coming Q2 — your guides synced across devices</div></div></li>
+        <li><span class="check">✓</span> <div><strong>Public shareable links</strong><div class="feature-coming">Coming Q2 — send a guide to anyone, no install required</div></div></li>
+        <li><span class="check">✓</span> <div><strong>AI-generated step descriptions</strong><div class="feature-coming">Coming Q3 — smarter than rule-based polish</div></div></li>
+        <li><span class="check">✓</span> <div><strong>Team workspace</strong><div class="feature-coming">Coming Q3 — shared library for your whole team</div></div></li>
+        <li><span class="check">✓</span> <div><strong>Priority support</strong> — direct line to the developer (me!)</div></li>
+        <li><span class="check">✓</span> <div><strong>Your name in CONTRIBUTORS.md</strong> — recognized as a founding supporter</div></li>
+        <li><span class="check">✓</span> <div><strong>Early access</strong> to every beta feature before public release</div></li>
+      </ul>
+
+      <a href="https://buy.stripe.com/REPLACE_WITH_PAYMENT_LINK" class="cta-btn">
+        Get Lifetime Access — $29
+      </a>
+      <div class="guarantee">
+        💛 <strong>30-day money-back guarantee</strong> · Secure payment via Stripe
+      </div>
+    </div>
+
+    <div class="why">
+      <h3>Why this exists</h3>
+      <p>
+        Scribe charges $23–29/seat/month. Tango charges $8–24/seat/month. Both are owned by VCs with ARR targets.
+      </p>
+      <p style="margin-top: 10px">
+        Chingu is built by one person and stays free forever for everyone. Pro buyers fund the cloud infrastructure and let me keep building. In return, you lock in lifetime access to every paid feature I ship — no subscription, no upgrade pressure, no rug pull.
+      </p>
+      <p style="margin-top: 10px">
+        If you've used Chingu and want to keep it alive, this is how.
+      </p>
+    </div>
+
+    <div class="alt-box">
+      Not ready to commit? Tip the developer at <a href="https://buymeacoffee.com/chingu" target="_blank">buymeacoffee.com/chingu</a> · Or sponsor on <a href="https://github.com/sponsors/21428122" target="_blank">GitHub Sponsors</a>
+    </div>
+  </div>
+
+  <div class="footer">
+    Made with care by <a href="https://github.com/21428122/chingu">Chingu</a> · <a href="https://21428122.github.io/chingu/privacy.html">Privacy</a>
+  </div>
+</body>
+</html>
