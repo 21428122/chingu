@@ -3,17 +3,18 @@
 <head>
   <meta charset="utf-8">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter+Tight:wght@400;500;600;700&family=Gowun+Dodum&display=swap');
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      width: 340px;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #F8FAFC;
+      width: 360px;
+      font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #FAFAF7;
       color: #0F172A;
       -webkit-font-smoothing: antialiased;
     }
+    .ko { font-family: 'Gowun Dodum', sans-serif; }
 
     /* --- Animations --- */
     @keyframes record-pulse {
@@ -59,11 +60,11 @@
       .recording-dot { animation: none !important; }
     }
 
-    /* Header with cool-focus gradient */
+    /* Header with warm Cappy gradient */
     .header {
-      background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A78BFA 100%);
-      color: white;
-      padding: 16px 20px 14px;
+      background: linear-gradient(135deg, #FFB07A 0%, #E8A87C 50%, #C8956D 100%);
+      color: #1A0A04;
+      padding: 18px 20px 16px;
       position: relative;
       overflow: hidden;
     }
@@ -75,8 +76,15 @@
       right: -20%;
       width: 200px;
       height: 200px;
-      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(255,245,228,0.25) 0%, transparent 70%);
       border-radius: 50%;
+    }
+    .header::before {
+      content: "★";
+      position: absolute;
+      top: 12px; right: 18px;
+      font-size: 12px;
+      color: rgba(26, 10, 4, 0.3);
     }
 
     .header-row {
@@ -89,16 +97,17 @@
 
     /* Mini Cappy face icon in header */
     .header-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.18);
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: rgba(26, 10, 4, 0.92);
       backdrop-filter: blur(8px);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
       overflow: hidden;
+      box-shadow: 0 4px 14px rgba(26, 10, 4, 0.3);
     }
 
     .header-title-group {
@@ -110,26 +119,31 @@
     }
 
     .header h1 {
-      font-size: 17px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      line-height: 1.1;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      color: #1A0A04;
     }
 
     .header-subtitle {
-      font-size: 11px;
-      opacity: 0.75;
-      letter-spacing: 0.04em;
-      font-weight: 500;
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 12px;
+      opacity: 0.6;
+      font-weight: 400;
+      color: #1A0A04;
     }
 
     .header p {
       font-size: 11px;
-      opacity: 0.75;
-      margin-top: 4px;
+      opacity: 0.55;
+      margin-top: 6px;
       position: relative;
       z-index: 1;
       letter-spacing: 0.01em;
+      color: #1A0A04;
+      font-weight: 500;
     }
 
     /* Tabs */
@@ -160,9 +174,19 @@
     .tab:hover { color: #64748B; }
 
     .tab.active {
-      color: #6366F1;
-      border-bottom-color: #6366F1;
+      color: #1A0A04;
+      border-bottom-color: #FFB07A;
     }
+    .tab.active::after {
+      content: "";
+      position: absolute;
+      width: 6px; height: 6px;
+      background: #FFB07A;
+      border-radius: 50%;
+      bottom: -3px; left: 50%;
+      transform: translateX(-50%);
+    }
+    .tab { position: relative; }
 
     /* Content */
     .tab-content {
@@ -175,11 +199,24 @@
     /* Stats card */
     .stats-card {
       background: white;
-      border-radius: 16px;
-      padding: 20px 24px;
+      border-radius: 18px;
+      padding: 22px 24px 20px;
       text-align: center;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.06);
-      margin-bottom: 16px;
+      box-shadow:
+        0 1px 3px rgba(15, 23, 42, 0.05),
+        0 8px 24px rgba(255, 176, 122, 0.08);
+      margin-bottom: 14px;
+      border: 1px solid #FFE4C4;
+      position: relative;
+      overflow: hidden;
+    }
+    .stats-card::before {
+      content: "";
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 100px; height: 100px;
+      background: radial-gradient(circle, rgba(255, 176, 122, 0.18), transparent 70%);
+      border-radius: 50%;
     }
 
     /* Cappy mood container */
@@ -194,22 +231,28 @@
     }
 
     .step-count {
-      font-size: 40px;
-      font-weight: 700;
-      background: linear-gradient(135deg, #FFD4A8 0%, #C8956D 40%, #8B5CF6 100%);
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 48px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FFB07A 0%, #C8956D 60%, #A6754F 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
       line-height: 1;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
+      letter-spacing: -0.04em;
+      position: relative;
+      z-index: 1;
     }
 
     .step-label {
-      font-size: 12px;
+      font-size: 11px;
       color: #94A3B8;
-      font-weight: 500;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.12em;
+      position: relative;
+      z-index: 1;
     }
 
     /* Status badge */
@@ -263,14 +306,16 @@
     }
 
     .btn-record {
-      background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
-      color: white;
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+      background: linear-gradient(135deg, #FFB07A 0%, #E8A87C 100%);
+      color: #1A0A04;
+      font-weight: 700;
+      box-shadow: 0 6px 18px rgba(255, 176, 122, 0.4);
     }
 
     .btn-record:hover {
-      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+      box-shadow: 0 10px 28px rgba(255, 176, 122, 0.55);
       transform: translateY(-1px);
+      background: linear-gradient(135deg, #FFC494 0%, #E8B98E 100%);
     }
 
     .btn-stop {
@@ -298,25 +343,27 @@
 
     .btn-new {
       background: white;
-      color: #6366F1;
+      color: #1A0A04;
       border: 1.5px solid #E2E8F0;
       margin-top: 8px;
       box-shadow: none;
     }
 
     .btn-new:hover {
-      background: #F8FAFC;
-      border-color: #6366F1;
+      background: #FFF8F0;
+      border-color: #FFB07A;
+      color: #C8956D;
     }
 
     .btn-autopilot {
-      background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+      background: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%);
       color: white;
-      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+      box-shadow: 0 6px 18px rgba(124, 58, 237, 0.35);
+      font-weight: 700;
     }
 
     .btn-autopilot:hover {
-      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+      box-shadow: 0 10px 28px rgba(124, 58, 237, 0.5);
       transform: translateY(-1px);
     }
 
@@ -390,17 +437,28 @@
 
     /* Footer */
     .footer {
-      padding: 12px 20px;
+      padding: 14px 20px;
       text-align: center;
       font-size: 11px;
-      color: #CBD5E1;
+      color: #94A3B8;
       border-top: 1px solid #F1F5F9;
+      background: white;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      flex-wrap: wrap;
     }
 
     .footer a {
-      color: #6366F1;
+      color: #C8956D;
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 600;
+      transition: color 0.15s ease;
+    }
+    .footer a:hover { color: #FFB07A; }
+    .footer .divider { color: #E2E8F0; }
+    .footer .ko { color: #C8956D; font-size: 11px; }
+    .footer .pro {
+      color: #FFB07A;
+      font-weight: 700;
     }
 
     .btn-library {
@@ -442,10 +500,10 @@
       </div>
       <div class="header-title-group">
         <h1>Chingu</h1>
-        <span class="header-subtitle">친구</span>
+        <span class="header-subtitle">친구 · friend</span>
       </div>
     </div>
-    <p>SOPs that actually work</p>
+    <p>SOPs that make themselves</p>
   </div>
 
   <div class="tabs">
@@ -500,10 +558,12 @@ type MyNewPass123 in password field"></textarea>
 
   <div class="footer">
     <a href="https://github.com/21428122/chingu" target="_blank">GitHub</a>
-    <span style="color:#E2E8F0;margin:0 6px">·</span>
-    <a href="https://21428122.github.io/chingu/pro.html" target="_blank" style="color:#F59E0B;font-weight:600">⭐ Get Chingu Pro</a>
-    <span style="color:#E2E8F0;margin:0 6px">·</span>
-    <a href="https://buymeacoffee.com/chingu" target="_blank" style="color:#FB923C">☕ Tip</a>
+    <span class="divider">·</span>
+    <a href="https://21428122.github.io/chingu/pro.html" target="_blank" class="pro">⭐ Pro</a>
+    <span class="divider">·</span>
+    <a href="https://buymeacoffee.com/chingu" target="_blank">☕ Tip</a>
+    <span class="divider">·</span>
+    <span class="ko">친구</span>
   </div>
 
   <script>

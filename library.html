@@ -4,16 +4,17 @@
   <meta charset="utf-8">
   <title>Chingu — My Guides</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter+Tight:wght@400;500;600;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      background: #F8FAFC;
+      font-family: 'Inter Tight', -apple-system, sans-serif;
+      background: #FAFAF7;
       color: #0F172A;
       -webkit-font-smoothing: antialiased;
       min-height: 100vh;
     }
+    .ko { font-family: 'Gowun Dodum', sans-serif; }
 
     /* ── Top bar ── */
     .top-bar {
@@ -32,24 +33,44 @@
     }
     .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
     .logo-mark {
-      width: 32px; height: 32px; border-radius: 9px;
+      width: 36px; height: 36px; border-radius: 11px;
       background: linear-gradient(135deg, #FFE4C4, #FFB07A, #C8956D);
       display: flex; align-items: center; justify-content: center; overflow: hidden;
+      box-shadow: 0 4px 14px rgba(255, 176, 122, 0.3);
     }
-    .logo-mark svg { width: 24px; height: 24px; }
-    .logo-name { font-size: 17px; font-weight: 700; color: #0F172A; letter-spacing: -0.02em; }
-    .logo-sub  { font-size: 12px; font-weight: 600; color: #6366F1; margin-left: 4px; }
-    .page-title { font-size: 15px; font-weight: 600; color: #64748B; margin-left: 16px; padding-left: 16px; border-left: 1px solid #E2E8F0; }
+    .logo-mark svg { width: 26px; height: 26px; }
+    .logo-name {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 19px; font-weight: 700; color: #0F172A; letter-spacing: -0.03em;
+    }
+    .logo-sub  {
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 13px; color: #C8956D; margin-left: 4px;
+    }
+    .page-title {
+      font-size: 14px; font-weight: 600; color: #64748B;
+      margin-left: 16px; padding-left: 16px; border-left: 1px solid #E2E8F0;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      letter-spacing: -0.01em;
+    }
 
     .btn {
-      padding: 8px 18px; border: none; border-radius: 9px; font-size: 13px;
-      font-weight: 600; cursor: pointer; font-family: inherit;
+      padding: 9px 20px; border: none; border-radius: 999px; font-size: 13px;
+      font-weight: 700; cursor: pointer; font-family: inherit;
       transition: all 0.15s ease; letter-spacing: -0.01em;
     }
-    .btn-primary { background: linear-gradient(135deg, #6366F1, #8B5CF6); color: white; box-shadow: 0 2px 8px rgba(99,102,241,0.3); }
-    .btn-primary:hover { box-shadow: 0 4px 16px rgba(99,102,241,0.4); transform: translateY(-1px); }
+    .btn-primary {
+      background: linear-gradient(135deg, #FFB07A, #E8A87C);
+      color: #1A0A04;
+      box-shadow: 0 4px 14px rgba(255, 176, 122, 0.35);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 8px 22px rgba(255, 176, 122, 0.5);
+      transform: translateY(-1px);
+      background: linear-gradient(135deg, #FFC494, #E8B98E);
+    }
     .btn-ghost { background: white; color: #334155; border: 1.5px solid #E2E8F0; }
-    .btn-ghost:hover { background: #F8FAFC; border-color: #CBD5E1; }
+    .btn-ghost:hover { background: #FFF8F0; border-color: #FFB07A; color: #C8956D; }
 
     /* ── Main ── */
     .main { max-width: 1100px; margin: 0 auto; padding: 36px 24px 80px; }
@@ -58,19 +79,32 @@
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 24px;
     }
-    .section-head h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
-    .doc-count { font-size: 13px; color: #94A3B8; font-weight: 500; background: #F1F5F9; padding: 4px 10px; border-radius: 9999px; margin-left: 10px; }
+    .section-head h2 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 28px; font-weight: 700; letter-spacing: -0.03em;
+    }
+    .doc-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: #C8956D; font-weight: 600;
+      background: #FFF5E4; padding: 5px 11px; border-radius: 9999px; margin-left: 12px;
+      letter-spacing: 0.04em;
+    }
 
     /* ── Grid ── */
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 20px; }
 
     .card {
-      background: white; border-radius: 16px; overflow: hidden;
-      box-shadow: 0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
-      transition: all 0.2s ease; border: 1px solid #F1F5F9;
+      background: white; border-radius: 18px; overflow: hidden;
+      box-shadow: 0 1px 3px rgba(15,23,42,0.04), 0 4px 16px rgba(15,23,42,0.04);
+      transition: all 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+      border: 1px solid #F1F5F9;
       display: flex; flex-direction: column;
     }
-    .card:hover { box-shadow: 0 8px 24px rgba(15,23,42,0.1); transform: translateY(-3px); border-color: #E2E8F0; }
+    .card:hover {
+      box-shadow: 0 12px 32px rgba(255, 176, 122, 0.15), 0 4px 14px rgba(15,23,42,0.06);
+      transform: translateY(-4px);
+      border-color: #FFE4C4;
+    }
 
     .card-thumb {
       aspect-ratio: 16/9; background: #F1F5F9; overflow: hidden;
@@ -92,8 +126,9 @@
 
     .card-body { padding: 16px 18px 18px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
     .card-title {
-      font-size: 14px; font-weight: 700; color: #0F172A;
-      letter-spacing: -0.01em; line-height: 1.35;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 15px; font-weight: 700; color: #0F172A;
+      letter-spacing: -0.02em; line-height: 1.3;
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }
     .card-meta { font-size: 12px; color: #94A3B8; font-weight: 500; }
@@ -107,9 +142,14 @@
     .empty {
       text-align: center; padding: 100px 24px; color: #94A3B8;
     }
-    .empty img { width: 200px; opacity: 0.85; margin-bottom: 20px; }
-    .empty h3 { font-size: 20px; font-weight: 700; color: #64748B; margin-bottom: 8px; }
-    .empty p { font-size: 14px; margin-bottom: 24px; }
+    .empty img { width: 220px; opacity: 0.95; margin-bottom: 20px; }
+    .empty h3 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 24px; font-weight: 700; color: #334155; margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+    .empty p { font-size: 15px; margin-bottom: 28px; line-height: 1.5; }
+    .empty .ko { color: #C8956D; font-size: 13px; margin-bottom: 28px; display: block; }
 
     /* ── Confirm overlay ── */
     .confirm-overlay {
@@ -171,10 +211,11 @@
 
   <div class="grid" id="grid"></div>
   <div class="empty hidden" id="emptyState">
-    <img src="illustrations/empty-no-recordings.svg" alt="">
+    <img src="illustrations/empty-no-recordings.svg" alt="Cappy looking around">
     <h3>No guides yet</h3>
-    <p>Record your first workflow and it'll show up here.</p>
-    <button class="btn btn-primary" onclick="document.getElementById('btnNewRecording').click()">Start Recording</button>
+    <span class="ko">아직 가이드가 없어요</span>
+    <p>Record your first workflow and it'll show up here. ✨</p>
+    <button class="btn btn-primary" onclick="document.getElementById('btnNewRecording').click()">Start Recording →</button>
   </div>
 </div>
 
